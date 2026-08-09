@@ -46,16 +46,33 @@ from psycopg2 import OperationalError, InterfaceError
 
 db_pool = None
 
+# =============================================================================
+# DATABASE CONNECTION POOL
+# =============================================================================
+# NeonDB Free Tier connection limits:
+# - Max connections: 20
+# - Idle timeout: ~30-60 seconds
+# - Connection pooler available on port 5432
+#
+# We use min=1, max=5 to stay well within the 20-connection limit
+# while still handling multiple concurrent requests.
+#
+# If you enable NeonDB's connection pooler (port 5432 with ?pool_mode=transaction),
+# you can safely increase max connections to 10-15.
+
+db_pool = None
+
 def init_pool():
     """Initialize the database connection pool."""
     global db_pool
     if db_pool is None:
+        # NeonDB free tier: 20 max connections, so 5 is conservative
         db_pool = psycopg2.pool.SimpleConnectionPool(
-            1, 5,  # min 1, max 5 connections
+            1, 5,  # min 1, max 5 for NeonDB free tier
             dsn=os.environ.get("DATABASE_URL")
         )
-        print(f"✅ Database connection pool initialized (max 5 connections)")
-
+        print(f"✅ Database connection pool initialized (max 5 connections) - Optimized for NeonDB")
+        
 # =============================================================================
 # CONNECTION HEALTH CHECK
 # =============================================================================
@@ -301,200 +318,193 @@ def get_db_cursor_manual():
 # DATABASE INITIALIZATION
 # =============================================================================
 
-def init_db():
+@contextmanager
+def get_connection_autocommit():
     """
-    Creates the database tables and indexes if they don't already exist.
+    Get a connection with autocommit enabled.
     
-    Safe to run multiple times - CREATE TABLE IF NOT EXISTS and
-    ALTER TABLE ... ADD COLUMN IF NOT EXISTS are no-ops if the table/column
-    already exists.
-    
-    This runs every time the app starts (see app.py), which is safe and
-    means we never need shell access to run migrations manually.
-    
-    Tables:
-    - users: User accounts with authentication and subscription info
-    - documents: User documents with expiry dates
-    - newsletter_subscribers: Email subscribers
-    
-    Indexes:
-    - On users.verification_token for fast token lookups
-    - On users.email_verified for filtering unverified users
-    - On newsletter_subscribers.email for quick lookups
+    Use this for schema migrations and other operations that need
+    autocommit mode (e.g., CREATE/DROP/ALTER statements).
     """
-    conn = get_db()
+    global db_pool
+    if db_pool is None:
+        init_pool()
+    
+    conn = db_pool.getconn()
     try:
-        # CRITICAL: Set isolation level to autocommit for initialization
-        # This prevents any transaction from being left open
         conn.autocommit = True
-        cursor = conn.cursor()
-        
-        # ---------------------------------------------------------------------
-        # USERS TABLE
-        # ---------------------------------------------------------------------
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
-                email TEXT NOT NULL UNIQUE,
-                password_hash TEXT NOT NULL,
-                email_verified BOOLEAN DEFAULT FALSE
-            );
-        """)
-        print("✅ Created/verified users table")
-
-        # Add columns individually with their own checks
-        columns_to_add = [
-            ("reset_token", "TEXT"),
-            ("reset_token_expiry", "TIMESTAMP"),
-            ("verification_token", "VARCHAR(255)"),
-            ("verification_token_expiry", "TIMESTAMP"),
-            ("email_verification_sent_at", "TIMESTAMP"),
-            ("subscription_tier", "VARCHAR(50) DEFAULT 'free'"),
-            ("subscription_status", "VARCHAR(50) DEFAULT 'active'"),
-            ("subscription_expiry", "TIMESTAMP"),
-        ]
-        
-        for col_name, col_type in columns_to_add:
-            try:
-                cursor.execute(f"ALTER TABLE users ADD COLUMN IF NOT EXISTS {col_name} {col_type};")
-                print(f"✅ Added column {col_name} to users")
-            except Exception as e:
-                if "already exists" in str(e).lower():
-                    print(f"ℹ️ Column {col_name} already exists in users")
-                else:
-                    print(f"ℹ️ Could not add column {col_name}: {e}")
-
-        # ---------------------------------------------------------------------
-        # DOCUMENTS TABLE
-        # ---------------------------------------------------------------------
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS documents (
-                id SERIAL PRIMARY KEY,
-                title TEXT NOT NULL,
-                expiry_date TEXT NOT NULL,
-                user_id INTEGER NOT NULL REFERENCES users(id)
-            );
-        """)
-        print("✅ Created/verified documents table")
-
-        # Add reminder columns individually
-        reminder_columns = [
-            ("last_reminder_sent", "DATE"),
-            ("reminder_state", "TEXT"),
-            ("snoozed_until", "DATE"),
-        ]
-        
-        for col_name, col_type in reminder_columns:
-            try:
-                cursor.execute(f"ALTER TABLE documents ADD COLUMN IF NOT EXISTS {col_name} {col_type};")
-                print(f"✅ Added column {col_name} to documents")
-            except Exception as e:
-                if "already exists" in str(e).lower():
-                    print(f"ℹ️ Column {col_name} already exists in documents")
-                else:
-                    print(f"ℹ️ Could not add column {col_name}: {e}")
-
-        print("✅ Added/verified reminder columns to documents table")
-
-        # ---------------------------------------------------------------------
-        # UNIQUE CONSTRAINT - Prevent duplicate documents
-        # ---------------------------------------------------------------------
-        # Check if constraint exists first
-        cursor.execute("""
-            SELECT 1 FROM information_schema.constraint_column_usage 
-            WHERE constraint_name = 'unique_document_for_user' 
-            AND table_name = 'documents';
-        """)
-        constraint_exists = cursor.fetchone() is not None
-        
-        if not constraint_exists:
-            try:
-                # First, clean up any existing duplicates
-                cursor.execute("""
-                    SELECT COUNT(*) FROM (
-                        SELECT user_id, title, expiry_date, COUNT(*) 
-                        FROM documents 
-                        GROUP BY user_id, title, expiry_date 
-                        HAVING COUNT(*) > 1
-                    ) AS duplicates;
-                """)
-                duplicate_count = cursor.fetchone()[0]
-                
-                if duplicate_count > 0:
-                    print(f"⚠️ Found {duplicate_count} duplicate document groups. Removing duplicates...")
-                    
-                    # Keep only the lowest ID (oldest) for each duplicate group
-                    cursor.execute("""
-                        WITH duplicates AS (
-                            SELECT id,
-                                   ROW_NUMBER() OVER (
-                                       PARTITION BY user_id, title, expiry_date 
-                                       ORDER BY id
-                                   ) as rn
-                            FROM documents
-                        )
-                        DELETE FROM documents
-                        WHERE id IN (
-                            SELECT id FROM duplicates WHERE rn > 1
-                        );
-                    """)
-                    print(f"✅ Removed {cursor.rowcount} duplicate documents.")
-                
-                # Add the unique constraint
-                cursor.execute("""
-                    ALTER TABLE documents ADD CONSTRAINT unique_document_for_user 
-                    UNIQUE (user_id, title, expiry_date);
-                """)
-                print("✅ Added unique constraint for documents")
-            except Exception as e:
-                print(f"⚠️ Could not add unique constraint: {e}")
-        else:
-            print("ℹ️ Unique constraint already exists, skipping")
-
-        # ---------------------------------------------------------------------
-        # NEWSLETTER SUBSCRIBERS TABLE
-        # ---------------------------------------------------------------------
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS newsletter_subscribers (
-                id SERIAL PRIMARY KEY,
-                email VARCHAR(255) UNIQUE NOT NULL,
-                subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                unsubscribed_at TIMESTAMP,
-                is_active BOOLEAN DEFAULT TRUE
-            );
-        """)
-        print("✅ Created/verified newsletter_subscribers table")
-
-        # ---------------------------------------------------------------------
-        # INDEXES - Speed up common queries
-        # ---------------------------------------------------------------------
-        indexes = [
-            "CREATE INDEX IF NOT EXISTS idx_users_verification_token ON users(verification_token);",
-            "CREATE INDEX IF NOT EXISTS idx_users_email_verified ON users(email_verified);",
-            "CREATE INDEX IF NOT EXISTS idx_newsletter_email ON newsletter_subscribers(email);",
-        ]
-        
-        for index_sql in indexes:
-            try:
-                cursor.execute(index_sql)
-                print(f"✅ Created index: {index_sql.split('ON')[0].strip()}")
-            except Exception as e:
-                print(f"ℹ️ Could not create index: {e}")
-
-        cursor.close()
-        print("✅ Database tables initialized successfully")
-        
-    except Exception as e:
-        print(f"❌ Error initializing database: {e}")
-        # Don't re-raise - we want the app to continue even if DB init fails
-        # The error will be logged but the app will still work if tables already exist
+        yield conn
     finally:
-        # Reset autocommit before returning to pool
         try:
             conn.autocommit = False
         except:
             pass
-        put_db(conn)  # Always return connection
+        db_pool.putconn(conn)
+
+def init_db():
+    """
+    Creates the database tables and indexes if they don't already exist.
+    """
+    try:
+        # Use the autocommit connection directly - this is the ONLY connection
+        with get_connection_autocommit() as conn:
+            cursor = conn.cursor()
+            
+            # ---------------------------------------------------------------------
+            # USERS TABLE
+            # ---------------------------------------------------------------------
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id SERIAL PRIMARY KEY,
+                    email TEXT NOT NULL UNIQUE,
+                    password_hash TEXT NOT NULL,
+                    email_verified BOOLEAN DEFAULT FALSE
+                );
+            """)
+            print("✅ Created/verified users table")
+
+            # Add columns individually with their own checks
+            columns_to_add = [
+                ("reset_token", "TEXT"),
+                ("reset_token_expiry", "TIMESTAMP"),
+                ("verification_token", "VARCHAR(255)"),
+                ("verification_token_expiry", "TIMESTAMP"),
+                ("email_verification_sent_at", "TIMESTAMP"),
+                ("subscription_tier", "VARCHAR(50) DEFAULT 'free'"),
+                ("subscription_status", "VARCHAR(50) DEFAULT 'active'"),
+                ("subscription_expiry", "TIMESTAMP"),
+            ]
+            
+            for col_name, col_type in columns_to_add:
+                try:
+                    cursor.execute(f"ALTER TABLE users ADD COLUMN IF NOT EXISTS {col_name} {col_type};")
+                    print(f"✅ Added column {col_name} to users")
+                except Exception as e:
+                    if "already exists" in str(e).lower():
+                        print(f"ℹ️ Column {col_name} already exists in users")
+                    else:
+                        print(f"ℹ️ Could not add column {col_name}: {e}")
+
+            # ---------------------------------------------------------------------
+            # DOCUMENTS TABLE
+            # ---------------------------------------------------------------------
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS documents (
+                    id SERIAL PRIMARY KEY,
+                    title TEXT NOT NULL,
+                    expiry_date TEXT NOT NULL,
+                    user_id INTEGER NOT NULL REFERENCES users(id)
+                );
+            """)
+            print("✅ Created/verified documents table")
+
+            # Add reminder columns individually
+            reminder_columns = [
+                ("last_reminder_sent", "DATE"),
+                ("reminder_state", "TEXT"),
+                ("snoozed_until", "DATE"),
+            ]
+            
+            for col_name, col_type in reminder_columns:
+                try:
+                    cursor.execute(f"ALTER TABLE documents ADD COLUMN IF NOT EXISTS {col_name} {col_type};")
+                    print(f"✅ Added column {col_name} to documents")
+                except Exception as e:
+                    if "already exists" in str(e).lower():
+                        print(f"ℹ️ Column {col_name} already exists in documents")
+                    else:
+                        print(f"ℹ️ Could not add column {col_name}: {e}")
+
+            print("✅ Added/verified reminder columns to documents table")
+
+            # ---------------------------------------------------------------------
+            # UNIQUE CONSTRAINT - Prevent duplicate documents
+            # ---------------------------------------------------------------------
+            cursor.execute("""
+                SELECT 1 FROM information_schema.constraint_column_usage 
+                WHERE constraint_name = 'unique_document_for_user' 
+                AND table_name = 'documents';
+            """)
+            constraint_exists = cursor.fetchone() is not None
+            
+            if not constraint_exists:
+                try:
+                    # Check for duplicates
+                    cursor.execute("""
+                        SELECT COUNT(*) FROM (
+                            SELECT user_id, title, expiry_date, COUNT(*) 
+                            FROM documents 
+                            GROUP BY user_id, title, expiry_date 
+                            HAVING COUNT(*) > 1
+                        ) AS duplicates;
+                    """)
+                    duplicate_count = cursor.fetchone()[0]
+                    
+                    if duplicate_count > 0:
+                        print(f"⚠️ Found {duplicate_count} duplicate document groups. Removing duplicates...")
+                        
+                        cursor.execute("""
+                            WITH duplicates AS (
+                                SELECT id,
+                                    ROW_NUMBER() OVER (
+                                        PARTITION BY user_id, title, expiry_date 
+                                        ORDER BY id
+                                    ) as rn
+                                FROM documents
+                            )
+                            DELETE FROM documents
+                            WHERE id IN (
+                                SELECT id FROM duplicates WHERE rn > 1
+                            );
+                        """)
+                        print(f"✅ Removed {cursor.rowcount} duplicate documents.")
+                    
+                    cursor.execute("""
+                        ALTER TABLE documents ADD CONSTRAINT unique_document_for_user 
+                        UNIQUE (user_id, title, expiry_date);
+                    """)
+                    print("✅ Added unique constraint for documents")
+                except Exception as e:
+                    print(f"⚠️ Could not add unique constraint: {e}")
+            else:
+                print("ℹ️ Unique constraint already exists, skipping")
+
+            # ---------------------------------------------------------------------
+            # NEWSLETTER SUBSCRIBERS TABLE
+            # ---------------------------------------------------------------------
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+                    id SERIAL PRIMARY KEY,
+                    email VARCHAR(255) UNIQUE NOT NULL,
+                    subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    unsubscribed_at TIMESTAMP,
+                    is_active BOOLEAN DEFAULT TRUE
+                );
+            """)
+            print("✅ Created/verified newsletter_subscribers table")
+
+            # ---------------------------------------------------------------------
+            # INDEXES - Speed up common queries
+            # ---------------------------------------------------------------------
+            indexes = [
+                "CREATE INDEX IF NOT EXISTS idx_users_verification_token ON users(verification_token);",
+                "CREATE INDEX IF NOT EXISTS idx_users_email_verified ON users(email_verified);",
+                "CREATE INDEX IF NOT EXISTS idx_newsletter_email ON newsletter_subscribers(email);",
+            ]
+            
+            for index_sql in indexes:
+                try:
+                    cursor.execute(index_sql)
+                    print(f"✅ Created index: {index_sql.split('ON')[0].strip()}")
+                except Exception as e:
+                    print(f"ℹ️ Could not create index: {e}")
+
+            cursor.close()
+            print("✅ Database tables initialized successfully")
+        
+    except Exception as e:
+        print(f"❌ Error initializing database: {e}")
+        # Don't re-raise - we want the app to continue even if DB init fails
 
 # =============================================================================
 # USER VERIFICATION FUNCTIONS
@@ -623,3 +633,11 @@ if __name__ == "__main__":
     print("🚀 Initializing database tables...")
     init_db()
     print("✅ Database tables are ready.")
+
+"""
+# Later in the life if more traffic comes
+# db_pool = psycopg2.pool.SimpleConnectionPool(
+    1, 10,  # Increase to 10 if needed
+    dsn=os.environ.get("DATABASE_URL")
+)
+"""
