@@ -130,39 +130,23 @@
   </div>
 </section>
 
-<!-- Pricing Section - Simplified CTA -->
+<!-- Pricing Section - Clean CTA -->
 <section class="py-16 bg-paper border-t border-line">
   <div class="max-w-4xl mx-auto text-center">
     <h2 class="font-display font-bold text-3xl mb-4">Simple, Transparent Pricing</h2>
-    <p class="text-muted text-lg mb-6">
-      Start free with 20 documents. Upgrade when you need more.
+    <p class="text-muted text-lg max-w-2xl mx-auto">
+      Start free with 20 documents. Upgrade to Pro for 100 documents 
+      or VIP for unlimited tracking.
     </p>
     
-    <!-- Quick Pricing Overview -->
-    <div class="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto mb-8">
-      <div class="bg-white border border-line rounded-xl p-6">
-        <h3 class="font-bold text-lg">Free</h3>
-        <p class="text-2xl font-bold text-ink">$0</p>
-        <p class="text-sm text-muted">20 documents</p>
-      </div>
-      <div class="bg-white border-2 border-fritt rounded-xl p-6 relative">
-        <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-fritt text-white text-xs font-medium px-3 py-1 rounded-full">Popular</span>
-        <h3 class="font-bold text-lg">Pro</h3>
-        <p class="text-2xl font-bold text-fritt">$4.99</p>
-        <p class="text-sm text-muted">100 documents</p>
-      </div>
-      <div class="bg-white border border-line rounded-xl p-6">
-        <h3 class="font-bold text-lg">VIP</h3>
-        <p class="text-2xl font-bold text-purple-600">$14.99</p>
-        <p class="text-sm text-muted">Unlimited</p>
-      </div>
+    <div class="mt-8">
+      <a href="{{ url_for('pricing') }}" class="inline-block px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
+        View All Plans →
+      </a>
+      <p class="text-sm text-muted mt-3">
+        No credit card required. Cancel anytime.
+      </p>
     </div>
-    
-    <!-- CTA Button -->
-    <a href="/pricing" class="inline-block px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
-      View All Plans →
-    </a>
-    <p class="text-sm text-muted mt-3">Regional pricing available for Nigeria (£) and UK (£).</p>
   </div>
 </section>
 
@@ -181,36 +165,19 @@
         <h2 class="text-3xl font-bold mb-4">💬 We'd Love Your Feedback</h2>
         <p class="text-gray-600 text-lg mb-3">
             Tell us what you think about <strong>current features</strong> — 
-            and <strong>what you'd like to see in the future</strong>! 
+            and <strong>what you'd like to see in the future</strong>!
         </p>
         <p class="text-gray-500 mb-6">
-            Your ideas help shape our roadmap. Feature requests, improvements, or 
+            Your ideas shape our roadmap. Feature requests, improvements, or 
             problems you're facing — we want to hear it all.
         </p>
         
-        <!-- Option 1: Link to a feedback form page -->
-        <a href="/feedback" class="inline-block px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
+        <a href="{{ url_for('feedback') }}" class="inline-block px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
             Share Your Feedback →
         </a>
         
-        <!-- Option 2: If you want to keep the email form instead -->
-        <!--
-        <form method="POST" action="{{ url_for('subscribe_newsletter') }}" class="max-w-md mx-auto">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <div class="flex flex-col sm:flex-row gap-3">
-              <input type="email" name="email" required 
-                      placeholder="Enter your email" 
-                      class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <button type="submit" 
-                      class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
-                  Subscribe
-              </button>
-          </div>
-        </form>
-        -->
-        
-        <p class="text-sm text-gray-500 mt-4">
-            💡 Have a feature in mind? Let us know — we might build it next!
+        <p class="text-sm text-muted mt-4">
+            💡 Have a feature in mind? We might build it next!
         </p>
     </div>
 </section>
