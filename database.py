@@ -44,11 +44,6 @@ from psycopg2 import OperationalError, InterfaceError
 # to become available. The free tier of Render typically runs 1-2 workers,
 # so 5 connections is usually enough.
 
-db_pool = None
-
-# =============================================================================
-# DATABASE CONNECTION POOL
-# =============================================================================
 # NeonDB Free Tier connection limits:
 # - Max connections: 20
 # - Idle timeout: ~30-60 seconds
@@ -72,7 +67,7 @@ def init_pool():
             dsn=os.environ.get("DATABASE_URL")
         )
         print(f"✅ Database connection pool initialized (max 5 connections) - Optimized for NeonDB")
-        
+
 # =============================================================================
 # CONNECTION HEALTH CHECK
 # =============================================================================
@@ -341,9 +336,27 @@ def get_connection_autocommit():
             pass
         db_pool.putconn(conn)
 
+
 def init_db():
     """
     Creates the database tables and indexes if they don't already exist.
+    
+    Safe to run multiple times - CREATE TABLE IF NOT EXISTS and
+    ALTER TABLE ... ADD COLUMN IF NOT EXISTS are no-ops if the table/column
+    already exists.
+    
+    This runs every time the app starts (see app.py), which is safe and
+    means we never need shell access to run migrations manually.
+    
+    Tables:
+    - users: User accounts with authentication and subscription info
+    - documents: User documents with expiry dates
+    - newsletter_subscribers: Email subscribers
+    
+    Indexes:
+    - On users.verification_token for fast token lookups
+    - On users.email_verified for filtering unverified users
+    - On newsletter_subscribers.email for quick lookups
     """
     try:
         # Use the autocommit connection directly - this is the ONLY connection
@@ -505,6 +518,7 @@ def init_db():
     except Exception as e:
         print(f"❌ Error initializing database: {e}")
         # Don't re-raise - we want the app to continue even if DB init fails
+        # The error will be logged but the app will still work if tables already exist
 
 # =============================================================================
 # USER VERIFICATION FUNCTIONS
