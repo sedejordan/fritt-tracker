@@ -1812,6 +1812,11 @@ def import_csv():
 @app.route("/subscribe/<plan_type>")
 def subscribe(plan_type):
     """Show payment page for subscription."""
+    # Check if user is logged in FIRST
+    if not session.get("user_id"):
+        flash("Please log in or create an account before subscribing.", "warning")
+        return redirect(url_for("login"))
+    
     auth = require_verified()
     if auth:
         return auth

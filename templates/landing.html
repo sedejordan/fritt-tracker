@@ -20,7 +20,7 @@
       How It Works
     </a>
   </div>
-  <p class="text-sm text-muted mt-4">Free for up to 10 documents. No commitment.</p>
+  <p class="text-sm text-muted mt-4">Free for up to 20 documents. No commitment.</p>
 </section>
 
 <!-- Trust/Stats Section -->
@@ -130,75 +130,39 @@
   </div>
 </section>
 
-<!-- Pricing Section -->
+<!-- Pricing Section - Simplified CTA -->
 <section class="py-16 bg-paper border-t border-line">
-  <h2 class="font-display font-bold text-3xl text-center mb-4">Simple, Transparent Pricing</h2>
-  <p class="text-center text-muted mb-4">Start free, upgrade when you need more.</p>
-  
-  <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-    <!-- Free Tier -->
-    <div class="bg-white border border-line rounded-xl p-8 text-center">
-      <h3 class="font-display font-bold text-xl mb-2">Free</h3>
-      <p class="text-3xl font-bold text-ink mb-1">$0</p>
-      <p class="text-sm text-muted mb-4">forever</p>
-      <ul class="text-sm text-left space-y-2 mb-6">
-        <li class="flex items-center gap-2">✅ Track up to <strong>20</strong> documents</li>
-        <li class="flex items-center gap-2">✅ Status indicators (Safe → Expired)</li>
-        <li class="flex items-center gap-2">✅ Search and filter</li>
-        <li class="flex items-center gap-2">✅ Email reminders</li>
-        <li class="flex items-center gap-2">✅ CSV import</li>
-      </ul>
-      <a href="/register" class="block w-full py-2 rounded-md border border-line text-ink font-medium hover:bg-paper transition-colors">Get Started</a>
+  <div class="max-w-4xl mx-auto text-center">
+    <h2 class="font-display font-bold text-3xl mb-4">Simple, Transparent Pricing</h2>
+    <p class="text-muted text-lg mb-6">
+      Start free with 20 documents. Upgrade when you need more.
+    </p>
+    
+    <!-- Quick Pricing Overview -->
+    <div class="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto mb-8">
+      <div class="bg-white border border-line rounded-xl p-6">
+        <h3 class="font-bold text-lg">Free</h3>
+        <p class="text-2xl font-bold text-ink">$0</p>
+        <p class="text-sm text-muted">20 documents</p>
+      </div>
+      <div class="bg-white border-2 border-fritt rounded-xl p-6 relative">
+        <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-fritt text-white text-xs font-medium px-3 py-1 rounded-full">Popular</span>
+        <h3 class="font-bold text-lg">Pro</h3>
+        <p class="text-2xl font-bold text-fritt">$4.99</p>
+        <p class="text-sm text-muted">100 documents</p>
+      </div>
+      <div class="bg-white border border-line rounded-xl p-6">
+        <h3 class="font-bold text-lg">VIP</h3>
+        <p class="text-2xl font-bold text-purple-600">$14.99</p>
+        <p class="text-sm text-muted">Unlimited</p>
+      </div>
     </div>
     
-    <!-- Pro Tier -->
-    <div class="bg-white border-2 border-fritt rounded-xl p-8 text-center relative">
-      <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-fritt text-white text-xs font-medium px-3 py-1 rounded-full">Most Popular</span>
-      <h3 class="font-display font-bold text-xl mb-2">Pro</h3>
-      <p class="text-3xl font-bold text-fritt mb-2">
-        {{ pricing.currency }}{{ pricing.monthly }}
-      </p>
-      <p class="text-muted text-sm mb-1">Per month</p>
-      <p class="text-xs text-muted mb-6">
-        or {{ pricing.currency }}{{ pricing.yearly }} per year
-      </p>
-      <ul class="text-sm text-left space-y-2 mb-6">
-        <li class="flex items-center gap-2">✅ Track up to <strong>100</strong> documents</li>
-        <li class="flex items-center gap-2">✅ All Free features</li>
-        <li class="flex items-center gap-2">✅ Priority support</li>
-        <li class="flex items-center gap-2">✅ Advanced analytics</li>
-        <li class="flex items-center gap-2">✅ Bulk operations</li>
-      </ul>
-      <button class="w-full py-2 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors opacity-50 cursor-not-allowed" disabled>
-        Coming Soon
-      </button>
-      <p class="text-xs text-muted mt-2">Beta — Free until launch</p>
-    </div>
-
-    <!-- VIP Tier -->
-    <div class="bg-white border border-line rounded-xl p-8 text-center relative">
-      <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs font-medium px-3 py-1 rounded-full">Best Value</span>
-      <h3 class="font-display font-bold text-xl mb-2">VIP</h3>
-      <p class="text-3xl font-bold text-purple-600 mb-2">
-        {{ pricing.currency }}{{ pricing.vip_monthly or '14.99' }}
-      </p>
-      <p class="text-muted text-sm mb-1">Per month</p>
-      <p class="text-xs text-muted mb-6">
-        or {{ pricing.currency }}{{ pricing.vip_yearly or '149.99' }} per year
-      </p>
-      <ul class="text-sm text-left space-y-2 mb-6">
-        <li class="flex items-center gap-2">✅ <strong>Unlimited</strong> documents</li>
-        <li class="flex items-center gap-2">✅ All Pro features</li>
-        <li class="flex items-center gap-2">✅ Priority support</li>
-        <li class="flex items-center gap-2">✅ Custom reports</li>
-        <li class="flex items-center gap-2">✅ API access</li>
-        <li class="flex items-center gap-2">✅ Team sharing</li>
-      </ul>
-      <button class="w-full py-2 rounded-md bg-purple-600 text-white font-medium hover:bg-purple-700 transition-colors opacity-50 cursor-not-allowed" disabled>
-        Coming Soon
-      </button>
-      <p class="text-xs text-muted mt-2">Beta — Free until launch</p>
-    </div>
+    <!-- CTA Button -->
+    <a href="/pricing" class="inline-block px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
+      View All Plans →
+    </a>
+    <p class="text-sm text-muted mt-3">Regional pricing available for Nigeria (£) and UK (£).</p>
   </div>
 </section>
 
@@ -207,15 +171,30 @@
   <h2 class="font-display font-bold text-3xl mb-4">Ready to Never Miss a Renewal?</h2>
   <p class="text-muted mb-6">Join thousands tracking their important documents with Fritt Tracker.</p>
   <a href="/register" class="px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
-    Start Free — 10 Documents
+    Start Free — 20 Documents
   </a>
 </section>
 
-<section class="py-16 bg-gray-50">
+<!-- Feedback Section - Updated to encourage future feature requests -->
+<section class="py-16 bg-gray-50 border-t border-line">
     <div class="container mx-auto px-4 max-w-4xl text-center">
-        <h2 class="text-3xl font-bold mb-4">Stay Updated</h2>
-        <p class="text-gray-600 mb-6">Get tips on document management and early access to new features.</p>
+        <h2 class="text-3xl font-bold mb-4">💬 We'd Love Your Feedback</h2>
+        <p class="text-gray-600 text-lg mb-3">
+            Tell us what you think about <strong>current features</strong> — 
+            and <strong>what you'd like to see in the future</strong>! 
+        </p>
+        <p class="text-gray-500 mb-6">
+            Your ideas help shape our roadmap. Feature requests, improvements, or 
+            problems you're facing — we want to hear it all.
+        </p>
         
+        <!-- Option 1: Link to a feedback form page -->
+        <a href="/feedback" class="inline-block px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
+            Share Your Feedback →
+        </a>
+        
+        <!-- Option 2: If you want to keep the email form instead -->
+        <!--
         <form method="POST" action="{{ url_for('subscribe_newsletter') }}" class="max-w-md mx-auto">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="flex flex-col sm:flex-row gap-3">
@@ -228,7 +207,11 @@
               </button>
           </div>
         </form>
-        <p class="text-sm text-gray-500 mt-3">Unsubscribe anytime. No spam.</p>
+        -->
+        
+        <p class="text-sm text-gray-500 mt-4">
+            💡 Have a feature in mind? Let us know — we might build it next!
+        </p>
     </div>
 </section>
 
