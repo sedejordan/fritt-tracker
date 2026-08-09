@@ -155,13 +155,14 @@
                         </button>
                     {% endif %}
                 {% else %}
-                    <!-- <button class="block w-full mt-6 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition opacity-50 cursor-not-allowed" disabled>
-                        Coming Soon
-                    </button>
-                    <p class="text-xs text-gray-500 text-center mt-2">Beta — Free until launch</p> -->
-
-                    <a href="/login" class="...">Log in to Subscribe</a>
-                    <span class="text-sm text-muted">or <a href="/register">create an account</a></span>
+                    <div class="mt-6 text-center">
+                        <a href="{{ url_for('login') }}" class="block w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-sign-in-alt mr-2"></i> Log in to Subscribe
+                        </a>
+                        <p class="text-sm text-muted mt-2">
+                            Don't have an account? <a href="{{ url_for('register') }}" class="text-blue-600 hover:underline">Create one free</a>
+                        </p>
+                    </div>
                 {% endif %}
             </div>
         </div>
@@ -220,13 +221,14 @@
                         </button>
                     {% endif %}
                 {% else %}
-                    <!-- <button class="block w-full mt-6 text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition opacity-50 cursor-not-allowed" disabled>
-                        Coming Soon
-                    </button>
-                    <p class="text-xs text-gray-500 text-center mt-2">Beta — Free until launch</p> -->
-
-                    <a href="/login" class="...">Log in to Subscribe</a>
-                    <span class="text-sm text-muted">or <a href="/register">create an account</a></span>
+                    <div class="mt-6 text-center">
+                        <a href="{{ url_for('login') }}" class="block w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">
+                            <i class="fas fa-sign-in-alt mr-2"></i> Log in to Subscribe
+                        </a>
+                        <p class="text-sm text-muted mt-2">
+                            Don't have an account? <a href="{{ url_for('register') }}" class="text-purple-600 hover:underline">Create one free</a>
+                        </p>
+                    </div>
                 {% endif %}
             </div>
         </div>
