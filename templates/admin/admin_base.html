@@ -4,45 +4,13 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <!-- Admin Navigation -->
-    <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
-        <div class="flex flex-wrap items-center gap-2 md:gap-4">
-            <span class="text-sm font-medium text-gray-500 mr-2">⚙️ Admin</span>
-            <a href="{{ url_for('admin_dashboard') }}" 
-               class="px-3 py-1.5 rounded-md text-sm {% if request.endpoint == 'admin_dashboard' %}bg-purple-100 text-purple-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition">
-                Dashboard
-            </a>
-            <a href="{{ url_for('admin_users') }}" 
-               class="px-3 py-1.5 rounded-md text-sm {% if request.endpoint == 'admin_users' or request.endpoint == 'admin_user_detail' %}bg-purple-100 text-purple-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition">
-                Users
-            </a>
-            <a href="{{ url_for('admin_documents') }}" 
-               class="px-3 py-1.5 rounded-md text-sm {% if request.endpoint == 'admin_documents' %}bg-purple-100 text-purple-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition">
-                Documents
-            </a>
-            <a href="{{ url_for('admin_inquiries') }}" 
-               class="px-3 py-1.5 rounded-md text-sm {% if request.endpoint == 'admin_inquiries' %}bg-purple-100 text-purple-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition">
-                Inquiries
-            </a>
-            <a href="{{ url_for('admin_business_inquiries') }}" 
-               class="px-3 py-1.5 rounded-md text-sm {% if request.endpoint == 'admin_business_inquiries' %}bg-purple-100 text-purple-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition">
-                Business
-            </a>
-            <a href="{{ url_for('admin_audit_log') }}" 
-               class="px-3 py-1.5 rounded-md text-sm {% if request.endpoint == 'admin_audit_log' %}bg-purple-100 text-purple-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition">
-                Audit Log
-            </a>
-            <a href="{{ url_for('newsletter_admin') }}" 
-               class="px-3 py-1.5 rounded-md text-sm {% if request.endpoint == 'newsletter_admin' %}bg-purple-100 text-purple-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition">
-                Newsletter
-            </a>
-            <span class="flex-1"></span>
-            <a href="{{ url_for('home') }}" class="text-sm text-gray-400 hover:text-gray-600 transition">
-                ← Back to Site
-            </a>
-        </div>
+    <!-- Admin mode indicator (visible on desktop) -->
+    <div class="hidden sm:flex items-center gap-2 mb-4 text-sm text-purple-600">
+        <span class="font-medium">⚙️ Admin Mode</span>
+        <span class="text-gray-300">|</span>
+        <span class="text-gray-500">You're in the admin dashboard</span>
     </div>
-
+    
     {% block admin_content %}{% endblock %}
 </div>
 {% endblock %}
