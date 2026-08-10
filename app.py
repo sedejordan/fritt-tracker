@@ -342,12 +342,17 @@ def get_document_count(user_id):
 
 def can_add_document(user_id):
     """Check if user can add more documents based on subscription."""
+    # First check if suspended
+    if is_user_suspended(user_id):
+        return False
+    
     sub_status = get_subscription_status(user_id)
+    tier = sub_status['tier']
     
     # If Pro expired, trigger cleanup
-    if sub_status['tier'] == 'pro' and not sub_status['is_active']:
+    if tier == 'pro' and not sub_status['is_active']:
         # Trim documents and revert to free
-        deleted_count = trim_documents_to_free_limit(user_id)
+        trim_documents_to_free_limit(user_id)
         conn = get_db()
         try:
             cursor = conn.cursor()
@@ -366,6 +371,10 @@ def can_add_document(user_id):
     else:
         tier = sub_status['tier']
     
+    # Suspended users can't add documents
+    if tier == 'suspended':
+        return False
+    
     # VIP and Business have unlimited documents
     if tier in ['vip', 'business']:
         return True
@@ -376,28 +385,28 @@ def can_add_document(user_id):
     # Count current documents
     return get_document_count(user_id) < limit
 
-
 def trim_documents_to_free_limit(user_id):
     """
-    When a user's Pro subscription expires, keep only the 20 documents
-    farthest from expiry and delete the rest.
+    When a user's subscription expires, keep only the 20 documents
+    with the closest expiry dates (most urgent) and delete the rest.
     """
     conn = get_db()
     try:
         cursor = conn.cursor()
         
-        # Get all document IDs ordered by expiry_date DESC (farthest first)
+        # Get all document IDs ordered by expiry_date ASC (closest first)
         cursor.execute("""
             SELECT id 
             FROM documents 
             WHERE user_id = %s 
-            ORDER BY expiry_date DESC
+            ORDER BY expiry_date ASC
         """, (user_id,))
         all_docs = [row[0] for row in cursor.fetchall()]
         
         if len(all_docs) <= 20:
             return 0
         
+        # Keep the first 20 (closest expiry), delete the rest
         docs_to_delete = all_docs[20:]
         
         if docs_to_delete:
@@ -413,7 +422,6 @@ def trim_documents_to_free_limit(user_id):
         return 0
     finally:
         put_db(conn)
-
 
 def get_owned_document(doc_id, user_id):
     """
@@ -672,6 +680,38 @@ def is_admin(user_id=None):
     finally:
         put_db(conn)
 
+# Add this helper function at the top with other helper functions
+
+def is_user_suspended(user_id):
+    """Check if a user is suspended."""
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT subscription_tier FROM users WHERE id = %s",
+            (user_id,)
+        )
+        result = cursor.fetchone()
+        cursor.close()
+        return result and result[0] == 'suspended'
+    finally:
+        put_db(conn)
+
+def get_user_tier(user_id):
+    """Get user's actual tier (not suspended)."""
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT subscription_tier FROM users WHERE id = %s",
+            (user_id,)
+        )
+        result = cursor.fetchone()
+        cursor.close()
+        return result[0] if result else 'free'
+    finally:
+        put_db(conn)
+
 # =============================================================================
 # CONTEXT PROCESSOR
 # =============================================================================
@@ -687,19 +727,25 @@ def utility_processor():
 
 def require_verified():
     """
-    Check if user is logged in AND their email is verified.
+    Check if user is logged in AND their email is verified AND not suspended.
     Returns a redirect if not, otherwise None.
     """
     if not session.get("user_id"):
         return redirect(url_for("login"))
     
     user_id = session["user_id"]
+    
+    # Check if suspended
+    if is_user_suspended(user_id):
+        session.clear()
+        flash("❌ Your account has been suspended. Please contact support for assistance.", "error")
+        return redirect(url_for("login"))
+    
     if not is_email_verified(user_id):
         flash("⚠️ Please verify your email address to access all features.", "warning")
         return redirect(url_for("resend_verification"))
     
     return None
-
 
 def verify_flutterwave_webhook(data, signature):
     """Verify webhook signature."""
@@ -1076,16 +1122,20 @@ def home():
         return render_template("landing.html", pricing=pricing)
 
     user_id = session["user_id"]
+    
+    # Check if suspended FIRST
+    if is_user_suspended(user_id):
+        session.clear()
+        flash("❌ Your account has been suspended. Please contact support.", "error")
+        return redirect(url_for("login"))
 
-     # Get subscription status
+    # Get subscription status
     sub_status = get_subscription_status(user_id)
     tier = sub_status['tier']
-    
-    # Check if subscription is active
     is_active = sub_status['is_active']
     
     # If Pro/VIP expired, downgrade to free and trim documents
-    if tier != 'free' and not is_active:
+    if tier != 'free' and tier != 'suspended' and not is_active:
         deleted_count = trim_documents_to_free_limit(user_id)
         
         conn = get_db()
@@ -1131,9 +1181,23 @@ def home():
         
         # Update tier to free for the rest of the request
         tier = 'free'
+        sub_status['tier'] = 'free'
     
     # Get document count
     doc_count = get_document_count(user_id)
+    
+    # If on free plan and over limit, trim immediately
+    if tier == 'free' and doc_count > 20:
+        deleted_count = trim_documents_to_free_limit(user_id)
+        if deleted_count > 0:
+            flash(
+                f"⚠️ You have more than 20 documents on the Free plan. "
+                f"We've kept your 20 most important documents (farthest from expiry) "
+                f"and removed {deleted_count} documents. "
+                f"Upgrade to Pro or VIP to track more than 20 documents.",
+                "warning"
+            )
+            doc_count = get_document_count(user_id)  # Refresh count
     
     search_query = request.args.get("q", "").strip()
     status_filter = request.args.get("status", "")
@@ -1166,7 +1230,7 @@ def home():
         "index.html", 
         documents=documents, 
         doc_count=doc_count,  
-        subscription_tier=tier,  # Use the updated tier
+        subscription_tier=tier,
         subscription_expiry=sub_status.get('expiry'),
         now=datetime.now(timezone.utc)
     )
@@ -1846,7 +1910,6 @@ def admin_user_action(user_id):
             flash("✅ Flag resolved.", "success")
             
         elif action == "suspend_user":
-            # You can implement suspension by setting a flag or blocking login
             cursor.execute(
                 "UPDATE users SET subscription_tier = 'suspended' WHERE id = %s",
                 (user_id,)
@@ -1857,12 +1920,86 @@ def admin_user_action(user_id):
             
         elif action == "unsuspend_user":
             cursor.execute(
-                "UPDATE users SET subscription_tier = 'free' WHERE id = %s AND subscription_tier = 'suspended'",
+                "UPDATE users SET subscription_tier = 'free', subscription_status = 'active' WHERE id = %s AND subscription_tier = 'suspended'",
                 (user_id,)
             )
             conn.commit()
             log_admin_action("unsuspend_user", "user", user_id, {"action": "unsuspended"})
             flash("✅ User unsuspended.", "success")
+            
+        # NEW: Manual Upgrade/Downgrade Actions
+        elif action == "upgrade_user":
+            new_tier = request.form.get("new_tier")
+            if new_tier not in ['pro', 'vip', 'business']:
+                flash("Invalid tier selected.", "error")
+                return redirect(url_for("admin_user_detail", user_id=user_id))
+            
+            # Check if user has more than 20 documents when downgrading to free
+            if new_tier == 'free':
+                cursor.execute("SELECT COUNT(*) FROM documents WHERE user_id = %s", (user_id,))
+                doc_count = cursor.fetchone()[0]
+                if doc_count > 20:
+                    trim_documents_to_free_limit(user_id)
+            
+            cursor.execute("""
+                UPDATE users 
+                SET subscription_tier = %s,
+                    subscription_status = 'active',
+                    subscription_expiry = NULL
+                WHERE id = %s
+            """, (new_tier, user_id))
+            conn.commit()
+            log_admin_action("upgrade_user", "user", user_id, {"new_tier": new_tier})
+            flash(f"✅ User upgraded to {new_tier.capitalize()} plan.", "success")
+            
+        elif action == "downgrade_user":
+            new_tier = request.form.get("new_tier")
+            if new_tier != 'free':
+                flash("Only free downgrade is supported.", "error")
+                return redirect(url_for("admin_user_detail", user_id=user_id))
+            
+            # Trim documents to free limit
+            deleted_count = trim_documents_to_free_limit(user_id)
+            
+            cursor.execute("""
+                UPDATE users 
+                SET subscription_tier = 'free',
+                    subscription_status = 'active',
+                    subscription_expiry = NULL
+                WHERE id = %s
+            """, (user_id,))
+            conn.commit()
+            log_admin_action("downgrade_user", "user", user_id, {"deleted_documents": deleted_count})
+            flash(f"✅ User downgraded to Free plan. Removed {deleted_count} documents.", "success")
+
+        elif action == "force_fix":
+            # Force a subscription check and cleanup
+            sub_status = get_subscription_status(user_id)
+            tier = sub_status['tier']
+            
+            # Check if subscription expired
+            if tier != 'free' and tier != 'suspended' and not sub_status['is_active']:
+                deleted_count = trim_documents_to_free_limit(user_id)
+                cursor.execute("""
+                    UPDATE users 
+                    SET subscription_tier = 'free', 
+                        subscription_status = 'expired',
+                        subscription_expiry = NULL
+                    WHERE id = %s
+                """, (user_id,))
+                conn.commit()
+                flash(f"✅ User forced to Free plan. Removed {deleted_count} documents.", "success")
+            else:
+                # Just check and trim if over limit on free
+                cursor.execute("SELECT COUNT(*) FROM documents WHERE user_id = %s", (user_id,))
+                doc_count = cursor.fetchone()[0]
+                if tier == 'free' and doc_count > 20:
+                    deleted_count = trim_documents_to_free_limit(user_id)
+                    flash(f"⚠️ User had {doc_count} documents on Free plan. Removed {deleted_count} documents.", "warning")
+                else:
+                    flash(f"✅ User is on {tier} plan with {doc_count} documents. No issues found.", "success")
+            
+            log_admin_action("force_fix", "user", user_id, {"action": "force_fix_subscription"})
             
         elif action == "delete_user":
             # Delete user and all their data
@@ -1884,7 +2021,6 @@ def admin_user_action(user_id):
         put_db(conn)
     
     return redirect(url_for("admin_user_detail", user_id=user_id))
-
 
 @app.route("/admin/inquiries")
 def admin_inquiries():
@@ -2042,6 +2178,69 @@ def admin_audit_log():
         put_db(conn)
     
     return render_template("admin/audit.html", logs=logs)
+
+@app.route("/admin/fix-user/<int:user_id>")
+def admin_fix_user(user_id):
+    """Force a subscription check and cleanup for a user."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    # Check if user exists
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT email FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        if not user:
+            flash("User not found.", "error")
+            return redirect(url_for("admin_users"))
+        
+        # Force subscription check
+        sub_status = get_subscription_status(user_id)
+        tier = sub_status['tier']
+        
+        if tier != 'free' and tier != 'suspended' and not sub_status['is_active']:
+            deleted_count = trim_documents_to_free_limit(user_id)
+            cursor.execute("""
+                UPDATE users 
+                SET subscription_tier = 'free', 
+                    subscription_status = 'expired',
+                    subscription_expiry = NULL
+                WHERE id = %s
+            """, (user_id,))
+            conn.commit()
+            flash(f"✅ User {user[0]} downgraded to Free. Removed {deleted_count} documents.", "success")
+        else:
+            # Just check and trim if over limit
+            cursor.execute("SELECT COUNT(*) FROM documents WHERE user_id = %s", (user_id,))
+            doc_count = cursor.fetchone()[0]
+            if tier == 'free' and doc_count > 20:
+                deleted_count = trim_documents_to_free_limit(user_id)
+                flash(f"⚠️ User had {doc_count} documents on Free plan. Removed {deleted_count} documents.", "warning")
+            else:
+                flash(f"✅ User {user[0]} is on {tier} plan with {doc_count} documents. No changes needed.", "success")
+        
+        cursor.close()
+    finally:
+        put_db(conn)
+    
+    return redirect(url_for("admin_user_detail", user_id=user_id))
+
+@app.route("/admin/payment-plans")
+def admin_payment_plans():
+    """View and manage payment plans."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    # For now, just show current pricing configuration
+    regions = ['us', 'uk', 'ng']
+    pricing_data = {}
+    for region in regions:
+        pricing_data[region] = get_pricing(region)
+    
+    return render_template("admin/payment_plans.html", pricing_data=pricing_data)
 
 @app.route("/pricing")
 def pricing():
@@ -2220,13 +2419,18 @@ def login():
         conn = get_db()
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT id, email, password_hash FROM users WHERE email = %s", (email,))
+            cursor.execute("SELECT id, email, password_hash, subscription_tier FROM users WHERE email = %s", (email,))
             user = cursor.fetchone()
             cursor.close()
         finally:
             put_db(conn)
 
         if user and check_password_hash(user[2], password):
+            # Check if suspended
+            if user[3] == 'suspended':
+                flash("❌ Your account has been suspended. Please contact support.", "error")
+                return render_template("login.html", error="Account suspended. Please contact support.")
+            
             session["user_id"] = user[0]
             session["email"] = user[1]
             return redirect("/")
@@ -2234,7 +2438,6 @@ def login():
             error = "Invalid email or password"
 
     return render_template("login.html", error=error)
-
 
 @app.route("/logout")
 def logout():

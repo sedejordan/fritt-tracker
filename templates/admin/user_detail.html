@@ -60,7 +60,7 @@
                     ✅ Verify Email
                 </button>
                 {% endif %}
-                
+              
                 {% if not user[7] %}
                 <button type="submit" name="action" value="make_admin" 
                         class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
@@ -121,6 +121,46 @@
                 </div>
             </form>
             {% endif %}
+
+            <!-- Manual Plan Management -->
+            <div class="mt-4 border-t pt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Manual Plan Management</label>
+                <div class="space-y-2">
+                    <!-- Upgrade Form -->
+                    <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="flex flex-wrap gap-2">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="upgrade_user">
+                        <select name="new_tier" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="pro">Pro</option>
+                            <option value="vip">VIP</option>
+                            <option value="business">Business</option>
+                        </select>
+                        <button type="submit" class="px-4 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
+                            ⬆️ Upgrade
+                        </button>
+                    </form>
+                    
+                    <!-- Downgrade Form -->
+                    <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="flex flex-wrap gap-2">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="downgrade_user">
+                        <input type="hidden" name="new_tier" value="free">
+                        <button type="submit" class="px-4 py-1.5 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition text-sm"
+                                onclick="return confirm('⚠️ This will downgrade the user to Free plan and trim documents to 20 (keeping closest to expiry). Continue?')">
+                            ⬇️ Downgrade to Free
+                        </button>
+                    </form>
+                    
+                    <!-- Force Fix Button -->
+                    <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="flex flex-wrap gap-2">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="force_fix">
+                        <button type="submit" class="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+                            🔧 Force Fix Subscription
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

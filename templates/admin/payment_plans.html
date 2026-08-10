@@ -1,0 +1,74 @@
+{% extends "admin/admin_base.html" %}
+
+{% block admin_title %}Payment Plans{% endblock %}
+
+{% block admin_content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">💰 Payment Plans</h1>
+    <span class="text-sm text-gray-500">Edit pricing in environment variables</span>
+</div>
+
+<div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+    <p class="text-sm text-yellow-800">
+        ⚠️ Payment plans are configured via environment variables in Render dashboard.
+        Changes here require updating the following variables:
+    </p>
+    <ul class="text-xs text-yellow-700 mt-2 space-y-1">
+        <li><code>FLW_PRO_MONTHLY_USD_PLAN</code> - Pro Monthly (USD)</li>
+        <li><code>FLW_PRO_YEARLY_USD_PLAN</code> - Pro Yearly (USD)</li>
+        <li><code>FLW_VIP_MONTHLY_USD_PLAN</code> - VIP Monthly (USD)</li>
+        <li><code>FLW_VIP_YEARLY_USD_PLAN</code> - VIP Yearly (USD)</li>
+        <li>Same for GBP and NGN currencies</li>
+    </ul>
+</div>
+
+<!-- Current Pricing Display -->
+<div class="grid md:grid-cols-3 gap-6">
+    {% for region, prices in pricing_data.items() %}
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <h2 class="font-bold text-lg mb-4">
+            {% if region == 'us' %}🇺🇸 USA (USD)
+            {% elif region == 'uk' %}🇬🇧 UK (GBP)
+            {% elif region == 'ng' %}🇳🇬 Nigeria (NGN)
+            {% endif %}
+        </h2>
+        <div class="space-y-3 text-sm">
+            <div class="border-b pb-2">
+                <span class="text-gray-500">Pro Monthly:</span>
+                <span class="font-bold float-right">{{ prices.currency }}{{ prices.monthly }}</span>
+            </div>
+            <div class="border-b pb-2">
+                <span class="text-gray-500">Pro Yearly:</span>
+                <span class="font-bold float-right">{{ prices.currency }}{{ prices.yearly }}</span>
+            </div>
+            <div class="border-b pb-2">
+                <span class="text-gray-500">VIP Monthly:</span>
+                <span class="font-bold float-right text-purple-600">{{ prices.currency }}{{ prices.vip_monthly }}</span>
+            </div>
+            <div>
+                <span class="text-gray-500">VIP Yearly:</span>
+                <span class="font-bold float-right text-purple-600">{{ prices.currency }}{{ prices.vip_yearly }}</span>
+            </div>
+        </div>
+        <div class="mt-4 pt-3 border-t text-xs text-gray-400">
+            Raw values: {{ prices.monthly_raw }} / {{ prices.yearly_raw }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Quick Actions -->
+<div class="mt-8 bg-white rounded-xl shadow-sm p-6">
+    <h2 class="font-bold text-lg mb-4">Quick Actions</h2>
+    <div class="flex flex-wrap gap-3">
+        <a href="https://dashboard.render.com" target="_blank" 
+           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+            🔧 Open Render Dashboard
+        </a>
+        <a href="https://dashboard.flutterwave.com" target="_blank" 
+           class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
+            💳 Open Flutterwave Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}
