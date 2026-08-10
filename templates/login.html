@@ -1,17 +1,14 @@
-{% extends "base.html" %} {% block title %}Login - Fritt Tracker{% endblock %}
+{% extends "base.html" %}
+{% block title %}Login - Fritt Tracker{% endblock %}
 {% block content %}
-<div
-  class="max-w-sm mx-auto mt-12 bg-white border border-line rounded-xl p-8 shadow-sm"
->
+<div class="max-w-sm mx-auto mt-12 bg-white border border-line rounded-xl p-8 shadow-sm">
   <h1 class="font-display font-bold text-2xl text-center">
     Fritt <span class="text-fritt">Tracker</span>
   </h1>
   <h2 class="text-center text-muted text-sm mb-6">Log in</h2>
 
   {% if error %}
-  <div
-    class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-3 py-2 mb-4"
-  >
+  <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-3 py-2 mb-4">
     {{ error }}
   </div>
   {% endif %}
@@ -20,82 +17,44 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div>
       <label for="email" class="block text-sm font-medium mb-1">Email</label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        autofocus
-        required
-        class="w-full px-3 py-2 border border-line rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-fritt focus:border-transparent"
-      />
+      <input type="email" id="email" name="email" autofocus required
+             class="w-full px-3 py-2 border border-line rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-fritt focus:border-transparent">
     </div>
     <div>
-      <label for="password" class="block text-sm font-medium mb-1"
-        >Password</label
-      >
+      <label for="password" class="block text-sm font-medium mb-1">Password</label>
       <div class="relative">
-        <input
-          type="password"
-          id="password"
-          name="password"
-          required
-          class="w-full px-3 py-2 border border-line rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-fritt focus:border-transparent pr-10"
-        />
-        <button
-          type="button"
-          onclick="togglePassword('password', this)"
-          title="Show/hide password"
-          aria-label="Toggle password visibility"
-          class="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink transition-colors"
-        >
-          <svg
-            class="w-5 h-5 eye-icon"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-            />
+        <input type="password" id="password" name="password" required
+               class="w-full px-3 py-2 border border-line rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-fritt focus:border-transparent pr-10">
+        <button type="button" onclick="togglePassword('password', this)"
+                title="Show/hide password" aria-label="Toggle password visibility"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink transition-colors">
+          <svg class="w-5 h-5 eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
           </svg>
         </button>
       </div>
     </div>
-    <button
-      type="submit"
-      class="w-full py-2 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors"
-    >
+    <button type="submit" class="w-full py-2 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
       Log In
     </button>
   </form>
 
-  {% with messages = get_flashed_messages(with_categories=true) %} 
+  {% with messages = get_flashed_messages(with_categories=true) %}
     {% for category, message in messages %}
-      <div
-        class="{% if category == 'success' %}bg-green-50 border-green-200 text-green-700{% elif category == 'warning' %}bg-yellow-50 border-yellow-200 text-yellow-700{% else %}bg-red-50 border-red-200 text-red-700{% endif %} border p-3 rounded mb-4"
-      >
-        {{ message }}
-      </div>
-    {% endfor %} 
+    <div class="{% if category == 'success' %}bg-green-50 border-green-200 text-green-700{% elif category == 'warning' %}bg-yellow-50 border-yellow-200 text-yellow-700{% else %}bg-red-50 border-red-200 text-red-700{% endif %} border p-3 rounded mt-4">
+      {{ message }}
+    </div>
+    {% endfor %}
   {% endwith %}
 
   <p class="text-center text-sm text-muted mt-4">
-    <a href="/forgot-password" class="text-fritt hover:underline"
-      >Forgot your password?</a
-    >
+    <a href="/forgot-password" class="text-fritt hover:underline">Forgot your password?</a>
   </p>
   <p class="text-center text-sm text-muted mt-2">
-    Don't have an account?
-    <a href="/register" class="text-fritt hover:underline">Sign up</a>
+    Don't have an account? <a href="/register" class="text-fritt hover:underline">Sign up</a>
   </p>
 </div>
 {% endblock %}

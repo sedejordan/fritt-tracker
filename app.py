@@ -95,14 +95,8 @@ SUBSCRIPTION_TIERS = {
         'price_monthly': 4.99,
         'price_yearly': 49.99
     },
-    'vip': {  # FIXED: Added VIP tier
+    'vip': {
         'name': 'VIP',
-        'doc_limit': 0,  # Unlimited
-        'price_monthly': 14.99,
-        'price_yearly': 149.99
-    },
-    'business': {
-        'name': 'Business',
         'doc_limit': 0,  # Unlimited
         'price_monthly': 14.99,
         'price_yearly': 149.99
@@ -1930,7 +1924,7 @@ def admin_user_action(user_id):
         # NEW: Manual Upgrade/Downgrade Actions
         elif action == "upgrade_user":
             new_tier = request.form.get("new_tier")
-            if new_tier not in ['pro', 'vip', 'business']:
+            if new_tier not in ['pro', 'vip']:  # Removed 'business'
                 flash("Invalid tier selected.", "error")
                 return redirect(url_for("admin_user_detail", user_id=user_id))
             
