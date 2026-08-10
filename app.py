@@ -3080,9 +3080,9 @@ def subscribe_newsletter():
 @app.route("/admin/newsletter")
 def newsletter_admin():
     """Admin page to view newsletter subscribers."""
-    # FIXED: Check for admin status properly
-    if not session.get("is_admin"):
-        abort(403)
+    auth = require_admin()
+    if auth:
+        return auth
     
     conn = get_db()
     try:
@@ -3093,7 +3093,6 @@ def newsletter_admin():
     finally:
         put_db(conn)
     
-    # FIXED: Render a simple template instead of missing template
     return render_template("admin/newsletter.html", subscribers=subscribers)
 
 # # Call with your email
