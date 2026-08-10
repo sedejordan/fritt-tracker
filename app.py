@@ -121,6 +121,34 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
 app.config['SERVER_NAME'] = os.environ.get("APP_URL", "tracker.fritt.org")
 
+# =============================================================================
+# CONTEXT PROCESSOR
+# =============================================================================
+
+@app.context_processor
+def utility_processor():
+    """Make utility functions available to all templates."""
+    def is_admin(user_id=None):
+        if user_id is None:
+            user_id = session.get("user_id")
+        if not user_id:
+            return False
+        
+        conn = get_db()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT 1 FROM admin_users WHERE user_id = %s",
+                (user_id,)
+            )
+            result = cursor.fetchone()
+            cursor.close()
+            return result is not None
+        finally:
+            put_db(conn)
+    
+    return dict(is_admin=is_admin)
+
 # -----------------------------------------------------------------------------
 # SECURE COOKIE SETTINGS
 # -----------------------------------------------------------------------------
