@@ -1,0 +1,81 @@
+{% extends "admin/admin_base.html" %}
+
+{% block admin_title %}Contact Inquiries{% endblock %}
+
+{% block admin_content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Contact Inquiries</h1>
+    <div class="flex gap-2">
+        <a href="{{ url_for('admin_inquiries') }}?status=all" 
+           class="px-3 py-1 text-sm rounded-md {% if status_filter == 'all' %}bg-blue-100 text-blue-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition">
+            All
+        </a>
+        <a href="{{ url_for('admin_inquiries') }}?status=new" 
+           class="px-3 py-1 text-sm rounded-md {% if status_filter == 'new' %}bg-blue-100 text-blue-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition">
+            New
+        </a>
+        <a href="{{ url_for('admin_inquiries') }}?status=resolved" 
+           class="px-3 py-1 text-sm rounded-md {% if status_filter == 'resolved' %}bg-blue-100 text-blue-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition">
+            Resolved
+        </a>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="bg-gray-50 text-left text-gray-500 border-b">
+                    <th class="px-6 py-3">From</th>
+                    <th class="px-6 py-3">Subject</th>
+                    <th class="px-6 py-3">Type</th>
+                    <th class="px-6 py-3">Status</th>
+                    <th class="px-6 py-3">Date</th>
+                    <th class="px-6 py-3">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inquiry in inquiries %}
+                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                    <td class="px-6 py-3">
+                        <div class="font-medium">{{ inquiry[1] }}</div>
+                        <div class="text-xs text-gray-500">{{ inquiry[2] }}</div>
+                    </td>
+                    <td class="px-6 py-3">{{ inquiry[3] }}</td>
+                    <td class="px-6 py-3">
+                        <span class="px-2 py-1 rounded-full text-xs
+                            {% if inquiry[5] == 'support' %}bg-blue-100 text-blue-700
+                            {% elif inquiry[5] == 'feedback' %}bg-green-100 text-green-700
+                            {% elif inquiry[5] == 'bug' %}bg-red-100 text-red-700
+                            {% elif inquiry[5] == 'business' %}bg-purple-100 text-purple-700
+                            {% else %}bg-gray-100 text-gray-700{% endif %}">
+                            {{ inquiry[5]|capitalize }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-3">
+                        {% if inquiry[6] == 'new' %}
+                        <span class="text-yellow-600">🟡 New</span>
+                        {% elif inquiry[6] == 'resolved' %}
+                        <span class="text-green-600">✅ Resolved</span>
+                        {% else %}
+                        <span class="text-gray-500">{{ inquiry[6]|capitalize }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-3 text-gray-500">{{ inquiry[7].strftime('%Y-%m-%d') }}</td>
+                    <td class="px-6 py-3">
+                        {% if inquiry[6] == 'new' %}
+                        <form method="POST" action="{{ url_for('resolve_inquiry', inquiry_id=inquiry[0]) }}" class="inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="text-green-600 hover:underline text-xs">Mark Resolved</button>
+                        </form>
+                        {% else %}
+                        <span class="text-gray-400 text-xs">Done</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

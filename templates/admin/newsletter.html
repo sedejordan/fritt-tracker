@@ -1,40 +1,31 @@
-{% extends "base.html" %}
-{% block title %}Newsletter Subscribers{% endblock %}
-{% block content %}
+{% extends "admin/admin_base.html" %}
 
-<div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-display font-bold">📬 Newsletter Subscribers</h1>
-    <a href="/" class="text-sm text-fritt hover:underline">← Back to Dashboard</a>
+{% block admin_title %}Newsletter{% endblock %}
+
+{% block admin_content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">📬 Newsletter Subscribers</h1>
+    <span class="text-sm text-gray-500">{{ subscribers|length }} subscribers</span>
 </div>
 
-<div class="bg-white border border-line rounded-xl overflow-hidden">
-    <div class="px-4 py-3 border-b border-line bg-paper">
-        <span class="text-sm text-muted">{{ subscribers|length }} subscribers</span>
-    </div>
-    {% if subscribers %}
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <thead>
-                <tr class="border-b border-line text-left text-muted text-xs uppercase tracking-wide">
-                    <th class="px-4 py-3 font-medium">Email</th>
-                    <th class="px-4 py-3 font-medium">Subscribed At</th>
+                <tr class="bg-gray-50 text-left text-gray-500 border-b">
+                    <th class="px-6 py-3">Email</th>
+                    <th class="px-6 py-3">Subscribed At</th>
                 </tr>
             </thead>
             <tbody>
-                {% for email, subscribed_at in subscribers %}
-                <tr class="border-b border-line last:border-0">
-                    <td class="px-4 py-3">{{ email }}</td>
-                    <td class="px-4 py-3 text-muted">{{ subscribed_at.strftime('%Y-%m-%d %H:%M') if subscribed_at else 'N/A' }}</td>
+                {% for subscriber in subscribers %}
+                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                    <td class="px-6 py-3">{{ subscriber[0] }}</td>
+                    <td class="px-6 py-3 text-gray-500">{{ subscriber[1].strftime('%Y-%m-%d %H:%M') if subscriber[1] else 'N/A' }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    {% else %}
-    <div class="py-16 text-center text-muted">
-        No subscribers yet.
-    </div>
-    {% endif %}
 </div>
-
 {% endblock %}

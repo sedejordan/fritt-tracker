@@ -1,0 +1,57 @@
+{% extends "admin/admin_base.html" %}
+
+{% block admin_title %}Audit Log{% endblock %}
+
+{% block admin_content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Audit Log</h1>
+    <span class="text-sm text-gray-500">Last 100 actions</span>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="bg-gray-50 text-left text-gray-500 border-b">
+                    <th class="px-6 py-3">Admin</th>
+                    <th class="px-6 py-3">Action</th>
+                    <th class="px-6 py-3">Target</th>
+                    <th class="px-6 py-3">Details</th>
+                    <th class="px-6 py-3">Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                    <td class="px-6 py-3">{{ log[7] }}</td>
+                    <td class="px-6 py-3">
+                        <span class="px-2 py-1 rounded-full text-xs
+                            {% if 'delete' in log[1] or 'suspend' in log[1] %}bg-red-100 text-red-700
+                            {% elif 'make' in log[1] or 'verify' in log[1] %}bg-green-100 text-green-700
+                            {% elif 'flag' in log[1] %}bg-yellow-100 text-yellow-700
+                            {% else %}bg-gray-100 text-gray-700{% endif %}">
+                            {{ log[1] }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-3">
+                        {% if log[3] %}
+                        <span class="text-xs">{{ log[2] }} #{{ log[3] }}</span>
+                        {% else %}
+                        <span class="text-gray-400">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-3">
+                        {% if log[4] %}
+                        <span class="text-xs text-gray-500">{{ log[4]|tojson|truncate(50) }}</span>
+                        {% else %}
+                        <span class="text-gray-400">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-3 text-gray-500 text-xs">{{ log[6].strftime('%Y-%m-%d %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1721,8 +1721,9 @@ def admin_user_detail(user_id):
         # Get user info
         cursor.execute("""
             SELECT u.id, u.email, u.email_verified, u.subscription_tier,
-                   u.subscription_status, u.subscription_expiry, u.created_at,
-                   EXISTS(SELECT 1 FROM admin_users a WHERE a.user_id = u.id) as is_admin
+                u.subscription_status, u.subscription_expiry, u.created_at,
+                EXISTS(SELECT 1 FROM admin_users a WHERE a.user_id = u.id) as is_admin,
+                EXISTS(SELECT 1 FROM flagged_users f WHERE f.user_id = u.id AND f.status = 'pending') as is_flagged
             FROM users u
             WHERE u.id = %s
         """, (user_id,))

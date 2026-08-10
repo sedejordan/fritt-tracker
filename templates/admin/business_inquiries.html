@@ -1,0 +1,72 @@
+{% extends "admin/admin_base.html" %}
+
+{% block admin_title %}Business Inquiries{% endblock %}
+
+{% block admin_content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Business Inquiries</h1>
+    <div class="flex gap-2">
+        <a href="{{ url_for('admin_business_inquiries') }}?status=all" 
+           class="px-3 py-1 text-sm rounded-md {% if status_filter == 'all' %}bg-purple-100 text-purple-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition">
+            All
+        </a>
+        <a href="{{ url_for('admin_business_inquiries') }}?status=new" 
+           class="px-3 py-1 text-sm rounded-md {% if status_filter == 'new' %}bg-purple-100 text-purple-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition">
+            New
+        </a>
+        <a href="{{ url_for('admin_business_inquiries') }}?status=contacted" 
+           class="px-3 py-1 text-sm rounded-md {% if status_filter == 'contacted' %}bg-purple-100 text-purple-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition">
+            Contacted
+        </a>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="bg-gray-50 text-left text-gray-500 border-b">
+                    <th class="px-6 py-3">Contact</th>
+                    <th class="px-6 py-3">Company</th>
+                    <th class="px-6 py-3">Team</th>
+                    <th class="px-6 py-3">Status</th>
+                    <th class="px-6 py-3">Date</th>
+                    <th class="px-6 py-3">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inquiry in inquiries %}
+                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                    <td class="px-6 py-3">
+                        <div class="font-medium">{{ inquiry[1] }}</div>
+                        <div class="text-xs text-gray-500">{{ inquiry[2] }}</div>
+                    </td>
+                    <td class="px-6 py-3">{{ inquiry[3] }}</td>
+                    <td class="px-6 py-3">{{ inquiry[4] or 'N/A' }}</td>
+                    <td class="px-6 py-3">
+                        {% if inquiry[6] == 'new' %}
+                        <span class="text-yellow-600">🟡 New</span>
+                        {% elif inquiry[6] == 'contacted' %}
+                        <span class="text-green-600">✅ Contacted</span>
+                        {% else %}
+                        <span class="text-gray-500">{{ inquiry[6]|capitalize }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-3 text-gray-500">{{ inquiry[7].strftime('%Y-%m-%d') }}</td>
+                    <td class="px-6 py-3">
+                        <a href="mailto:{{ inquiry[2] }}?subject=Re: Business Inquiry - {{ inquiry[3] }}" 
+                           class="text-blue-600 hover:underline text-xs">Reply</a>
+                        {% if inquiry[6] == 'new' %}
+                        <form method="POST" action="{{ url_for('resolve_inquiry', inquiry_id=inquiry[0]) }}" class="inline ml-2">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="text-green-600 hover:underline text-xs">Mark Contacted</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

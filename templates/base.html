@@ -118,6 +118,9 @@
                           📥 Import CSV <span class="text-xs text-muted">(Pro feature)</span>
                       </a>
                   {% endif %}
+                  
+                  <a href="/change-password" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">Change Password</a>
+                  <a href="/logout" class="block px-4 py-3 rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition-colors text-center">Logout</a>
 
                   {% if is_admin() %}
                   <a href="{{ url_for('admin_dashboard') }}" 
@@ -125,9 +128,6 @@
                       ⚙️ Admin
                   </a>
                   {% endif %}
-                  
-                  <a href="/change-password" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">Change Password</a>
-                  <a href="/logout" class="block px-4 py-3 rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition-colors text-center">Logout</a>
               {% else %}
                   <!-- Logged-out menu items -->
                   <a href="/login" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center font-medium">Log In</a>
