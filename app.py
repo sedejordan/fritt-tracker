@@ -1991,7 +1991,7 @@ def admin_business_inquiries():
 
 @app.route("/admin/documents")
 def admin_documents():
-    """View all documents across all users."""
+    """View all documents across all users, grouped by user."""
     auth = require_admin()
     if auth:
         return auth
@@ -2009,7 +2009,7 @@ def admin_documents():
                    END as status
             FROM documents d
             JOIN users u ON u.id = d.user_id
-            ORDER BY d.expiry_date ASC
+            ORDER BY u.email ASC, d.expiry_date ASC
             LIMIT 100
         """)
         documents = cursor.fetchall()
@@ -2018,7 +2018,6 @@ def admin_documents():
         put_db(conn)
     
     return render_template("admin/documents.html", documents=documents)
-
 
 @app.route("/admin/audit")
 def admin_audit_log():
