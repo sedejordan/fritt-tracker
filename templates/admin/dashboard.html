@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Fritt Tracker{% endblock %}
+
+{% block content %}
+<style>
+    .stat-card {
+        transition: transform 0.2s;
+    }
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">Admin Dashboard</h1>
+        <div class="text-sm text-gray-500">
+            <a href="{{ url_for('admin_audit_log') }}" class="text-blue-600 hover:underline">Audit Log</a>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+        <div class="stat-card bg-white rounded-xl shadow-sm p-4 md:p-6 border-l-4 border-blue-500">
+            <div class="text-sm text-gray-500">Total Users</div>
+            <div class="text-2xl md:text-3xl font-bold">{{ total_users }}</div>
+            <div class="text-xs text-gray-400">{{ verified_users }} verified</div>
+        </div>
+        <div class="stat-card bg-white rounded-xl shadow-sm p-4 md:p-6 border-l-4 border-green-500">
+            <div class="text-sm text-gray-500">Documents</div>
+            <div class="text-2xl md:text-3xl font-bold">{{ total_documents }}</div>
+            <div class="text-xs text-green-600">{{ expiring_soon }} expiring soon</div>
+        </div>
+        <div class="stat-card bg-white rounded-xl shadow-sm p-4 md:p-6 border-l-4 border-red-500">
+            <div class="text-sm text-gray-500">Expired</div>
+            <div class="text-2xl md:text-3xl font-bold text-red-600">{{ expired_documents }}</div>
+            <div class="text-xs text-gray-400">Need attention</div>
+        </div>
+        <div class="stat-card bg-white rounded-xl shadow-sm p-4 md:p-6 border-l-4 border-yellow-500">
+            <div class="text-sm text-gray-500">Pending</div>
+            <div class="text-2xl md:text-3xl font-bold text-yellow-600">{{ pending_flags + pending_inquiries }}</div>
+            <div class="text-xs text-gray-400">{{ pending_flags }} flags, {{ pending_inquiries }} inquiries</div>
+        </div>
+    </div>
+
+    <!-- Subscription Stats -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+        <h2 class="font-bold text-lg mb-4">Subscriptions</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {% for tier, count in subscription_stats %}
+            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                <div class="text-sm text-gray-500">{{ tier|capitalize }}</div>
+                <div class="text-xl font-bold">{{ count }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="font-bold text-lg">Recent Users</h2>
+            <a href="{{ url_for('admin_users') }}" class="text-sm text-blue-600 hover:underline">View all →</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left text-gray-500 border-b">
+                        <th class="pb-2">Email</th>
+                        <th class="pb-2">Plan</th>
+                        <th class="pb-2">Verified</th>
+                        <th class="pb-2">Joined</th>
+                        <th class="pb-2">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in recent_users %}
+                    <tr class="border-b border-gray-100">
+                        <td class="py-2">{{ user[1] }}</td>
+                        <td class="py-2">
+                            <span class="px-2 py-1 rounded-full text-xs 
+                                {% if user[2] == 'vip' %}bg-purple-100 text-purple-700
+                                {% elif user[2] == 'pro' %}bg-blue-100 text-blue-700
+                                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                                {{ user[2]|capitalize }}
+                            </span>
+                        </td>
+                        <td class="py-2">
+                            {% if user[3] %}
+                            <span class="text-green-600">✅</span>
+                            {% else %}
+                            <span class="text-red-600">❌</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-2 text-gray-500">{{ user[4].strftime('%Y-%m-%d') }}</td>
+                        <td class="py-2">
+                            <a href="{{ url_for('admin_user_detail', user_id=user[0]) }}" 
+                               class="text-blue-600 hover:underline text-xs">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

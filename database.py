@@ -496,6 +496,120 @@ def init_db():
             """)
             print("✅ Created/verified newsletter_subscribers table")
 
+            # Add to init_db() function, after newsletter_subscribers table:
+
+            # ---------------------------------------------------------------------
+            # CONTACT INQUIRIES TABLE
+            # ---------------------------------------------------------------------
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS contact_inquiries (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    email VARCHAR(255) NOT NULL,
+                    subject VARCHAR(255) NOT NULL,
+                    message TEXT NOT NULL,
+                    inquiry_type VARCHAR(50) DEFAULT 'support',
+                    status VARCHAR(50) DEFAULT 'new',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    resolved_at TIMESTAMP
+                );
+            """)
+            print("✅ Created/verified contact_inquiries table")
+
+            # ---------------------------------------------------------------------
+            # BUSINESS INQUIRIES TABLE
+            # ---------------------------------------------------------------------
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS business_inquiries (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    email VARCHAR(255) NOT NULL,
+                    company VARCHAR(255) NOT NULL,
+                    team_size VARCHAR(50),
+                    message TEXT NOT NULL,
+                    status VARCHAR(50) DEFAULT 'new',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    contacted_at TIMESTAMP
+                );
+            """)
+            print("✅ Created/verified business_inquiries table")
+
+            # =============================================================================
+            # ADMIN TABLES
+            # =============================================================================
+
+            # ---------------------------------------------------------------------
+            # ADMIN USERS (who has admin access)
+            # ---------------------------------------------------------------------
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS admin_users (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                    role VARCHAR(50) DEFAULT 'admin',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(user_id)
+                );
+            """)
+            print("✅ Created/verified admin_users table")
+
+            # ---------------------------------------------------------------------
+            # AUDIT LOG (track all admin actions)
+            # ---------------------------------------------------------------------
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS audit_log (
+                    id SERIAL PRIMARY KEY,
+                    admin_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                    action VARCHAR(100) NOT NULL,
+                    target_type VARCHAR(50),
+                    target_id INTEGER,
+                    details JSONB,
+                    ip_address VARCHAR(45),
+                    user_agent TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+            print("✅ Created/verified audit_log table")
+
+            # ---------------------------------------------------------------------
+            # USER ACTION LOGS (track user behavior)
+            # ---------------------------------------------------------------------
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS user_activity_logs (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                    action VARCHAR(100) NOT NULL,
+                    details JSONB,
+                    ip_address VARCHAR(45),
+                    user_agent TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+            print("✅ Created/verified user_activity_logs table")
+
+            # ---------------------------------------------------------------------
+            # FLAGGED USERS (for moderation)
+            # ---------------------------------------------------------------------
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS flagged_users (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                    flagged_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+                    reason TEXT NOT NULL,
+                    status VARCHAR(50) DEFAULT 'pending', -- pending, reviewed, resolved
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    resolved_at TIMESTAMP,
+                    notes TEXT
+                );
+            """)
+
+            cursor.execute("""
+                INSERT INTO admin_users (user_id) VALUES (1);
+            """)
+            
+            print("✅ Created/verified flagged_users table")
+
             # ---------------------------------------------------------------------
             # INDEXES - Speed up common queries
             # ---------------------------------------------------------------------

@@ -33,6 +33,8 @@ import secrets
 import time
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
+import re
+from email_validator import validate_email, EmailNotValidError
 
 import requests
 from flask import (
@@ -1145,18 +1147,893 @@ def health_check():
     """Health check endpoint for UptimeRobot — no rate limit."""
     return "OK", 200
 
+# =============================================================================
+# ROUTES - CONTACT & SUPPORT
+# =============================================================================
 
-@app.route("/contact")
+@app.route("/contact", methods=["GET", "POST"])
 def contact():
-    """Contact page."""
-    return render_template("contact.html")
+    """Contact page for support and business inquiries."""
+    error = None
+    success = None
+    
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        subject = request.form.get("subject", "").strip()
+        message = request.form.get("message", "").strip()
+        inquiry_type = request.form.get("inquiry_type", "support")
+        
+        # Validation
+        if not name:
+            error = "Please enter your name."
+        elif not email:
+            error = "Please enter your email address."
+        elif not validate_email(email):
+            error = "Please enter a valid email address."
+        elif not subject:
+            error = "Please enter a subject."
+        elif not message or len(message) < 10:
+            error = "Please enter a message (at least 10 characters)."
+        
+        if not error:
+            try:
+                # Store in database
+                conn = get_db()
+                try:
+                    cursor = conn.cursor()
+                    cursor.execute("""
+                        INSERT INTO contact_inquiries 
+                        (name, email, subject, message, inquiry_type, created_at)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                        RETURNING id
+                    """, (name, email, subject, message, inquiry_type, datetime.now(timezone.utc)))
+                    inquiry_id = cursor.fetchone()[0]
+                    conn.commit()
+                    cursor.close()
+                finally:
+                    put_db(conn)
+                
+                # Send notification to you (support@fritt.org or your personal email)
+                send_inquiry_notification(name, email, subject, message, inquiry_type, inquiry_id)
+                
+                # Send auto-reply to user
+                send_auto_reply(email, name, inquiry_type)
+                
+                success = "✅ Your message has been sent! We'll get back to you within 24 hours."
+                
+            except Exception as e:
+                print(f"❌ Error saving inquiry: {e}")
+                error = "Something went wrong. Please try again later."
+    
+    return render_template("contact.html", error=error, success=success)
 
 
-@app.route("/business")
+@app.route("/business", methods=["GET", "POST"])
 def business():
-    """Business page."""
-    return render_template("business.html")
+    """Business inquiries page."""
+    error = None
+    success = None
+    
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        company = request.form.get("company", "").strip()
+        team_size = request.form.get("team_size", "")
+        message = request.form.get("message", "").strip()
+        
+        # Validation
+        if not name:
+            error = "Please enter your name."
+        elif not email:
+            error = "Please enter your email address."
+        elif not validate_email(email):
+            error = "Please enter a valid email address."
+        elif not company:
+            error = "Please enter your company name."
+        elif not message or len(message) < 10:
+            error = "Please enter a message (at least 10 characters)."
+        
+        if not error:
+            try:
+                # Store in database
+                conn = get_db()
+                try:
+                    cursor = conn.cursor()
+                    cursor.execute("""
+                        INSERT INTO business_inquiries 
+                        (name, email, company, team_size, message, created_at)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                        RETURNING id
+                    """, (name, email, company, team_size, message, datetime.now(timezone.utc)))
+                    inquiry_id = cursor.fetchone()[0]
+                    conn.commit()
+                    cursor.close()
+                finally:
+                    put_db(conn)
+                
+                # Send notification to you
+                send_business_inquiry_notification(name, email, company, team_size, message, inquiry_id)
+                
+                # Send auto-reply
+                send_business_auto_reply(email, name)
+                
+                success = "✅ Thank you! A team member will contact you within 24 hours."
+                
+            except Exception as e:
+                print(f"❌ Error saving business inquiry: {e}")
+                error = "Something went wrong. Please try again later."
+    
+    return render_template("business.html", error=error, success=success)
 
+def send_inquiry_notification(name, email, subject, message, inquiry_type, inquiry_id):
+    """Send notification to you (the admin)."""
+    if not RESEND_API_KEY:
+        print(f"📧 New {inquiry_type} inquiry from {name} ({email}): {subject}")
+        return
+    
+    try:
+        # Send to your personal email (or support@fritt.org later)
+        admin_email = os.environ.get("ADMIN_EMAIL", "admin@example.com")
+        
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+            json={
+                "from": RESEND_FROM_EMAIL,
+                "to": [admin_email],
+                "reply_to": [email],
+                "subject": f"[Fritt Tracker] New {inquiry_type} inquiry: {subject}",
+                "html": f"""
+                    <h2>New {inquiry_type.capitalize()} Inquiry</h2>
+                    <p><strong>From:</strong> {name} ({email})</p>
+                    <p><strong>Subject:</strong> {subject}</p>
+                    <p><strong>Message:</strong></p>
+                    <p>{message.replace(chr(10), '<br>')}</p>
+                    <hr>
+                    <p><strong>Inquiry ID:</strong> #{inquiry_id}</p>
+                    <p><strong>Type:</strong> {inquiry_type}</p>
+                    <p>Reply directly to this email to respond to {name}.</p>
+                """,
+                "text": f"""
+                    New {inquiry_type} Inquiry
+                    
+                    From: {name} ({email})
+                    Subject: {subject}
+                    
+                    Message:
+                    {message}
+                    
+                    Inquiry ID: #{inquiry_id}
+                    Type: {inquiry_type}
+                """
+            },
+            timeout=10
+        )
+        if response.status_code >= 400:
+            print(f"⚠️ Failed to send inquiry notification: {response.text}")
+    except Exception as e:
+        print(f"⚠️ Error sending inquiry notification: {e}")
+
+
+def send_auto_reply(user_email, user_name, inquiry_type="support"):
+    """Send auto-reply to user."""
+    if not RESEND_API_KEY:
+        print(f"ℹ️ Auto-reply not sent (no API key): {user_email}")
+        return
+    
+    try:
+        if inquiry_type == "business":
+            subject = "Thank you for your business inquiry"
+            body = f"""
+                <h2>Thank you for reaching out, {user_name}!</h2>
+                <p>We've received your business inquiry and a team member will get back to you within <strong>24 hours</strong>.</p>
+                <p>In the meantime, you can:</p>
+                <ul>
+                    <li>📝 <a href="https://tracker.fritt.org/register">Create your free account</a></li>
+                    <li>📖 <a href="https://tracker.fritt.org/pricing">View our pricing plans</a></li>
+                </ul>
+                <hr>
+                <p style="font-size: 14px; color: #6b7280;">
+                    This is an automated response. Our team will personally follow up with you soon.
+                </p>
+            """
+            text_body = f"""
+                Thank you for reaching out, {user_name}!
+                
+                We've received your business inquiry and a team member will get back to you within 24 hours.
+                
+                In the meantime, you can:
+                - Create your free account: https://tracker.fritt.org/register
+                - View our pricing plans: https://tracker.fritt.org/pricing
+                
+                This is an automated response. Our team will personally follow up with you soon.
+            """
+        else:
+            subject = "We've received your message"
+            body = f"""
+                <h2>Thanks for reaching out, {user_name}!</h2>
+                <p>We've received your message and will get back to you within <strong>24 hours</strong>.</p>
+                <p>In the meantime, you can:</p>
+                <ul>
+                    <li>📝 <a href="https://tracker.fritt.org/register">Create your free account</a></li>
+                    <li>📖 <a href="https://tracker.fritt.org/pricing">View our pricing plans</a></li>
+                    <li>💬 <a href="https://tracker.fritt.org/feedback">Feedback</a> - Share feature ideas</li>
+                </ul>
+                <hr>
+                <p style="font-size: 14px; color: #6b7280;">
+                    This is an automated response. For urgent issues, reply to this email and we'll prioritize it.
+                </p>
+            """
+            text_body = f"""
+                Thanks for reaching out, {user_name}!
+                
+                We've received your message and will get back to you within 24 hours.
+                
+                In the meantime, you can:
+                - Create your free account: https://tracker.fritt.org/register
+                - View our pricing plans: https://tracker.fritt.org/pricing
+                - Give us feedback and share feature ideas: https://tracker.fritt.org/feedback
+                
+                This is an automated response. For urgent issues, reply to this email and we'll prioritize it.
+            """
+        
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+            json={
+                "from": RESEND_FROM_EMAIL,
+                "to": [user_email],
+                "subject": subject,
+                "html": f"""
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <style>
+                            body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                            .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                            .header {{ background: #2563eb; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }}
+                            .content {{ padding: 30px; background: #f9fafb; }}
+                            .footer {{ text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }}
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <div class="header">
+                                <h1>Fritt Tracker</h1>
+                            </div>
+                            <div class="content">
+                                {body}
+                            </div>
+                            <div class="footer">
+                                <p>Fritt Tracker - Never miss a document renewal</p>
+                                <p style="font-size: 12px;">
+                                    <a href="https://tracker.fritt.org/terms" style="color: #6b7280;">Terms</a> • 
+                                    <a href="https://tracker.fritt.org/privacy" style="color: #6b7280;">Privacy</a>
+                                </p>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                """,
+                "text": text_body
+            },
+            timeout=10
+        )
+        if response.status_code >= 400:
+            print(f"⚠️ Failed to send auto-reply: {response.text}")
+    except Exception as e:
+        print(f"⚠️ Error sending auto-reply: {e}")
+
+
+def send_business_inquiry_notification(name, email, company, team_size, message, inquiry_id):
+    """Send business inquiry notification to you."""
+    if not RESEND_API_KEY:
+        print(f"📧 New business inquiry from {name} ({email}) at {company}")
+        return
+    
+    try:
+        admin_email = os.environ.get("ADMIN_EMAIL", "admin@example.com")
+        
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+            json={
+                "from": RESEND_FROM_EMAIL,
+                "to": [admin_email],
+                "reply_to": [email],
+                "subject": f"[Fritt Tracker] Business Inquiry: {company}",
+                "html": f"""
+                    <h2>New Business Inquiry</h2>
+                    <p><strong>Name:</strong> {name}</p>
+                    <p><strong>Email:</strong> {email}</p>
+                    <p><strong>Company:</strong> {company}</p>
+                    <p><strong>Team Size:</strong> {team_size or 'Not specified'}</p>
+                    <p><strong>Message:</strong></p>
+                    <p>{message.replace(chr(10), '<br>')}</p>
+                    <hr>
+                    <p><strong>Inquiry ID:</strong> #{inquiry_id}</p>
+                """,
+                "text": f"""
+                    New Business Inquiry
+                    
+                    Name: {name}
+                    Email: {email}
+                    Company: {company}
+                    Team Size: {team_size or 'Not specified'}
+                    
+                    Message:
+                    {message}
+                    
+                    Inquiry ID: #{inquiry_id}
+                """
+            },
+            timeout=10
+        )
+        if response.status_code >= 400:
+            print(f"⚠️ Failed to send business inquiry notification: {response.text}")
+    except Exception as e:
+        print(f"⚠️ Error sending business inquiry notification: {e}")
+
+
+def send_business_auto_reply(user_email, user_name):
+    """Send auto-reply for business inquiries."""
+    return send_auto_reply(user_email, user_name, "business")
+
+# =============================================================================
+# ADMIN ROUTES
+# =============================================================================
+
+def is_admin(user_id=None):
+    """Check if a user has admin privileges."""
+    if user_id is None:
+        user_id = session.get("user_id")
+    
+    if not user_id:
+        return False
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT 1 FROM admin_users WHERE user_id = %s",
+            (user_id,)
+        )
+        result = cursor.fetchone()
+        cursor.close()
+        return result is not None
+    finally:
+        put_db(conn)
+
+
+def require_admin():
+    """Decorator-like function to require admin access."""
+    if not session.get("user_id"):
+        flash("Please log in to access the admin area.", "warning")
+        return redirect(url_for("login"))
+    
+    if not is_admin():
+        flash("You don't have permission to access the admin area.", "error")
+        abort(403)
+    
+    return None
+
+
+def log_admin_action(action, target_type=None, target_id=None, details=None):
+    """Log admin actions for audit trail."""
+    if not session.get("user_id"):
+        return
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO audit_log 
+            (admin_id, action, target_type, target_id, details, ip_address, user_agent)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (
+            session["user_id"],
+            action,
+            target_type,
+            target_id,
+            json.dumps(details) if details else None,
+            request.remote_addr,
+            request.headers.get('User-Agent')
+        ))
+        conn.commit()
+        cursor.close()
+    finally:
+        put_db(conn)
+
+
+@app.route("/admin")
+def admin_dashboard():
+    """Admin dashboard - overview of everything."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        
+        # Get stats
+        cursor.execute("SELECT COUNT(*) FROM users")
+        total_users = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) FROM users WHERE email_verified = TRUE")
+        verified_users = cursor.fetchone()[0]
+        
+        cursor.execute("""
+            SELECT subscription_tier, COUNT(*) 
+            FROM users 
+            GROUP BY subscription_tier
+        """)
+        subscription_stats = cursor.fetchall()
+        
+        cursor.execute("SELECT COUNT(*) FROM documents")
+        total_documents = cursor.fetchone()[0]
+        
+        cursor.execute("""
+            SELECT COUNT(*) FROM documents 
+            WHERE expiry_date::date <= CURRENT_DATE
+        """)
+        expired_documents = cursor.fetchone()[0]
+        
+        cursor.execute("""
+            SELECT COUNT(*) FROM documents 
+            WHERE expiry_date::date > CURRENT_DATE 
+            AND expiry_date::date <= CURRENT_DATE + INTERVAL '14 days'
+        """)
+        expiring_soon = cursor.fetchone()[0]
+        
+        cursor.execute("""
+            SELECT COUNT(*) FROM flagged_users WHERE status = 'pending'
+        """)
+        pending_flags = cursor.fetchone()[0]
+        
+        cursor.execute("""
+            SELECT COUNT(*) FROM contact_inquiries WHERE status = 'new'
+        """)
+        pending_inquiries = cursor.fetchone()[0]
+        
+        cursor.execute("""
+            SELECT id, email, subscription_tier, created_at 
+            FROM users 
+            ORDER BY created_at DESC 
+            LIMIT 10
+        """)
+        recent_users = cursor.fetchall()
+        
+        cursor.close()
+        
+    finally:
+        put_db(conn)
+    
+    return render_template(
+        "admin/dashboard.html",
+        total_users=total_users,
+        verified_users=verified_users,
+        subscription_stats=subscription_stats,
+        total_documents=total_documents,
+        expired_documents=expired_documents,
+        expiring_soon=expiring_soon,
+        pending_flags=pending_flags,
+        pending_inquiries=pending_inquiries,
+        recent_users=recent_users
+    )
+
+
+@app.route("/admin/users")
+def admin_users():
+    """View and manage all users."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    search = request.args.get("search", "")
+    status = request.args.get("status", "all")
+    page = int(request.args.get("page", 1))
+    per_page = 20
+    offset = (page - 1) * per_page
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        
+        # Build query
+        query = """
+            SELECT u.id, u.email, u.email_verified, u.subscription_tier, 
+                   u.subscription_status, u.created_at,
+                   COUNT(d.id) as doc_count,
+                   EXISTS(SELECT 1 FROM admin_users a WHERE a.user_id = u.id) as is_admin,
+                   EXISTS(SELECT 1 FROM flagged_users f WHERE f.user_id = u.id AND f.status = 'pending') as is_flagged
+            FROM users u
+            LEFT JOIN documents d ON d.user_id = u.id
+        """
+        where_clauses = []
+        params = []
+        
+        if search:
+            where_clauses.append("u.email ILIKE %s")
+            params.append(f"%{search}%")
+        
+        if status == "verified":
+            where_clauses.append("u.email_verified = TRUE")
+        elif status == "unverified":
+            where_clauses.append("u.email_verified = FALSE")
+        elif status == "flagged":
+            where_clauses.append("EXISTS(SELECT 1 FROM flagged_users f WHERE f.user_id = u.id AND f.status = 'pending')")
+        elif status == "admin":
+            where_clauses.append("EXISTS(SELECT 1 FROM admin_users a WHERE a.user_id = u.id)")
+        
+        if where_clauses:
+            query += " WHERE " + " AND ".join(where_clauses)
+        
+        query += " GROUP BY u.id ORDER BY u.created_at DESC LIMIT %s OFFSET %s"
+        params.extend([per_page, offset])
+        
+        cursor.execute(query, params)
+        users = cursor.fetchall()
+        
+        # Get total count for pagination
+        count_query = "SELECT COUNT(DISTINCT u.id) FROM users u"
+        if where_clauses:
+            count_query += " WHERE " + " AND ".join(where_clauses)
+        cursor.execute(count_query, params[:-2])  # Exclude LIMIT/OFFSET
+        total_users = cursor.fetchone()[0]
+        
+        cursor.close()
+        
+    finally:
+        put_db(conn)
+    
+    return render_template(
+        "admin/users.html",
+        users=users,
+        total_users=total_users,
+        page=page,
+        per_page=per_page,
+        search=search,
+        status=status
+    )
+
+
+@app.route("/admin/user/<int:user_id>")
+def admin_user_detail(user_id):
+    """View detailed user information."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        
+        # Get user info
+        cursor.execute("""
+            SELECT u.id, u.email, u.email_verified, u.subscription_tier,
+                   u.subscription_status, u.subscription_expiry, u.created_at,
+                   EXISTS(SELECT 1 FROM admin_users a WHERE a.user_id = u.id) as is_admin
+            FROM users u
+            WHERE u.id = %s
+        """, (user_id,))
+        user = cursor.fetchone()
+        
+        if not user:
+            abort(404)
+        
+        # Get user documents
+        cursor.execute("""
+            SELECT id, title, expiry_date,
+                   CASE 
+                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '60 days' THEN 'Safe'
+                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '15 days' THEN 'Good'
+                       WHEN expiry_date::date >= CURRENT_DATE THEN 'Warning'
+                       ELSE 'Expired'
+                   END as status
+            FROM documents
+            WHERE user_id = %s
+            ORDER BY expiry_date ASC
+        """, (user_id,))
+        documents = cursor.fetchall()
+        
+        # Get user activity logs
+        cursor.execute("""
+            SELECT action, details, created_at
+            FROM user_activity_logs
+            WHERE user_id = %s
+            ORDER BY created_at DESC
+            LIMIT 50
+        """, (user_id,))
+        activity_logs = cursor.fetchall()
+        
+        # Get audit logs for this user
+        cursor.execute("""
+            SELECT action, target_type, details, created_at
+            FROM audit_log
+            WHERE target_type = 'user' AND target_id = %s
+            ORDER BY created_at DESC
+            LIMIT 20
+        """, (user_id,))
+        audit_logs = cursor.fetchall()
+        
+        cursor.close()
+        
+    finally:
+        put_db(conn)
+    
+    return render_template(
+        "admin/user_detail.html",
+        user=user,
+        documents=documents,
+        activity_logs=activity_logs,
+        audit_logs=audit_logs
+    )
+
+
+@app.route("/admin/user/<int:user_id>/action", methods=["POST"])
+def admin_user_action(user_id):
+    """Perform actions on a user (suspend, verify, make admin, etc.)."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    action = request.form.get("action")
+    
+    if not action:
+        flash("No action specified.", "error")
+        return redirect(url_for("admin_user_detail", user_id=user_id))
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        
+        if action == "verify_email":
+            cursor.execute(
+                "UPDATE users SET email_verified = TRUE WHERE id = %s",
+                (user_id,)
+            )
+            conn.commit()
+            log_admin_action("verify_email", "user", user_id, {"action": "verified_email"})
+            flash("✅ User email verified successfully.", "success")
+            
+        elif action == "make_admin":
+            cursor.execute(
+                "INSERT INTO admin_users (user_id) VALUES (%s) ON CONFLICT (user_id) DO NOTHING",
+                (user_id,)
+            )
+            conn.commit()
+            log_admin_action("make_admin", "user", user_id, {"action": "made_admin"})
+            flash("✅ User is now an admin.", "success")
+            
+        elif action == "remove_admin":
+            cursor.execute(
+                "DELETE FROM admin_users WHERE user_id = %s",
+                (user_id,)
+            )
+            conn.commit()
+            log_admin_action("remove_admin", "user", user_id, {"action": "removed_admin"})
+            flash("✅ Admin privileges removed.", "success")
+            
+        elif action == "flag_user":
+            reason = request.form.get("reason", "No reason provided")
+            cursor.execute("""
+                INSERT INTO flagged_users (user_id, flagged_by, reason, status)
+                VALUES (%s, %s, %s, 'pending')
+            """, (user_id, session["user_id"], reason))
+            conn.commit()
+            log_admin_action("flag_user", "user", user_id, {"reason": reason})
+            flash("⚠️ User has been flagged for review.", "warning")
+            
+        elif action == "resolve_flag":
+            cursor.execute("""
+                UPDATE flagged_users 
+                SET status = 'resolved', resolved_at = %s, notes = %s
+                WHERE user_id = %s AND status = 'pending'
+            """, (datetime.now(timezone.utc), request.form.get("notes", ""), user_id))
+            conn.commit()
+            log_admin_action("resolve_flag", "user", user_id, {"action": "resolved_flag"})
+            flash("✅ Flag resolved.", "success")
+            
+        elif action == "suspend_user":
+            # You can implement suspension by setting a flag or blocking login
+            cursor.execute(
+                "UPDATE users SET subscription_tier = 'suspended' WHERE id = %s",
+                (user_id,)
+            )
+            conn.commit()
+            log_admin_action("suspend_user", "user", user_id, {"action": "suspended"})
+            flash("⚠️ User has been suspended.", "warning")
+            
+        elif action == "unsuspend_user":
+            cursor.execute(
+                "UPDATE users SET subscription_tier = 'free' WHERE id = %s AND subscription_tier = 'suspended'",
+                (user_id,)
+            )
+            conn.commit()
+            log_admin_action("unsuspend_user", "user", user_id, {"action": "unsuspended"})
+            flash("✅ User unsuspended.", "success")
+            
+        elif action == "delete_user":
+            # Delete user and all their data
+            cursor.execute("DELETE FROM documents WHERE user_id = %s", (user_id,))
+            cursor.execute("DELETE FROM flagged_users WHERE user_id = %s", (user_id,))
+            cursor.execute("DELETE FROM admin_users WHERE user_id = %s", (user_id,))
+            cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+            conn.commit()
+            log_admin_action("delete_user", "user", user_id, {"action": "deleted_user"})
+            flash("🗑️ User and all associated data deleted.", "warning")
+            return redirect(url_for("admin_users"))
+        
+        cursor.close()
+        
+    except Exception as e:
+        conn.rollback()
+        flash(f"Error performing action: {str(e)}", "error")
+    finally:
+        put_db(conn)
+    
+    return redirect(url_for("admin_user_detail", user_id=user_id))
+
+
+@app.route("/admin/inquiries")
+def admin_inquiries():
+    """View all contact inquiries."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    status_filter = request.args.get("status", "all")
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        
+        query = """
+            SELECT id, name, email, subject, message, inquiry_type, status, created_at
+            FROM contact_inquiries
+        """
+        params = []
+        
+        if status_filter != "all":
+            query += " WHERE status = %s"
+            params.append(status_filter)
+        
+        query += " ORDER BY created_at DESC"
+        
+        cursor.execute(query, params)
+        inquiries = cursor.fetchall()
+        cursor.close()
+        
+    finally:
+        put_db(conn)
+    
+    return render_template(
+        "admin/inquiries.html",
+        inquiries=inquiries,
+        status_filter=status_filter
+    )
+
+
+@app.route("/admin/inquiry/<int:inquiry_id>/resolve", methods=["POST"])
+def resolve_inquiry(inquiry_id):
+    """Mark an inquiry as resolved."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE contact_inquiries 
+            SET status = 'resolved', updated_at = %s
+            WHERE id = %s
+        """, (datetime.now(timezone.utc), inquiry_id))
+        conn.commit()
+        cursor.close()
+        log_admin_action("resolve_inquiry", "inquiry", inquiry_id, {"action": "resolved"})
+        flash("✅ Inquiry marked as resolved.", "success")
+    finally:
+        put_db(conn)
+    
+    return redirect(url_for("admin_inquiries"))
+
+
+@app.route("/admin/business")
+def admin_business_inquiries():
+    """View all business inquiries."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    status_filter = request.args.get("status", "all")
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        
+        query = """
+            SELECT id, name, email, company, team_size, message, status, created_at
+            FROM business_inquiries
+        """
+        params = []
+        
+        if status_filter != "all":
+            query += " WHERE status = %s"
+            params.append(status_filter)
+        
+        query += " ORDER BY created_at DESC"
+        
+        cursor.execute(query, params)
+        inquiries = cursor.fetchall()
+        cursor.close()
+        
+    finally:
+        put_db(conn)
+    
+    return render_template(
+        "admin/business_inquiries.html",
+        inquiries=inquiries,
+        status_filter=status_filter
+    )
+
+
+@app.route("/admin/documents")
+def admin_documents():
+    """View all documents across all users."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT d.id, d.title, d.expiry_date, d.user_id, u.email,
+                   CASE 
+                       WHEN d.expiry_date::date > CURRENT_DATE + INTERVAL '60 days' THEN 'Safe'
+                       WHEN d.expiry_date::date > CURRENT_DATE + INTERVAL '15 days' THEN 'Good'
+                       WHEN d.expiry_date::date >= CURRENT_DATE THEN 'Warning'
+                       ELSE 'Expired'
+                   END as status
+            FROM documents d
+            JOIN users u ON u.id = d.user_id
+            ORDER BY d.expiry_date ASC
+            LIMIT 100
+        """)
+        documents = cursor.fetchall()
+        cursor.close()
+    finally:
+        put_db(conn)
+    
+    return render_template("admin/documents.html", documents=documents)
+
+
+@app.route("/admin/audit")
+def admin_audit_log():
+    """View audit log of all admin actions."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT al.*, u.email as admin_email
+            FROM audit_log al
+            JOIN users u ON u.id = al.admin_id
+            ORDER BY al.created_at DESC
+            LIMIT 100
+        """)
+        logs = cursor.fetchall()
+        cursor.close()
+    finally:
+        put_db(conn)
+    
+    return render_template("admin/audit.html", logs=logs)
 
 @app.route("/pricing")
 def pricing():
