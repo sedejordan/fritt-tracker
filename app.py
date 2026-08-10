@@ -1606,8 +1606,7 @@ def admin_dashboard():
         pending_inquiries = cursor.fetchone()[0]
         
         cursor.execute("""
-            SELECT id, email, subscription_tier,
-                COALESCE(created_at, CURRENT_TIMESTAMP) as created_at
+            SELECT id, email, subscription_tier, email_verified, created_at
             FROM users 
             ORDER BY created_at DESC 
             LIMIT 10
