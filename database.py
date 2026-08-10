@@ -386,6 +386,7 @@ def init_db():
                 ("subscription_tier", "VARCHAR(50) DEFAULT 'free'"),
                 ("subscription_status", "VARCHAR(50) DEFAULT 'active'"),
                 ("subscription_expiry", "TIMESTAMP"),
+                ("created_at", "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
             ]
             
             for col_name, col_type in columns_to_add:
