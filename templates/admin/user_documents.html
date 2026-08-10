@@ -1,0 +1,67 @@
+{% extends "admin/admin_base.html" %}
+
+{% block admin_title %}User Documents{% endblock %}
+
+{% block admin_content %}
+<div class="flex justify-between items-center mb-6">
+    <div>
+        <h1 class="text-2xl font-bold">User Documents</h1>
+        <p class="text-gray-500">Managing documents for: <strong>{{ user[0] }}</strong></p>
+    </div>
+    <a href="{{ url_for('admin_user_detail', user_id=user_id) }}" class="text-blue-600 hover:underline">← Back to User</a>
+</div>
+
+{% if documents %}
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="bg-gray-50 text-left text-gray-500 border-b">
+                    <th class="px-6 py-3">Title</th>
+                    <th class="px-6 py-3">Expiry</th>
+                    <th class="px-6 py-3">Status</th>
+                    <th class="px-6 py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documents %}
+                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                    <td class="px-6 py-3 font-medium">{{ doc[1] }}</td>
+                    <td class="px-6 py-3">{{ doc[2] }}</td>
+                    <td class="px-6 py-3">
+                        <span class="px-2 py-1 rounded-full text-xs
+                            {% if doc[3] == 'Safe' %}bg-blue-100 text-blue-700
+                            {% elif doc[3] == 'Good' %}bg-green-100 text-green-700
+                            {% elif doc[3] == 'Warning' %}bg-orange-100 text-orange-700
+                            {% else %}bg-red-100 text-red-700{% endif %}">
+                            {{ doc[3] }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-3">
+                        <div class="flex gap-2">
+                            <!-- Renew button -->
+                            {% if doc[3] in ['Warning', 'Urgent', 'Expired'] %}
+                            <a href="{{ url_for('admin_renew_user_document', user_id=user_id, doc_id=doc[0]) }}" 
+                               class="text-green-600 hover:underline text-xs">🔄 Renew</a>
+                            {% endif %}
+                            
+                            <!-- Delete button -->
+                            <form method="POST" action="{{ url_for('admin_delete_user_document', user_id=user_id, doc_id=doc[0]) }}"
+                                  onsubmit="return confirm('Delete this document for the user?')" class="inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="text-red-600 hover:underline text-xs">🗑️ Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="bg-white border border-line rounded-xl py-16 text-center text-muted">
+    No documents found for this user.
+</div>
+{% endif %}
+{% endblock %}

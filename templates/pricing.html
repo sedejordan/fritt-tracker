@@ -8,6 +8,53 @@
     .border-fritt { border-color: #2563eb; }
     .text-fritt { color: #2563eb; }
     .hover\:bg-fritt-dark:hover { background-color: #1d4ed8; }
+    
+    /* Toggle Switch Styles */
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 56px;
+        height: 30px;
+    }
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .3s;
+        border-radius: 30px;
+    }
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .3s;
+        border-radius: 50%;
+    }
+    .toggle-switch input:checked + .toggle-slider {
+        background-color: #2C5FEF;
+    }
+    .toggle-switch input:checked + .toggle-slider:before {
+        transform: translateX(26px);
+    }
+    .pricing-card {
+        transition: all 0.3s ease;
+    }
+    .pricing-card:hover {
+        transform: translateY(-4px);
+    }
 </style>
 
 <!-- Pricing Header -->
@@ -42,13 +89,25 @@
             </p>
         </div>
     {% endif %}
+    
+    <!-- Monthly/Annual Toggle -->
+    <div class="mt-8 flex items-center justify-center gap-4">
+        <span class="text-sm font-medium {% if billing_period == 'monthly' %}text-gray-900{% else %}text-gray-400{% endif %}">Monthly</span>
+        <label class="toggle-switch">
+            <input type="checkbox" id="billing-toggle" {% if billing_period == 'annual' %}checked{% endif %}>
+            <span class="toggle-slider"></span>
+        </label>
+        <span class="text-sm font-medium {% if billing_period == 'annual' %}text-gray-900{% else %}text-gray-400{% endif %}">
+            Annual <span class="text-green-600 text-xs font-semibold">Save 16%</span>
+        </span>
+    </div>
 </div>
 
 <!-- Pricing Cards -->
 <div class="container mx-auto px-4 max-w-6xl">
     <div class="grid md:grid-cols-3 gap-8">
         <!-- Free Plan -->
-        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition {% if subscription_tier == 'free' %}border-2 border-blue-500{% endif %}">
+        <div class="pricing-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition {% if subscription_tier == 'free' %}border-2 border-blue-500{% endif %}">
             {% if subscription_tier == 'free' %}
                 <div class="bg-blue-500 text-white text-center py-2 text-sm font-semibold">YOUR CURRENT PLAN</div>
             {% endif %}
@@ -86,15 +145,9 @@
                     </li>
                 </ul>
                 {% if session.get('user_id') %}
-                    {% if subscription_tier == 'free' %}
-                        <a href="{{ url_for('home') }}" class="block mt-6 text-center bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition">
-                            <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
-                        </a>
-                    {% else %}
-                        <a href="{{ url_for('home') }}" class="block mt-6 text-center bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition">
-                            <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
-                        </a>
-                    {% endif %}
+                    <a href="{{ url_for('home') }}" class="block mt-6 text-center bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+                    </a>
                 {% else %}
                     <a href="{{ url_for('register') }}" class="block mt-6 text-center bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition">Get Started</a>
                 {% endif %}
@@ -102,7 +155,7 @@
         </div>
 
         <!-- Pro Plan -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-blue-500 transform scale-105 {% if subscription_tier == 'pro' %}border-4 border-green-500{% endif %}">
+        <div class="pricing-card bg-white rounded-xl shadow-lg overflow-hidden border-2 border-blue-500 transform scale-105 {% if subscription_tier == 'pro' %}border-4 border-green-500{% endif %}">
             {% if subscription_tier == 'pro' %}
                 <div class="bg-green-500 text-white text-center py-2 text-sm font-semibold">YOUR CURRENT PLAN</div>
             {% else %}
@@ -111,11 +164,19 @@
             <div class="p-6">
                 <h2 class="text-2xl font-bold text-gray-800">Pro</h2>
                 <p class="text-gray-500 mt-1">For serious document management</p>
-                <div class="mt-4">
+                
+                <!-- Monthly Price -->
+                <div class="mt-4 monthly-price" {% if billing_period == 'annual' %}style="display:none;"{% endif %}>
                     <span class="text-4xl font-bold">{{ pricing.currency }}{{ pricing.monthly }}</span>
                     <span class="text-gray-500">/month</span>
-                    <p class="text-sm text-gray-500 mt-1">or {{ pricing.currency }}{{ pricing.yearly }}/year (save 16%)</p>
                 </div>
+                <!-- Annual Price -->
+                <div class="mt-4 annual-price" {% if billing_period == 'monthly' %}style="display:none;"{% endif %}>
+                    <span class="text-4xl font-bold">{{ pricing.currency }}{{ pricing.yearly }}</span>
+                    <span class="text-gray-500">/year</span>
+                    <p class="text-sm text-green-600 mt-1">Save 16% with annual billing</p>
+                </div>
+                
                 <ul class="mt-6 space-y-3">
                     <li class="flex items-center text-gray-600">
                         <i class="fas fa-check text-green-500 mr-2"></i>
@@ -144,11 +205,18 @@
                 </ul>
                 {% if session.get('user_id') %}
                     {% if subscription_tier != 'pro' %}
+                        <!-- Monthly Subscribe Button -->
                         <a href="{{ url_for('subscribe', plan_type='pro_monthly') }}" 
-                        class="block w-full mt-6 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-                            <i class="fas fa-rocket mr-2"></i> Upgrade to Pro
+                           class="block w-full mt-6 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition monthly-btn" 
+                           {% if billing_period == 'annual' %}style="display:none;"{% endif %}>
+                            <i class="fas fa-rocket mr-2"></i> Upgrade to Pro Monthly
                         </a>
-                        <p class="text-xs text-gray-500 text-center mt-2">Monthly subscription</p>
+                        <!-- Annual Subscribe Button -->
+                        <a href="{{ url_for('subscribe', plan_type='pro_yearly') }}" 
+                           class="block w-full mt-6 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition annual-btn"
+                           {% if billing_period == 'monthly' %}style="display:none;"{% endif %}>
+                            <i class="fas fa-rocket mr-2"></i> Upgrade to Pro Yearly
+                        </a>
                     {% else %}
                         <button class="block w-full mt-6 text-center bg-green-500 text-white py-2 rounded-lg cursor-default" disabled>
                             <i class="fas fa-check mr-2"></i> Current Plan
@@ -168,7 +236,7 @@
         </div>
 
         <!-- VIP Plan -->
-        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition border-2 border-purple-500 {% if subscription_tier == 'vip' %}border-4 border-purple-700{% endif %}">
+        <div class="pricing-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition border-2 border-purple-500 {% if subscription_tier == 'vip' %}border-4 border-purple-700{% endif %}">
             {% if subscription_tier == 'vip' %}
                 <div class="bg-purple-700 text-white text-center py-2 text-sm font-semibold">YOUR CURRENT PLAN</div>
             {% else %}
@@ -177,11 +245,19 @@
             <div class="p-6">
                 <h2 class="text-2xl font-bold text-gray-800">VIP</h2>
                 <p class="text-gray-500 mt-1">For teams and power users</p>
-                <div class="mt-4">
+                
+                <!-- Monthly Price -->
+                <div class="mt-4 monthly-price" {% if billing_period == 'annual' %}style="display:none;"{% endif %}>
                     <span class="text-4xl font-bold text-purple-600">{{ pricing.currency }}{{ pricing.vip_monthly or '14.99' }}</span>
                     <span class="text-gray-500">/month</span>
-                    <p class="text-sm text-gray-500 mt-1">or {{ pricing.currency }}{{ pricing.vip_yearly or '149.99' }}/year (save 16%)</p>
                 </div>
+                <!-- Annual Price -->
+                <div class="mt-4 annual-price" {% if billing_period == 'monthly' %}style="display:none;"{% endif %}>
+                    <span class="text-4xl font-bold text-purple-600">{{ pricing.currency }}{{ pricing.vip_yearly or '149.99' }}</span>
+                    <span class="text-gray-500">/year</span>
+                    <p class="text-sm text-green-600 mt-1">Save 16% with annual billing</p>
+                </div>
+                
                 <ul class="mt-6 space-y-3">
                     <li class="flex items-center text-gray-600">
                         <i class="fas fa-check text-green-500 mr-2"></i>
@@ -210,11 +286,18 @@
                 </ul>
                 {% if session.get('user_id') %}
                     {% if subscription_tier != 'vip' %}
+                        <!-- Monthly Subscribe Button -->
                         <a href="{{ url_for('subscribe', plan_type='vip_monthly') }}" 
-                        class="block w-full mt-6 text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">
-                            <i class="fas fa-crown mr-2"></i> Upgrade to VIP
+                           class="block w-full mt-6 text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition monthly-btn"
+                           {% if billing_period == 'annual' %}style="display:none;"{% endif %}>
+                            <i class="fas fa-crown mr-2"></i> Upgrade to VIP Monthly
                         </a>
-                        <p class="text-xs text-gray-500 text-center mt-2">Monthly subscription</p>
+                        <!-- Annual Subscribe Button -->
+                        <a href="{{ url_for('subscribe', plan_type='vip_yearly') }}" 
+                           class="block w-full mt-6 text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition annual-btn"
+                           {% if billing_period == 'monthly' %}style="display:none;"{% endif %}>
+                            <i class="fas fa-crown mr-2"></i> Upgrade to VIP Yearly
+                        </a>
                     {% else %}
                         <button class="block w-full mt-6 text-center bg-purple-700 text-white py-2 rounded-lg cursor-default" disabled>
                             <i class="fas fa-check mr-2"></i> Current Plan
@@ -260,10 +343,39 @@
     <!-- CTA -->
     <div class="text-center py-12">
         <p class="text-gray-600 mb-4">Still have questions?</p>
-        <a href="mailto:support@fritt.org" class="text-blue-600 hover:underline">Contact our support team →</a>
+        <a href="mailto:sedejordan88@gmail.com" class="text-blue-600 hover:underline">Contact our support team →</a>
     </div>
 </div>
 
 <!-- Font Awesome for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Toggle JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggle = document.getElementById('billing-toggle');
+    const monthlyPrices = document.querySelectorAll('.monthly-price');
+    const annualPrices = document.querySelectorAll('.annual-price');
+    const monthlyBtns = document.querySelectorAll('.monthly-btn');
+    const annualBtns = document.querySelectorAll('.annual-btn');
+    const monthlyLabels = document.querySelectorAll('.monthly-label');
+    const annualLabels = document.querySelectorAll('.annual-label');
+    
+    toggle.addEventListener('change', function() {
+        if (this.checked) {
+            // Show annual, hide monthly
+            monthlyPrices.forEach(el => el.style.display = 'none');
+            annualPrices.forEach(el => el.style.display = 'block');
+            monthlyBtns.forEach(el => el.style.display = 'none');
+            annualBtns.forEach(el => el.style.display = 'block');
+        } else {
+            // Show monthly, hide annual
+            monthlyPrices.forEach(el => el.style.display = 'block');
+            annualPrices.forEach(el => el.style.display = 'none');
+            monthlyBtns.forEach(el => el.style.display = 'block');
+            annualBtns.forEach(el => el.style.display = 'none');
+        }
+    });
+});
+</script>
 {% endblock %}

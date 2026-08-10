@@ -132,6 +132,10 @@
                     class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_audit_log' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
                       📋 Audit Log
                   </a>
+                  <a href="{{ url_for('admin_payment_plans') }}" 
+                    class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_payment_plans' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+                      💰 Payment Plans
+                  </a>
                   <a href="{{ url_for('newsletter_admin') }}" 
                     class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'newsletter_admin' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
                       📬 Newsletter

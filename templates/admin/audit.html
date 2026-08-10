@@ -23,31 +23,40 @@
             <tbody>
                 {% for log in logs %}
                 <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="px-6 py-3">{{ log[7] }}</td>
+                    <!-- Admin Email (log[9]) -->
+                    <td class="px-6 py-3">{{ log[9] }}</td>
+                    
+                    <!-- Action (log[2]) -->
                     <td class="px-6 py-3">
                         <span class="px-2 py-1 rounded-full text-xs
-                            {% if 'delete' in log[1] or 'suspend' in log[1] %}bg-red-100 text-red-700
-                            {% elif 'make' in log[1] or 'verify' in log[1] %}bg-green-100 text-green-700
-                            {% elif 'flag' in log[1] %}bg-yellow-100 text-yellow-700
+                            {% if 'delete' in log[2] or 'suspend' in log[2] %}bg-red-100 text-red-700
+                            {% elif 'make' in log[2] or 'verify' in log[2] %}bg-green-100 text-green-700
+                            {% elif 'flag' in log[2] %}bg-yellow-100 text-yellow-700
                             {% else %}bg-gray-100 text-gray-700{% endif %}">
-                            {{ log[1] }}
+                            {{ log[2] }}
                         </span>
                     </td>
+                    
+                    <!-- Target (log[3] = target_type, log[4] = target_id) -->
                     <td class="px-6 py-3">
                         {% if log[3] %}
-                        <span class="text-xs">{{ log[2] }} #{{ log[3] }}</span>
+                        <span class="text-xs">{{ log[3] }} #{{ log[4] }}</span>
                         {% else %}
                         <span class="text-gray-400">-</span>
                         {% endif %}
                     </td>
+                    
+                    <!-- Details (log[5]) -->
                     <td class="px-6 py-3">
-                        {% if log[4] %}
-                        <span class="text-xs text-gray-500">{{ log[4]|tojson|truncate(50) }}</span>
+                        {% if log[5] %}
+                        <span class="text-xs text-gray-500">{{ log[5]|tojson|truncate(50) }}</span>
                         {% else %}
                         <span class="text-gray-400">-</span>
                         {% endif %}
                     </td>
-                    <td class="px-6 py-3 text-gray-500 text-xs">{{ log[6].strftime('%Y-%m-%d %H:%M') }}</td>
+                    
+                    <!-- Time (log[8] = created_at) -->
+                    <td class="px-6 py-3 text-gray-500 text-xs">{{ log[8].strftime('%Y-%m-%d %H:%M') }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -5,7 +5,7 @@
 {% block admin_content %}
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold">💰 Payment Plans</h1>
-    <span class="text-sm text-gray-500">Edit pricing in environment variables</span>
+    <span class="text-sm text-gray-500">View pricing configuration</span>
 </div>
 
 <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
@@ -13,12 +13,12 @@
         ⚠️ Payment plans are configured via environment variables in Render dashboard.
         Changes here require updating the following variables:
     </p>
-    <ul class="text-xs text-yellow-700 mt-2 space-y-1">
+    <ul class="text-xs text-yellow-700 mt-2 space-y-1 font-mono">
         <li><code>FLW_PRO_MONTHLY_USD_PLAN</code> - Pro Monthly (USD)</li>
         <li><code>FLW_PRO_YEARLY_USD_PLAN</code> - Pro Yearly (USD)</li>
         <li><code>FLW_VIP_MONTHLY_USD_PLAN</code> - VIP Monthly (USD)</li>
         <li><code>FLW_VIP_YEARLY_USD_PLAN</code> - VIP Yearly (USD)</li>
-        <li>Same for GBP and NGN currencies</li>
+        <li>Same for GBP (UK) and NGN (Nigeria) currencies</li>
     </ul>
 </div>
 

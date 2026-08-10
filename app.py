@@ -2236,6 +2236,151 @@ def admin_payment_plans():
     
     return render_template("admin/payment_plans.html", pricing_data=pricing_data)
 
+@app.route("/admin/user/<int:user_id>/documents")
+def admin_user_documents(user_id):
+    """View all documents for a specific user."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        
+        # Get user info
+        cursor.execute("SELECT email FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        if not user:
+            flash("User not found.", "error")
+            return redirect(url_for("admin_users"))
+        
+        # Get user documents
+        cursor.execute("""
+            SELECT id, title, expiry_date,
+                   CASE 
+                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '60 days' THEN 'Safe'
+                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '15 days' THEN 'Good'
+                       WHEN expiry_date::date >= CURRENT_DATE THEN 'Warning'
+                       ELSE 'Expired'
+                   END as status
+            FROM documents
+            WHERE user_id = %s
+            ORDER BY expiry_date ASC
+        """, (user_id,))
+        documents = cursor.fetchall()
+        cursor.close()
+        
+    finally:
+        put_db(conn)
+    
+    return render_template(
+        "admin/user_documents.html",
+        user=user,
+        user_id=user_id,
+        documents=documents
+    )
+
+
+@app.route("/admin/user/<int:user_id>/document/<int:doc_id>/delete", methods=["POST"])
+def admin_delete_user_document(user_id, doc_id):
+    """Delete a document on behalf of a user."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        
+        # Verify document belongs to user
+        cursor.execute(
+            "SELECT title FROM documents WHERE id = %s AND user_id = %s",
+            (doc_id, user_id)
+        )
+        doc = cursor.fetchone()
+        if not doc:
+            flash("Document not found or doesn't belong to this user.", "error")
+            return redirect(url_for("admin_user_documents", user_id=user_id))
+        
+        # Delete the document
+        cursor.execute(
+            "DELETE FROM documents WHERE id = %s AND user_id = %s",
+            (doc_id, user_id)
+        )
+        conn.commit()
+        
+        log_admin_action("admin_delete_document", "document", doc_id, {"user_id": user_id, "title": doc[0]})
+        flash(f"✅ Document '{doc[0]}' deleted successfully.", "success")
+        
+    except Exception as e:
+        conn.rollback()
+        flash(f"Error deleting document: {str(e)}", "error")
+    finally:
+        put_db(conn)
+    
+    return redirect(url_for("admin_user_documents", user_id=user_id))
+
+
+@app.route("/admin/user/<int:user_id>/document/<int:doc_id>/renew", methods=["GET", "POST"])
+def admin_renew_user_document(user_id, doc_id):
+    """Renew a document on behalf of a user."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        
+        # Get document info
+        cursor.execute(
+            "SELECT title, expiry_date FROM documents WHERE id = %s AND user_id = %s",
+            (doc_id, user_id)
+        )
+        doc = cursor.fetchone()
+        if not doc:
+            flash("Document not found or doesn't belong to this user.", "error")
+            return redirect(url_for("admin_user_documents", user_id=user_id))
+        
+        if request.method == "POST":
+            new_expiry = request.form.get("expiry_date")
+            
+            if not new_expiry:
+                flash("Please select a new expiry date.", "error")
+                return redirect(url_for("admin_renew_user_document", user_id=user_id, doc_id=doc_id))
+            
+            try:
+                datetime.strptime(new_expiry, "%Y-%m-%d")
+            except ValueError:
+                flash("Invalid date format.", "error")
+                return redirect(url_for("admin_renew_user_document", user_id=user_id, doc_id=doc_id))
+            
+            cursor.execute("""
+                UPDATE documents 
+                SET expiry_date = %s, 
+                    last_reminder_sent = NULL, 
+                    reminder_state = NULL, 
+                    snoozed_until = NULL 
+                WHERE id = %s AND user_id = %s
+            """, (new_expiry, doc_id, user_id))
+            conn.commit()
+            
+            log_admin_action("admin_renew_document", "document", doc_id, {"user_id": user_id, "new_expiry": new_expiry})
+            flash(f"✅ Document '{doc[0]}' renewed successfully to {new_expiry}.", "success")
+            return redirect(url_for("admin_user_documents", user_id=user_id))
+        
+        cursor.close()
+        
+    finally:
+        put_db(conn)
+    
+    return render_template(
+        "admin/renew_document.html",
+        user_id=user_id,
+        doc_id=doc_id,
+        doc=doc
+    )
+
 @app.route("/pricing")
 def pricing():
     """Pricing page showing subscription tiers."""
@@ -2245,6 +2390,11 @@ def pricing():
     subscription_tier = 'free'
     subscription_expiry = None
     doc_count = 0
+    
+    # Get billing period from query parameter (default: monthly)
+    billing_period = request.args.get("billing", "monthly")
+    if billing_period not in ['monthly', 'annual']:
+        billing_period = 'monthly'
     
     if session.get('user_id'):
         user_id = session['user_id']
@@ -2259,9 +2409,9 @@ def pricing():
         subscription_tier=subscription_tier,
         subscription_expiry=subscription_expiry,
         doc_count=doc_count,
-        now=datetime.now(timezone.utc)
+        now=datetime.now(timezone.utc),
+        billing_period=billing_period
     )
-
 
 @app.route("/terms")
 def terms():
