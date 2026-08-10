@@ -8,38 +8,98 @@
     <span class="text-sm text-gray-500">Showing up to 100 documents</span>
 </div>
 
-<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+{% set current_user = None %}
+{% set user_docs = [] %}
+
+{% for doc in documents %}
+    {% if current_user != doc[4] %}
+        {% if user_docs %}
+            <!-- Render previous user's documents -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+                <div class="bg-purple-50 px-6 py-3 border-b border-purple-100">
+                    <h2 class="font-semibold text-purple-700">
+                        👤 {{ current_user }} 
+                        <span class="text-xs text-gray-500 font-normal ml-2">(User ID: {{ user_docs[0][3] }})</span>
+                        <span class="text-xs text-gray-400 font-normal ml-2">{{ user_docs|length }} documents</span>
+                    </h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-gray-500 border-b">
+                                <th class="px-6 py-3">Title</th>
+                                <th class="px-6 py-3">Expiry</th>
+                                <th class="px-6 py-3">Status</th>
+                                <th class="px-6 py-3">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in user_docs %}
+                            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                <td class="px-6 py-3 font-medium">{{ d[1] }}</td>
+                                <td class="px-6 py-3">{{ d[2] }}</td>
+                                <td class="px-6 py-3">
+                                    <span class="px-2 py-1 rounded-full text-xs
+                                        {% if d[5] == 'Safe' %}bg-blue-100 text-blue-700
+                                        {% elif d[5] == 'Good' %}bg-green-100 text-green-700
+                                        {% elif d[5] == 'Warning' %}bg-orange-100 text-orange-700
+                                        {% else %}bg-red-100 text-red-700{% endif %}">
+                                        {{ d[5] }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-3">
+                                    <a href="{{ url_for('admin_user_detail', user_id=d[3]) }}#documents" 
+                                       class="text-blue-600 hover:underline text-xs">View User</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+        {% set user_docs = [] %}
+        {% set current_user = doc[4] %}
+    {% endif %}
+    {% set _ = user_docs.append(doc) %}
+{% endfor %}
+
+<!-- Render the last user's documents -->
+{% if user_docs %}
+<div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+    <div class="bg-purple-50 px-6 py-3 border-b border-purple-100">
+        <h2 class="font-semibold text-purple-700">
+            👤 {{ current_user }} 
+            <span class="text-xs text-gray-500 font-normal ml-2">(User ID: {{ user_docs[0][3] }})</span>
+            <span class="text-xs text-gray-400 font-normal ml-2">{{ user_docs|length }} documents</span>
+        </h2>
+    </div>
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <thead>
-                <tr class="bg-gray-50 text-left text-gray-500 border-b">
+                <tr class="text-left text-gray-500 border-b">
                     <th class="px-6 py-3">Title</th>
-                    <th class="px-6 py-3">User</th>
                     <th class="px-6 py-3">Expiry</th>
                     <th class="px-6 py-3">Status</th>
                     <th class="px-6 py-3">Action</th>
                 </tr>
             </thead>
             <tbody>
-                {% for doc in documents %}
+                {% for d in user_docs %}
                 <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="px-6 py-3 font-medium">{{ doc[1] }}</td>
-                    <td class="px-6 py-3">
-                        <a href="{{ url_for('admin_user_detail', user_id=doc[3]) }}" 
-                           class="text-blue-600 hover:underline">{{ doc[4] }}</a>
-                    </td>
-                    <td class="px-6 py-3">{{ doc[2] }}</td>
+                    <td class="px-6 py-3 font-medium">{{ d[1] }}</td>
+                    <td class="px-6 py-3">{{ d[2] }}</td>
                     <td class="px-6 py-3">
                         <span class="px-2 py-1 rounded-full text-xs
-                            {% if doc[5] == 'Safe' %}bg-blue-100 text-blue-700
-                            {% elif doc[5] == 'Good' %}bg-green-100 text-green-700
-                            {% elif doc[5] == 'Warning' %}bg-orange-100 text-orange-700
+                            {% if d[5] == 'Safe' %}bg-blue-100 text-blue-700
+                            {% elif d[5] == 'Good' %}bg-green-100 text-green-700
+                            {% elif d[5] == 'Warning' %}bg-orange-100 text-orange-700
                             {% else %}bg-red-100 text-red-700{% endif %}">
-                            {{ doc[5] }}
+                            {{ d[5] }}
                         </span>
                     </td>
                     <td class="px-6 py-3">
-                        <a href="{{ url_for('admin_user_detail', user_id=doc[3]) }}#documents" 
+                        <a href="{{ url_for('admin_user_detail', user_id=d[3]) }}#documents" 
                            class="text-blue-600 hover:underline text-xs">View User</a>
                     </td>
                 </tr>
@@ -47,5 +107,12 @@
             </tbody>
         </table>
     </div>
+</div>
+{% endif %}
+
+<!-- Footer with count -->
+<div class="mt-4 text-sm text-gray-500 text-center">
+    Showing <strong>{{ documents|length }}</strong> documents
+    from <strong>{{ documents|map(attribute=4)|unique|list|length }}</strong> users
 </div>
 {% endblock %}
