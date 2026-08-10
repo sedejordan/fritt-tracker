@@ -1169,7 +1169,7 @@ def contact():
             error = "Please enter your name."
         elif not email:
             error = "Please enter your email address."
-        elif not validate_email(email):
+        elif not validate_email.email:
             error = "Please enter a valid email address."
         elif not subject:
             error = "Please enter a subject."
@@ -1227,7 +1227,7 @@ def business():
             error = "Please enter your name."
         elif not email:
             error = "Please enter your email address."
-        elif not validate_email(email):
+        elif not validate_email.email:
             error = "Please enter a valid email address."
         elif not company:
             error = "Please enter your company name."
