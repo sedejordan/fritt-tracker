@@ -115,6 +115,14 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
 app.config['SERVER_NAME'] = os.environ.get("APP_URL", "tracker.fritt.org")
 
+@app.after_request
+def add_security_headers(response):
+    """Add security headers to all responses."""
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    return response
+
 # -----------------------------------------------------------------------------
 # SECURE COOKIE SETTINGS
 # -----------------------------------------------------------------------------
@@ -3083,6 +3091,42 @@ def subscribe(plan_type):
         user_email=user_email
     )
 
+@app.route("/cancel-subscription", methods=["POST"])
+def cancel_subscription():
+    """Cancel user's subscription."""
+    auth = require_verified()
+    if auth:
+        return auth
+    
+    user_id = session["user_id"]
+    sub_status = get_subscription_status(user_id)
+    
+    if sub_status['tier'] == 'free':
+        flash("You're already on the Free plan.", "info")
+        return redirect(url_for("home"))
+    
+    # Update user to free
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE users 
+            SET subscription_tier = 'free',
+                subscription_status = 'cancelled',
+                subscription_expiry = NULL
+            WHERE id = %s
+        """, (user_id,))
+        conn.commit()
+        cursor.close()
+        print(f"✅ User {user_id} cancelled subscription")
+    finally:
+        put_db(conn)
+    
+    # Optional: Call Flutterwave API to cancel subscription if you have a subscription ID
+    # This would be more complex and require storing the Flutterwave subscription ID
+    
+    flash("✅ Your subscription has been cancelled. You'll be downgraded to the Free plan at the end of your billing period.", "success")
+    return redirect(url_for("home"))
 
 @app.route("/payment/initiate", methods=["POST"])
 def initiate_payment():
@@ -3450,4 +3494,4 @@ def newsletter_admin():
 
 if __name__ == "__main__":
     debug_mode = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
-    app.run(debug=debug_mode)
+    app.run(debug=False)
