@@ -192,17 +192,21 @@ def get_subscription_status(user_id):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT subscription_tier, subscription_status, subscription_expiry FROM users WHERE id = %s",
+            "SELECT subscription_tier, subscription_status, subscription_expiry, flw_subscription_id, grace_period_end, documents_trimmed, trial_used, trial_ends_at FROM users WHERE id = %s",
             (user_id,)
         )
         result = cursor.fetchone()
         cursor.close()
         
         if result:
-            tier, status, expiry = result
-            # Make expiry timezone-aware if it's naive
+            tier, status, expiry, flw_subscription_id, grace_period_end, documents_trimmed, trial_used, trial_ends_at = result
+            
             if expiry and expiry.tzinfo is None:
                 expiry = expiry.replace(tzinfo=timezone.utc)
+            if grace_period_end and grace_period_end.tzinfo is None:
+                grace_period_end = grace_period_end.replace(tzinfo=timezone.utc)
+            if trial_ends_at and trial_ends_at.tzinfo is None:
+                trial_ends_at = trial_ends_at.replace(tzinfo=timezone.utc)
 
             # Check if subscription is active
             is_active = True
@@ -211,16 +215,32 @@ def get_subscription_status(user_id):
             elif tier == 'free':
                 is_active = True
             else:
-                # If status is 'cancelled' but expiry is in future, still active
                 is_active = status == 'active' or (status == 'cancelled' and expiry and expiry > datetime.now(timezone.utc))
+            
+            # Check if in grace period (only for expired subscriptions)
+            in_grace_period = False
+            if tier != 'free' and status == 'expired' and grace_period_end and grace_period_end > datetime.now(timezone.utc):
+                in_grace_period = True
+            
+            # Check if on trial
+            on_trial = False
+            if trial_used and tier == 'pro' and status == 'active' and trial_ends_at and trial_ends_at > datetime.now(timezone.utc):
+                on_trial = True
             
             return {
                 'tier': tier,
                 'status': status,
                 'expiry': expiry,
-                'is_active': is_active
+                'flw_subscription_id': flw_subscription_id,
+                'grace_period_end': grace_period_end,
+                'documents_trimmed': documents_trimmed,
+                'trial_used': trial_used,
+                'trial_ends_at': trial_ends_at,
+                'is_active': is_active,
+                'in_grace_period': in_grace_period,
+                'on_trial': on_trial
             }
-        return {'tier': 'free', 'status': 'active', 'expiry': None, 'is_active': True}
+        return {'tier': 'free', 'status': 'active', 'expiry': None, 'flw_subscription_id': None, 'grace_period_end': None, 'documents_trimmed': False, 'trial_used': False, 'trial_ends_at': None, 'is_active': True, 'in_grace_period': False, 'on_trial': False}
     finally:
         put_db(conn)
 
@@ -736,6 +756,11 @@ def get_user_tier(user_id):
     finally:
         put_db(conn)
 
+# Helper to check if we're in test mode
+def is_test_mode():
+    """Check if Flutterwave is in test mode."""
+    return os.environ.get("FLW_TEST_MODE", "false").lower() == "true"
+
 # =============================================================================
 # CONTEXT PROCESSOR
 # =============================================================================
@@ -1170,64 +1195,151 @@ def home():
     # Get subscription status
     sub_status = get_subscription_status(user_id)
     tier = sub_status['tier']
-    status = sub_status['status']  # ✅ Get the status
+    status = sub_status['status']
     is_active = sub_status['is_active']
+    in_grace_period = sub_status.get('in_grace_period', False)
+    documents_trimmed = sub_status.get('documents_trimmed', False)
     
-    # If Pro/VIP expired, downgrade to free and trim documents
-    if tier != 'free' and tier != 'suspended' and not is_active:
-        deleted_count = trim_documents_to_free_limit(user_id)
+    # ============================================================
+    # FREE TRIAL LOGIC - Add this section
+    # ============================================================
+    # Check if user should get a free trial
+    # Only give trial if:
+    # 1. User is on free plan
+    # 2. Hasn't used a trial before
+    # 3. Hasn't already started a trial
+    # 4. Hasn't been downgraded from a paid plan (documents_trimmed is False)
+    if tier == 'free' and not sub_status.get('trial_used', False) and not documents_trimmed:
+        # Start 7-day free trial
+        trial_ends_at = datetime.now(timezone.utc) + timedelta(days=7)
+        conn = get_db()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE users 
+                SET trial_used = TRUE,
+                    trial_ends_at = %s,
+                    subscription_tier = 'pro',
+                    subscription_status = 'active',
+                    subscription_expiry = %s
+                WHERE id = %s
+            """, (trial_ends_at, trial_ends_at, user_id))
+            conn.commit()
+            cursor.close()
+            flash(f"🎉 Welcome! You're on a 7-day free trial of Pro. Expires {trial_ends_at.strftime('%B %d, %Y')}.", "success")
+            tier = 'pro'
+            status = 'active'
+            sub_status['tier'] = 'pro'
+            sub_status['status'] = 'active'
+            sub_status['expiry'] = trial_ends_at
+            sub_status['trial_used'] = True
+            sub_status['trial_ends_at'] = trial_ends_at
+        except Exception as e:
+            print(f"❌ Error starting trial: {e}")
+        finally:
+            put_db(conn)
+    
+    # Check if trial has expired
+    elif tier == 'pro' and status == 'active' and sub_status.get('trial_used', False):
+        trial_ends_at = sub_status.get('trial_ends_at')
+        if trial_ends_at and trial_ends_at <= datetime.now(timezone.utc):
+            # Trial expired - downgrade to free
+            conn = get_db()
+            try:
+                cursor = conn.cursor()
+                # Trim documents if over limit
+                trim_documents_to_free_limit(user_id)
+                cursor.execute("""
+                    UPDATE users 
+                    SET subscription_tier = 'free',
+                        subscription_status = 'expired',
+                        subscription_expiry = NULL,
+                        trial_ends_at = NULL
+                    WHERE id = %s
+                """, (user_id,))
+                conn.commit()
+                cursor.close()
+                flash("⚠️ Your free trial has ended. Upgrade to continue using Pro features.", "warning")
+                tier = 'free'
+                status = 'expired'
+                sub_status['tier'] = 'free'
+                sub_status['status'] = 'expired'
+                sub_status['expiry'] = None
+            except Exception as e:
+                print(f"❌ Error ending trial: {e}")
+            finally:
+                put_db(conn)
+    # ============================================================
+    # END FREE TRIAL LOGIC
+    # ============================================================
+    
+    # If subscription expired, start grace period
+    if tier != 'free' and tier != 'suspended' and not is_active and not in_grace_period and not documents_trimmed:
+        # Start 30-day grace period
+        grace_period_end = datetime.now(timezone.utc) + timedelta(days=30)
         
         conn = get_db()
         try:
             cursor = conn.cursor()
             cursor.execute("""
                 UPDATE users 
-                SET subscription_tier = 'free', 
-                    subscription_status = 'expired',
-                    subscription_expiry = NULL
+                SET grace_period_end = %s
                 WHERE id = %s
-            """, (user_id,))
+            """, (grace_period_end, user_id))
             conn.commit()
             cursor.close()
         finally:
             put_db(conn)
         
-        # Send expiry notification email
-        conn = get_db()
-        try:
-            cursor = conn.cursor()
-            cursor.execute("SELECT email FROM users WHERE id = %s", (user_id,))
-            user_email = cursor.fetchone()[0]
-            cursor.close()
-        finally:
-            put_db(conn)
-        
-        send_subscription_expiry_email(user_email)
-        
-        if deleted_count > 0:
-            flash(
-                f"⚠️ Your {tier} subscription has expired. We've kept your 20 most important documents "
-                f"(farthest from expiry) and removed {deleted_count} documents. "
-                f"Upgrade to continue tracking more than 20 documents.",
-                "warning"
-            )
-        else:
-            flash(
-                f"⚠️ Your {tier} subscription has expired. You're now on the Free plan with a 20-document limit. "
-                "Upgrade to track more documents.",
-                "warning"
-            )
-        
-        # Update tier to free for the rest of the request
-        tier = 'free'
-        status = 'expired'
-        sub_status['tier'] = 'free'
-        sub_status['status'] = 'expired'
+        flash(
+            f"⚠️ Your {tier} subscription has expired. You have until {grace_period_end.strftime('%B %d, %Y')} to reactivate without losing your documents. "
+            "After that, we'll keep your 20 most important documents and remove the rest.",
+            "warning"
+        )
+        in_grace_period = True
+    
+    # If grace period ended and documents haven't been trimmed yet
+    if tier != 'free' and tier != 'suspended' and not is_active and not documents_trimmed:
+        grace_period_end = sub_status.get('grace_period_end')
+        if grace_period_end and grace_period_end <= datetime.now(timezone.utc):
+            # Grace period ended - trim documents
+            deleted_count = trim_documents_to_free_limit(user_id)
+            
+            conn = get_db()
+            try:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    UPDATE users 
+                    SET subscription_tier = 'free',
+                        subscription_status = 'expired',
+                        subscription_expiry = NULL,
+                        grace_period_end = NULL,
+                        documents_trimmed = TRUE
+                    WHERE id = %s
+                """, (user_id,))
+                conn.commit()
+                cursor.close()
+            finally:
+                put_db(conn)
+            
+            if deleted_count > 0:
+                flash(
+                    f"⚠️ Your grace period has ended. We've kept your 20 most important documents "
+                    f"(farthest from expiry) and removed {deleted_count} documents. "
+                    f"Upgrade to Pro or VIP to track more than 20 documents.",
+                    "warning"
+                )
+            else:
+                flash("⚠️ Your grace period has ended. You're now on the Free plan.", "warning")
+            
+            tier = 'free'
+            status = 'expired'
+            documents_trimmed = True
     
     # Get document count
     doc_count = get_document_count(user_id)
     
-    # If on free plan and over limit, trim immediately
+    # If on free plan and over limit (shouldn't happen after trim, but just in case)
     if tier == 'free' and doc_count > 20:
         deleted_count = trim_documents_to_free_limit(user_id)
         if deleted_count > 0:
@@ -1238,7 +1350,7 @@ def home():
                 f"Upgrade to Pro or VIP to track more than 20 documents.",
                 "warning"
             )
-            doc_count = get_document_count(user_id)  # Refresh count
+            doc_count = get_document_count(user_id)
     
     search_query = request.args.get("q", "").strip()
     status_filter = request.args.get("status", "")
@@ -1272,8 +1384,11 @@ def home():
         documents=documents, 
         doc_count=doc_count,  
         subscription_tier=tier,
-        subscription_status=status,  # ✅ Pass the status
+        subscription_status=status,
         subscription_expiry=sub_status.get('expiry'),
+        grace_period_end=sub_status.get('grace_period_end'),
+        on_trial=sub_status.get('on_trial', False),  # ✅ Add this
+        trial_ends_at=sub_status.get('trial_ends_at'),  # ✅ Add this
         now=datetime.now(timezone.utc)
     )
 
@@ -1986,7 +2101,7 @@ def admin_user_action(user_id):
             
             # Calculate expiry based on duration
             if duration == "indefinite":
-                expiry = None  # No expiry = indefinite
+                expiry = None
                 expiry_display = "Indefinite"
             else:
                 duration_map = {
@@ -2003,7 +2118,8 @@ def admin_user_action(user_id):
                 UPDATE users 
                 SET subscription_tier = %s,
                     subscription_status = 'active',
-                    subscription_expiry = %s
+                    subscription_expiry = %s,
+                    flw_subscription_id = NULL  -- Admin upgrades don't have Flutterwave IDs
                 WHERE id = %s
             """, (new_tier, expiry, user_id))
             conn.commit()
@@ -2015,7 +2131,7 @@ def admin_user_action(user_id):
             })
             
             flash(f"✅ User upgraded to {new_tier.capitalize()} plan ({expiry_display})", "success")
-            
+
         elif action == "downgrade_user":
             new_tier = request.form.get("new_tier")
             if new_tier != 'free':
@@ -3163,6 +3279,41 @@ def subscribe(plan_type):
         user_email=user_email
     )
 
+def cancel_flutterwave_subscription(flw_subscription_id):
+    """
+    Cancel a subscription at Flutterwave.
+    Returns True if successful, False otherwise.
+    """
+    if not flw_subscription_id:
+        print("⚠️ No Flutterwave subscription ID to cancel")
+        return True  # No subscription to cancel
+    
+    try:
+        response = requests.put(
+            f'https://api.flutterwave.com/v3/subscriptions/{flw_subscription_id}/cancel',
+            headers={
+                'Authorization': f'Bearer {os.getenv("FLW_SECRET_KEY")}',
+                'Content-Type': 'application/json'
+            },
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('status') == 'success':
+                print(f"✅ Flutterwave subscription {flw_subscription_id} cancelled")
+                return True
+            else:
+                print(f"❌ Flutterwave cancellation failed: {data.get('message', 'Unknown error')}")
+                return False
+        else:
+            print(f"❌ HTTP error cancelling subscription: {response.status_code}")
+            return False
+    except Exception as e:
+        print(f"❌ Error cancelling Flutterwave subscription: {e}")
+        return False
+
+
 @app.route("/cancel-subscription", methods=["POST"])
 @limiter.limit("5 per hour", error_message="Too many cancellation attempts. Please wait.")
 def cancel_subscription():
@@ -3178,23 +3329,31 @@ def cancel_subscription():
         flash("You're already on the Free plan.", "info")
         return redirect(url_for("home"))
     
-    # Get current expiry before cancelling
+    # Get current expiry and Flutterwave subscription ID before cancelling
     current_expiry = sub_status.get('expiry')
+    flw_subscription_id = sub_status.get('flw_subscription_id')
     
     conn = get_db()
     try:
         cursor = conn.cursor()
         
-        # Option 2: Keep access until expiry, just mark as cancelled
-        cursor.execute("""
-            UPDATE users 
-            SET subscription_status = 'cancelled'
-            WHERE id = %s
-        """, (user_id,))
-        conn.commit()
-        cursor.close()
+        # FIRST: Cancel at Flutterwave
+        if flw_subscription_id:
+            cancel_success = cancel_flutterwave_subscription(flw_subscription_id)
+            if not cancel_success:
+                flash("Could not cancel subscription at Flutterwave. Please contact support.", "error")
+                return redirect(url_for("home"))
         
+        # SECOND: Update our database
         if current_expiry and current_expiry > datetime.now(timezone.utc):
+            # Keep access until expiry, just mark as cancelled
+            cursor.execute("""
+                UPDATE users 
+                SET subscription_status = 'cancelled'
+                WHERE id = %s
+            """, (user_id,))
+            conn.commit()
+            
             days_left = (current_expiry - datetime.now(timezone.utc)).days
             flash(f"✅ Your subscription has been cancelled. You'll have {sub_status['tier'].upper()} access until {current_expiry.strftime('%B %d, %Y')} ({days_left} days remaining).", "success")
         else:
@@ -3203,14 +3362,83 @@ def cancel_subscription():
                 UPDATE users 
                 SET subscription_tier = 'free',
                     subscription_status = 'cancelled',
-                    subscription_expiry = NULL
+                    subscription_expiry = NULL,
+                    flw_subscription_id = NULL
                 WHERE id = %s
             """, (user_id,))
             conn.commit()
             flash("✅ Your subscription has been cancelled. You're now on the Free plan.", "success")
         
+        cursor.close()
+        
     except Exception as e:
         print(f"❌ Error cancelling subscription: {e}")
+        conn.rollback()
+        flash("Something went wrong. Please try again.", "error")
+    finally:
+        put_db(conn)
+    
+    return redirect(url_for("home"))
+
+@app.route("/reactivate-subscription", methods=["POST"])
+@limiter.limit("5 per hour", error_message="Too many reactivation attempts. Please wait.")
+def reactivate_subscription():
+    """Reactivate a cancelled or expired subscription during grace period."""
+    auth = require_verified()
+    if auth:
+        return auth
+    
+    user_id = session["user_id"]
+    sub_status = get_subscription_status(user_id)
+    
+    tier = sub_status['tier']
+    status = sub_status['status']
+    current_expiry = sub_status.get('expiry')
+    in_grace_period = sub_status.get('in_grace_period', False)
+    documents_trimmed = sub_status.get('documents_trimmed', False)
+    
+    # If already active
+    if status == 'active' and sub_status['is_active']:
+        flash("Your subscription is already active.", "info")
+        return redirect(url_for("home"))
+    
+    # If on free plan
+    if tier == 'free':
+        flash("You're on the Free plan. Please purchase a new subscription.", "warning")
+        return redirect(url_for("pricing"))
+    
+    # Check if still within grace period
+    if not in_grace_period:
+        if documents_trimmed:
+            flash("Your documents have already been trimmed. Please purchase a new subscription to regain access.", "warning")
+        else:
+            flash("Your grace period has expired. Please purchase a new subscription.", "warning")
+        return redirect(url_for("pricing"))
+    
+    # Check if still within billing period
+    if current_expiry and current_expiry <= datetime.now(timezone.utc):
+        flash("Your subscription has expired. Please purchase a new subscription.", "warning")
+        return redirect(url_for("pricing"))
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        
+        # Reactivate - set status back to 'active'
+        cursor.execute("""
+            UPDATE users 
+            SET subscription_status = 'active',
+                grace_period_end = NULL
+            WHERE id = %s
+        """, (user_id,))
+        conn.commit()
+        cursor.close()
+        
+        days_left = (current_expiry - datetime.now(timezone.utc)).days
+        flash(f"✅ Your {tier.upper()} subscription has been reactivated! Access until {current_expiry.strftime('%B %d, %Y')} ({days_left} days remaining). All your documents are safe.", "success")
+        
+    except Exception as e:
+        print(f"❌ Error reactivating subscription: {e}")
         conn.rollback()
         flash("Something went wrong. Please try again.", "error")
     finally:
@@ -3275,8 +3503,15 @@ def initiate_payment():
         
         print(f"🔍 Sending payment request: {payload}")
         
+        # Use test or live endpoint
+        api_base = "https://api.flutterwave.com/v3"
+        if is_test_mode():
+            print("🔧 Running in TEST MODE")
+        else:
+            print("🚀 Running in LIVE MODE")
+
         response = requests.post(
-            'https://api.flutterwave.com/v3/payments',
+            f'{api_base}/payments',
             headers={
                 'Authorization': f'Bearer {os.getenv("FLW_SECRET_KEY")}',
                 'Content-Type': 'application/json'
@@ -3319,7 +3554,7 @@ def initiate_payment():
 
 
 @app.route("/payment/callback")
-@limiter.exempt  # Payment callbacks should never be rate limited
+@limiter.exempt
 def payment_callback():
     """Handle payment callback from Flutterwave."""
     auth = require_verified()
@@ -3335,7 +3570,6 @@ def payment_callback():
     
     try:
         # Check if we're in test mode vs live mode
-        # This prevents test mode payments from upgrading users in production
         is_test_mode = os.environ.get("FLW_TEST_MODE", "false").lower() == "true"
         
         response = requests.get(
@@ -3371,6 +3605,25 @@ def payment_callback():
                 
                 tier = plan_type.split('_')[0] if plan_type else 'pro'
                 
+                # Get the Flutterwave subscription ID from the response
+                # This comes from the payment_plan subscription
+                flw_subscription_id = data['data'].get('subscription_id') or data['data'].get('payment_plan_id')
+                
+                # If we don't have a subscription_id, we need to fetch it
+                if not flw_subscription_id:
+                    # Try to get subscription from the transaction
+                    transaction_data = data['data']
+                    if transaction_data.get('payment_plan'):
+                        # The subscription might be in the payment_plan object
+                        flw_subscription_id = transaction_data.get('payment_plan', {}).get('id')
+                
+                # Calculate expiry based on plan type
+                # Flutterwave handles the recurring billing, but we track it in our DB too
+                if '_yearly' in plan_type:
+                    expiry = datetime.now(timezone.utc) + timedelta(days=365)
+                else:
+                    expiry = datetime.now(timezone.utc) + timedelta(days=30)
+                
                 conn = get_db()
                 try:
                     cursor = conn.cursor()
@@ -3378,12 +3631,13 @@ def payment_callback():
                         UPDATE users 
                         SET subscription_tier = %s,
                             subscription_status = 'active',
-                            subscription_expiry = NULL
+                            subscription_expiry = %s,
+                            flw_subscription_id = %s
                         WHERE id = %s
-                    """, (tier, user_id))
+                    """, (tier, expiry, flw_subscription_id, user_id))
                     conn.commit()
                     cursor.close()
-                    print(f"✅ User {user_id} upgraded to {tier}")
+                    print(f"✅ User {user_id} upgraded to {tier} (expires {expiry}, FLW ID: {flw_subscription_id})")
                 finally:
                     put_db(conn)
                 
@@ -3402,7 +3656,7 @@ def payment_callback():
         traceback.print_exc()
         flash("Error verifying payment. Please contact support.", "error")
         return redirect(url_for("pricing"))
-    
+
 @app.route("/payment/cancel")
 def payment_cancel():
     """Handle payment cancellation."""
@@ -3419,7 +3673,7 @@ def payment_cancel():
 
 @app.route("/webhook/flutterwave", methods=["POST"])
 @csrf.exempt
-@limiter.exempt  # Webhooks should NEVER be rate limited
+@limiter.exempt
 def flutterwave_webhook():
     """Handle Flutterwave webhook for subscription events."""
     try:
@@ -3469,6 +3723,15 @@ def flutterwave_webhook():
                 if user_id:
                     tier = plan_type.split('_')[0] if plan_type else 'pro'
                     
+                    # Calculate expiry
+                    if '_yearly' in plan_type:
+                        expiry = datetime.now(timezone.utc) + timedelta(days=365)
+                    else:
+                        expiry = datetime.now(timezone.utc) + timedelta(days=30)
+                    
+                    # Get subscription ID from webhook
+                    flw_subscription_id = webhook_data.get('subscription_id') or webhook_data.get('payment_plan_id')
+                    
                     conn = get_db()
                     try:
                         cursor = conn.cursor()
@@ -3476,12 +3739,13 @@ def flutterwave_webhook():
                             UPDATE users 
                             SET subscription_tier = %s,
                                 subscription_status = 'active',
-                                subscription_expiry = NULL
+                                subscription_expiry = %s,
+                                flw_subscription_id = %s
                             WHERE id = %s
-                        """, (tier, user_id))
+                        """, (tier, expiry, flw_subscription_id, user_id))
                         conn.commit()
                         cursor.close()
-                        print(f"✅ User {user_id} upgraded to {tier}")
+                        print(f"✅ User {user_id} upgraded to {tier} via webhook (expires {expiry})")
                     except Exception as db_error:
                         print(f"❌ Database error: {db_error}")
                     finally:
@@ -3490,18 +3754,60 @@ def flutterwave_webhook():
                     print(f"⚠️ Could not find user for webhook: {data}")
             
             elif event == 'subscription.cancelled':
-                print("❌ Subscription cancelled")
-                meta = data.get('data', {}).get('meta', {})
-                user_id = meta.get('user_id')
-                if user_id:
-                    update_user_to_free(user_id)
+                print("❌ Subscription cancelled webhook received")
+                webhook_data = data.get('data', {})
+                
+                # Find user by subscription ID
+                subscription_id = webhook_data.get('id')
+                if subscription_id:
+                    conn = get_db()
+                    try:
+                        cursor = conn.cursor()
+                        cursor.execute("""
+                            UPDATE users 
+                            SET subscription_status = 'cancelled'
+                            WHERE flw_subscription_id = %s
+                        """, (subscription_id,))
+                        conn.commit()
+                        print(f"✅ User with FLW subscription {subscription_id} marked as cancelled")
+                    except Exception as db_error:
+                        print(f"❌ Database error: {db_error}")
+                    finally:
+                        put_db(conn)
             
             elif event == 'subscription.expired':
-                print("⏰ Subscription expired")
-                meta = data.get('data', {}).get('meta', {})
-                user_id = meta.get('user_id')
-                if user_id:
-                    update_user_to_free(user_id)
+                print("⏰ Subscription expired webhook received")
+                webhook_data = data.get('data', {})
+                
+                # Find user by subscription ID and downgrade
+                subscription_id = webhook_data.get('id')
+                if subscription_id:
+                    conn = get_db()
+                    try:
+                        cursor = conn.cursor()
+                        cursor.execute("""
+                            SELECT id FROM users WHERE flw_subscription_id = %s
+                        """, (subscription_id,))
+                        user_result = cursor.fetchone()
+                        
+                        if user_result:
+                            user_id = user_result[0]
+                            # Trim documents to free limit
+                            trim_documents_to_free_limit(user_id)
+                            cursor.execute("""
+                                UPDATE users 
+                                SET subscription_tier = 'free',
+                                    subscription_status = 'expired',
+                                    subscription_expiry = NULL,
+                                    flw_subscription_id = NULL
+                                WHERE id = %s
+                            """, (user_id,))
+                            conn.commit()
+                            print(f"✅ User {user_id} downgraded to Free via webhook")
+                    except Exception as db_error:
+                        print(f"❌ Database error: {db_error}")
+                    finally:
+                        put_db(conn)
             
             else:
                 print(f"ℹ️ Unhandled webhook event: {event}")
@@ -3518,7 +3824,7 @@ def flutterwave_webhook():
         import traceback
         traceback.print_exc()
         return "OK", 200
-
+    
 @app.route("/cron/reminders")
 @limiter.exempt  # Cron jobs should NEVER be rate limited
 def run_reminders():

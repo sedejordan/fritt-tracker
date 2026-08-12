@@ -399,6 +399,26 @@ def init_db():
                     else:
                         print(f"ℹ️ Could not add column {col_name}: {e}")
 
+            # Add this column to the users table
+            try:
+                cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS flw_subscription_id VARCHAR(255);")
+                print("✅ Added flw_subscription_id column to users")
+            except Exception as e:
+                print(f"ℹ️ Could not add flw_subscription_id: {e}")
+
+            # Add grace period columns
+            try:
+                cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS grace_period_end TIMESTAMP;")
+                print("✅ Added grace_period_end column to users")
+            except Exception as e:
+                print(f"ℹ️ Could not add grace_period_end: {e}")
+
+            try:
+                cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS documents_trimmed BOOLEAN DEFAULT FALSE;")
+                print("✅ Added documents_trimmed column to users")
+            except Exception as e:
+                print(f"ℹ️ Could not add documents_trimmed: {e}")
+
             # ---------------------------------------------------------------------
             # DOCUMENTS TABLE
             # ---------------------------------------------------------------------
