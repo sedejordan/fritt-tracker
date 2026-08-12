@@ -223,7 +223,7 @@ def get_subscription_status(user_id):
         return {'tier': 'free', 'status': 'active', 'expiry': None, 'is_active': True}
     finally:
         put_db(conn)
-        
+
 @app.before_request
 def check_subscription_status():
     if 'user_id' in session:
@@ -1972,30 +1972,45 @@ def admin_user_action(user_id):
             log_admin_action("unsuspend_user", "user", user_id, {"action": "unsuspended"})
             flash("✅ User unsuspended.", "success")
             
-        # NEW: Manual Upgrade/Downgrade Actions
         elif action == "upgrade_user":
             new_tier = request.form.get("new_tier")
-            if new_tier not in ['pro', 'vip']:  # Removed 'business'
+            duration = request.form.get("duration", "indefinite")
+            
+            if new_tier not in ['pro', 'vip']:
                 flash("Invalid tier selected.", "error")
                 return redirect(url_for("admin_user_detail", user_id=user_id))
             
-            # Check if user has more than 20 documents when downgrading to free
-            if new_tier == 'free':
-                cursor.execute("SELECT COUNT(*) FROM documents WHERE user_id = %s", (user_id,))
-                doc_count = cursor.fetchone()[0]
-                if doc_count > 20:
-                    trim_documents_to_free_limit(user_id)
+            # Calculate expiry based on duration
+            if duration == "indefinite":
+                expiry = None  # No expiry = indefinite
+                expiry_display = "Indefinite"
+            else:
+                duration_map = {
+                    '1_month': 30,
+                    '3_months': 90,
+                    '6_months': 180,
+                    '1_year': 365
+                }
+                days = duration_map.get(duration, 30)
+                expiry = datetime.now(timezone.utc) + timedelta(days=days)
+                expiry_display = expiry.strftime('%B %d, %Y')
             
             cursor.execute("""
                 UPDATE users 
                 SET subscription_tier = %s,
                     subscription_status = 'active',
-                    subscription_expiry = NULL
+                    subscription_expiry = %s
                 WHERE id = %s
-            """, (new_tier, user_id))
+            """, (new_tier, expiry, user_id))
             conn.commit()
-            log_admin_action("upgrade_user", "user", user_id, {"new_tier": new_tier})
-            flash(f"✅ User upgraded to {new_tier.capitalize()} plan.", "success")
+            
+            log_admin_action("upgrade_user", "user", user_id, {
+                "new_tier": new_tier, 
+                "duration": duration,
+                "expiry": expiry_display
+            })
+            
+            flash(f"✅ User upgraded to {new_tier.capitalize()} plan ({expiry_display})", "success")
             
         elif action == "downgrade_user":
             new_tier = request.form.get("new_tier")
