@@ -1170,6 +1170,7 @@ def home():
     # Get subscription status
     sub_status = get_subscription_status(user_id)
     tier = sub_status['tier']
+    status = sub_status['status']  # ✅ Get the status
     is_active = sub_status['is_active']
     
     # If Pro/VIP expired, downgrade to free and trim documents
@@ -1219,7 +1220,9 @@ def home():
         
         # Update tier to free for the rest of the request
         tier = 'free'
+        status = 'expired'
         sub_status['tier'] = 'free'
+        sub_status['status'] = 'expired'
     
     # Get document count
     doc_count = get_document_count(user_id)
@@ -1244,9 +1247,9 @@ def home():
     documents = []
 
     for doc_id, title, expiry_date in docs:
-        days_left, status, color, icon = get_status(expiry_date)
+        days_left, doc_status, color, icon = get_status(expiry_date)
 
-        if status_filter and status != status_filter:
+        if status_filter and doc_status != status_filter:
             continue
 
         if days_left < 0:
@@ -1259,7 +1262,7 @@ def home():
             "title": title,
             "expiry_date": expiry_date,
             "display_days": display_days,
-            "status": status,
+            "status": doc_status,
             "color": color,
             "icon": icon
         })
@@ -1269,6 +1272,7 @@ def home():
         documents=documents, 
         doc_count=doc_count,  
         subscription_tier=tier,
+        subscription_status=status,  # ✅ Pass the status
         subscription_expiry=sub_status.get('expiry'),
         now=datetime.now(timezone.utc)
     )
