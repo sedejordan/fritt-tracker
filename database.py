@@ -419,6 +419,19 @@ def init_db():
             except Exception as e:
                 print(f"ℹ️ Could not add documents_trimmed: {e}")
 
+            # ADD trial columns
+            try:
+                cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS trial_used BOOLEAN DEFAULT FALSE;")
+                print("✅ Added trial_used column to users")
+            except Exception as e:
+                print(f"ℹ️ Could not add trial_used: {e}")
+
+            try:
+                cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS trial_ends_at TIMESTAMP;")
+                print("✅ Added trial_ends_at column to users")
+            except Exception as e:
+                print(f"ℹ️ Could not add trial_ends_at: {e}")
+
             # ---------------------------------------------------------------------
             # DOCUMENTS TABLE
             # ---------------------------------------------------------------------
