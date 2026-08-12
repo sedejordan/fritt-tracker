@@ -186,7 +186,6 @@ except Exception as e:
 _subscription_cache = {}
 _cache_ttl = 60  # 60 seconds
 
-# FIXED: Moved get_subscription_status definition BEFORE get_cached_subscription_status uses it
 def get_subscription_status(user_id):
     """Get user's subscription status and expiry."""
     conn = get_db()
@@ -212,7 +211,8 @@ def get_subscription_status(user_id):
             elif tier == 'free':
                 is_active = True
             else:
-                is_active = status == 'active'
+                # If status is 'cancelled' but expiry is in future, still active
+                is_active = status == 'active' or (status == 'cancelled' and expiry and expiry > datetime.now(timezone.utc))
             
             return {
                 'tier': tier,
@@ -223,7 +223,7 @@ def get_subscription_status(user_id):
         return {'tier': 'free', 'status': 'active', 'expiry': None, 'is_active': True}
     finally:
         put_db(conn)
-
+        
 @app.before_request
 def check_subscription_status():
     if 'user_id' in session:
@@ -3159,27 +3159,44 @@ def cancel_subscription():
         flash("You're already on the Free plan.", "info")
         return redirect(url_for("home"))
     
-    # Update user to free
+    # Get current expiry before cancelling
+    current_expiry = sub_status.get('expiry')
+    
     conn = get_db()
     try:
         cursor = conn.cursor()
+        
+        # Option 2: Keep access until expiry, just mark as cancelled
         cursor.execute("""
             UPDATE users 
-            SET subscription_tier = 'free',
-                subscription_status = 'cancelled',
-                subscription_expiry = NULL
+            SET subscription_status = 'cancelled'
             WHERE id = %s
         """, (user_id,))
         conn.commit()
         cursor.close()
-        print(f"✅ User {user_id} cancelled subscription")
+        
+        if current_expiry and current_expiry > datetime.now(timezone.utc):
+            days_left = (current_expiry - datetime.now(timezone.utc)).days
+            flash(f"✅ Your subscription has been cancelled. You'll have {sub_status['tier'].upper()} access until {current_expiry.strftime('%B %d, %Y')} ({days_left} days remaining).", "success")
+        else:
+            # If no expiry or already expired, downgrade immediately
+            cursor.execute("""
+                UPDATE users 
+                SET subscription_tier = 'free',
+                    subscription_status = 'cancelled',
+                    subscription_expiry = NULL
+                WHERE id = %s
+            """, (user_id,))
+            conn.commit()
+            flash("✅ Your subscription has been cancelled. You're now on the Free plan.", "success")
+        
+    except Exception as e:
+        print(f"❌ Error cancelling subscription: {e}")
+        conn.rollback()
+        flash("Something went wrong. Please try again.", "error")
     finally:
         put_db(conn)
     
-    # Optional: Call Flutterwave API to cancel subscription if you have a subscription ID
-    # This would be more complex and require storing the Flutterwave subscription ID
-    
-    flash("✅ Your subscription has been cancelled. You'll be downgraded to the Free plan at the end of your billing period.", "success")
     return redirect(url_for("home"))
 
 @app.route("/payment/initiate", methods=["POST"])

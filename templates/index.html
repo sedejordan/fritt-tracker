@@ -26,7 +26,106 @@
   </form>
 </div>
 
-<!-- Add this near the top of your dashboard - ONLY SHOW FOR FREE TIER -->
+<!-- PRO BANNER - Active -->
+{% if subscription_tier == 'pro' and subscription_status == 'active' and subscription_expiry and subscription_expiry > now %}
+<div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+    <div class="flex items-start gap-3">
+        <span class="text-green-600 text-xl">✅</span>
+        <div>
+            <p class="text-sm text-green-800">
+                <strong>You're on the Pro plan!</strong> 
+                {% set days_left = ((subscription_expiry - now).days) %}
+                {% if days_left > 0 %}
+                    Expires in {{ days_left }} days
+                {% else %}
+                    Your subscription has expired
+                {% endif %}
+            </p>
+            <p class="text-xs text-green-700 mt-1">
+                You can track up to <strong>100 documents</strong>.
+                {% if days_left <= 7 and days_left > 0 %}
+                    <a href="{{ url_for('pricing') }}" class="underline font-medium">Renew now</a> to keep your Pro features.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- PRO BANNER - Cancelled (still has access) -->
+{% if subscription_tier == 'pro' and subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
+<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+    <div class="flex items-start gap-3">
+        <span class="text-yellow-600 text-xl">⏳</span>
+        <div>
+            <p class="text-sm text-yellow-800">
+                <strong>Your Pro plan has been cancelled.</strong>
+                {% set days_left = ((subscription_expiry - now).days) %}
+                {% if days_left > 0 %}
+                    Access until {{ subscription_expiry.strftime('%B %d, %Y') }} ({{ days_left }} days remaining)
+                {% endif %}
+            </p>
+            <p class="text-xs text-yellow-700 mt-1">
+                Your Pro features will end on {{ subscription_expiry.strftime('%B %d, %Y') }}.
+                <a href="{{ url_for('pricing') }}" class="underline font-medium">Reactivate</a> to keep your Pro features.
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- VIP BANNER - Active -->
+{% if subscription_tier == 'vip' and subscription_status == 'active' %}
+<div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+    <div class="flex items-start gap-3">
+        <span class="text-purple-600 text-xl">⭐</span>
+        <div>
+            <p class="text-sm text-purple-800">
+                <strong>You're on the VIP plan!</strong> 
+                {% if subscription_expiry and subscription_expiry > now %}
+                    {% set days_left = ((subscription_expiry - now).days) %}
+                    Expires in {{ days_left }} days
+                {% else %}
+                    Active
+                {% endif %}
+            </p>
+            <p class="text-xs text-purple-700 mt-1">
+                You have unlimited document tracking with premium features.
+                {% if subscription_expiry and subscription_expiry > now %}
+                    {% set days_left = ((subscription_expiry - now).days) %}
+                    {% if days_left <= 7 %}
+                        <a href="{{ url_for('pricing') }}" class="underline font-medium">Renew now</a> to keep your VIP features.
+                    {% endif %}
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- VIP BANNER - Cancelled (still has access) -->
+{% if subscription_tier == 'vip' and subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
+<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+    <div class="flex items-start gap-3">
+        <span class="text-yellow-600 text-xl">⏳</span>
+        <div>
+            <p class="text-sm text-yellow-800">
+                <strong>Your VIP plan has been cancelled.</strong>
+                {% set days_left = ((subscription_expiry - now).days) %}
+                {% if days_left > 0 %}
+                    Access until {{ subscription_expiry.strftime('%B %d, %Y') }} ({{ days_left }} days remaining)
+                {% endif %}
+            </p>
+            <p class="text-xs text-yellow-700 mt-1">
+                Your VIP features will end on {{ subscription_expiry.strftime('%B %d, %Y') }}.
+                <a href="{{ url_for('pricing') }}" class="underline font-medium">Reactivate</a> to keep your VIP features.
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- FREE PLAN BANNER -->
 {% if subscription_tier == 'free' %}
 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
     <div class="flex justify-between items-center">
@@ -50,65 +149,6 @@
     {% if doc_count >= 20 %}
         <p class="text-xs text-red-600 mt-1">⚠️ You've reached the document limit. Upgrade to add more.</p>
     {% endif %}
-</div>
-{% endif %}
-
-<!-- Show Pro banner when on Pro -->
-{% if subscription_tier == 'pro' and subscription_expiry %}
-    {% set days_left = ((subscription_expiry - now).days) %}
-    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-        <div class="flex items-start gap-3">
-            <span class="text-green-600 text-xl">✅</span>
-            <div>
-                <p class="text-sm text-green-800">
-                    <strong>You're on the Pro plan!</strong> 
-                    {% if days_left > 0 %}
-                        Expires in {{ days_left }} days
-                    {% else %}
-                        Your subscription has expired
-                    {% endif %}
-                </p>
-                <p class="text-xs text-green-700 mt-1">
-                    You can track up to <strong>100 documents</strong>.
-                    {% if days_left <= 7 and days_left > 0 %}
-                        <a href="{{ url_for('pricing') }}" class="underline font-medium">Renew now</a> to keep your Pro features.
-                    {% endif %}
-                </p>
-            </div>
-        </div>
-    </div>
-{% endif %}
-
-<!-- Show VIP banner when on VIP -->
-{% if subscription_tier == 'vip'%}
-<div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-    <div class="flex items-start gap-3">
-        <span class="text-purple-600 text-xl">⭐</span>
-        <div>
-            <p class="text-sm text-purple-800">
-                <strong>You're on the {{ subscription_tier|upper }} plan!</strong> 
-                {% if subscription_expiry %}
-                    {% set days_left = ((subscription_expiry - now).days) %}
-                    {% if days_left > 0 %}
-                        Expires in {{ days_left }} days
-                    {% else %}
-                        Your subscription has expired
-                    {% endif %}
-                {% else %}
-                    Active
-                {% endif %}
-            </p>
-            <p class="text-xs text-purple-700 mt-1">
-                You have unlimited document tracking with premium features.
-                {% if subscription_expiry %}
-                    {% set days_left = ((subscription_expiry - now).days) %}
-                    {% if days_left <= 7 and days_left > 0 %}
-                        <a href="{{ url_for('pricing') }}" class="underline font-medium">Renew now</a> to keep your VIP features.
-                    {% endif %}
-                {% endif %}
-            </p>
-        </div>
-    </div>
 </div>
 {% endif %}
 
