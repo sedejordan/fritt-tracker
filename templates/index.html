@@ -80,7 +80,7 @@
 {% endif %}
 
 <!-- Show VIP banner when on VIP -->
-{% if subscription_tier == 'vip' or subscription_tier == 'business' %}
+{% if subscription_tier == 'vip'}
 <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
     <div class="flex items-start gap-3">
         <span class="text-purple-600 text-xl">⭐</span>
@@ -91,6 +91,8 @@
                     {% set days_left = ((subscription_expiry - now).days) %}
                     {% if days_left > 0 %}
                         Expires in {{ days_left }} days
+                    {% else %}
+                        Your subscription has expired
                     {% endif %}
                 {% else %}
                     Active
@@ -98,8 +100,11 @@
             </p>
             <p class="text-xs text-purple-700 mt-1">
                 You have unlimited document tracking with premium features.
-                {% if days_left <= 7 and days_left > 0 %}
-                    <a href="{{ url_for('pricing') }}" class="underline font-medium">Renew now</a> to keep your VIP features.
+                {% if subscription_expiry %}
+                    {% set days_left = ((subscription_expiry - now).days) %}
+                    {% if days_left <= 7 and days_left > 0 %}
+                        <a href="{{ url_for('pricing') }}" class="underline font-medium">Renew now</a> to keep your VIP features.
+                    {% endif %}
                 {% endif %}
             </p>
         </div>
