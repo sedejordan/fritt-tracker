@@ -34,6 +34,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 import re
+import sys
 from email_validator import validate_email, EmailNotValidError
 
 import requests
@@ -54,7 +55,7 @@ from database import get_db, init_db, put_db
 # =============================================================================
 
 # Secret token for cron job authentication
-TRIGGER_SECRET = os.environ.get("TRIGGER_SECRET", "")
+TRIGGER_SECRET = os.environ.get("TRIGGER_SECRET")
 
 # Sentry error monitoring (optional)
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
@@ -77,6 +78,9 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 RESEND_FROM_EMAIL = os.environ.get("RESEND_FROM_EMAIL", "auth@fritt.org")
 RESET_TOKEN_LIFETIME = timedelta(hours=1)
 
+# Admin email
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")
+
 # Log a warning if email is not configured
 if not RESEND_API_KEY:
     print("⚠️ WARNING: RESEND_API_KEY not set - email features will be disabled")
@@ -92,14 +96,14 @@ SUBSCRIPTION_TIERS = {
     'pro': {
         'name': 'Pro',
         'doc_limit': 100,
-        'price_monthly': 4.99,
-        'price_yearly': 49.99
+        'price_monthly': 8.99,
+        'price_yearly': 89.99
     },
     'vip': {
         'name': 'VIP',
         'doc_limit': 0,  # Unlimited
-        'price_monthly': 14.99,
-        'price_yearly': 149.99
+        'price_monthly': 19.99,
+        'price_yearly': 199.99
     }
 }
 
@@ -114,6 +118,11 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
 app.config['SERVER_NAME'] = os.environ.get("APP_URL", "tracker.fritt.org")
+
+# Make sure secret key exists
+if not app.secret_key:
+    print("❌ CRITICAL: SECRET_KEY environment variable not set.")
+    sys.exit(1)
 
 @app.after_request
 def add_security_headers(response):
@@ -149,9 +158,16 @@ csrf = CSRFProtect(app)
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour"],
+    # No default limits - we'll apply per-route instead
     enabled=os.environ.get("DISABLE_RATE_LIMITING", "false").lower() != "true"
 )
+# Custom error handler for rate limit exceeded
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    """Return a user-friendly message when rate limit is exceeded."""
+    # e.description contains the custom error message
+    error_message = e.description if e.description else "Too many requests. Please slow down."
+    return render_template('errors/429.html', error_message=error_message), 429
 
 # =============================================================================
 # DATABASE INITIALIZATION
@@ -214,6 +230,17 @@ def get_subscription_status(user_id):
         return {'tier': 'free', 'status': 'active', 'expiry': None, 'is_active': True}
     finally:
         put_db(conn)
+
+@app.before_request
+def check_subscription_status():
+    if 'user_id' in session:
+        user_id = session['user_id']
+        sub_status = get_subscription_status(user_id)
+        if sub_status['tier'] not in ['free', 'suspended'] and not sub_status['is_active']:
+            trim_documents_to_free_limit(user_id)
+            # Update user to free tier...
+            # Optionally flash a message
+            flash("Your subscription has expired. You've been downgraded to the Free plan.", "warning")
 
 def get_cached_subscription_status(user_id):
     """Get subscription status with simple caching."""
@@ -528,43 +555,45 @@ def get_pricing(region='us'):
     pricing = {
         'ng': {
             'currency': '₦',
-            'monthly': '2,500',
-            'yearly': '25,000',
-            'monthly_raw': 2500,
-            'yearly_raw': 25000,
-            'vip_monthly': '7,500',
-            'vip_yearly': '75,000',
-            'vip_monthly_raw': 7500,
-            'vip_yearly_raw': 75000,
-            'region_name': 'Nigeria'
+            'monthly': '5,000',
+            'yearly': '50,000',
+            'monthly_raw': 5000,
+            'yearly_raw': 50000,
+            'vip_monthly': '10,000',
+            'vip_yearly': '100,000',
+            'vip_monthly_raw': 10000,
+            'vip_yearly_raw': 100000,
+            'region_name': 'Nigeria',
+            'currency_code': 'NGN'
         },
         'uk': {
             'currency': '£',
-            'monthly': '3.99',
-            'yearly': '39.99',
-            'monthly_raw': 3.99,
-            'yearly_raw': 39.99,
-            'vip_monthly': '11.99',
-            'vip_yearly': '119.99',
-            'vip_monthly_raw': 11.99,
-            'vip_yearly_raw': 119.99,
-            'region_name': 'United Kingdom'
+            'monthly': '8.00',
+            'yearly': '80.00',
+            'monthly_raw': 8.00,
+            'yearly_raw':80.00,
+            'vip_monthly': '16.00',
+            'vip_yearly': '160.00',
+            'vip_monthly_raw': 16.00,
+            'vip_yearly_raw': 160.00,
+            'region_name': 'United Kingdom',
+            'currency_code': 'GBP'
         },
         'us': {
             'currency': '$',
-            'monthly': '4.99',
-            'yearly': '49.99',
-            'monthly_raw': 4.99,
-            'yearly_raw': 49.99,
-            'vip_monthly': '14.99',
-            'vip_yearly': '149.99',
-            'vip_monthly_raw': 14.99,
-            'vip_yearly_raw': 149.99,
-            'region_name': 'Worldwide'
+            'monthly': '10.00',
+            'yearly': '100.00',
+            'monthly_raw': 10.00,
+            'yearly_raw': 100.00,
+            'vip_monthly': '20.00',
+            'vip_yearly': '200.00',
+            'vip_monthly_raw': 20.00,
+            'vip_yearly_raw': 200.00,
+            'region_name': 'Worldwide',
+            'currency_code': 'USD'
         }
     }
     return pricing.get(region, pricing['us'])
-
 
 def get_currency_for_region(region):
     """Map region to currency code."""
@@ -1116,6 +1145,7 @@ def method_not_allowed(e):
 # =============================================================================
 
 @app.route("/")
+@limiter.exempt
 def home():
     """Show landing page for non-logged-in users, dashboard for logged-in users."""
     if not session.get("user_id"):
@@ -1248,6 +1278,7 @@ def health_check():
 # =============================================================================
 
 @app.route("/contact", methods=["GET", "POST"])
+@limiter.limit("10 per hour", error_message="Too many contact form submissions. Please try again later.")
 def contact():
     """Contact page for support and business inquiries."""
     error = None
@@ -1306,6 +1337,7 @@ def contact():
 
 
 @app.route("/business", methods=["GET", "POST"])
+@limiter.limit("10 per hour", error_message="Too many business inquiries. Please try again later.")
 def business():
     """Business inquiries page."""
     error = None
@@ -1370,14 +1402,16 @@ def send_inquiry_notification(name, email, subject, message, inquiry_type, inqui
     
     try:
         # Send to your personal email (or support@fritt.org later)
-        admin_email = os.environ.get("ADMIN_EMAIL", "admin@example.com")
+        if not ADMIN_EMAIL:
+            print(f"⚠️ WARNING: ADMIN_EMAIL not set. Inquiry from {email} was not sent.")
+            return
         
         response = requests.post(
             "https://api.resend.com/emails",
             headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
             json={
                 "from": RESEND_FROM_EMAIL,
-                "to": [admin_email],
+                "to": [ADMIN_EMAIL],
                 "reply_to": [email],
                 "subject": f"[Fritt Tracker] New {inquiry_type} inquiry: {subject}",
                 "html": f"""
@@ -1529,14 +1563,17 @@ def send_business_inquiry_notification(name, email, company, team_size, message,
         return
     
     try:
-        admin_email = os.environ.get("ADMIN_EMAIL", "admin@example.com")
+        # Get admin email from env variables
+        if not ADMIN_EMAIL:
+            print(f"⚠️ WARNING: ADMIN_EMAIL not set. Inquiry from {email} was not sent.")
+            return
         
         response = requests.post(
             "https://api.resend.com/emails",
             headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
             json={
                 "from": RESEND_FROM_EMAIL,
-                "to": [admin_email],
+                "to": [ADMIN_EMAIL],
                 "reply_to": [email],
                 "subject": f"[Fritt Tracker] Business Inquiry: {company}",
                 "html": f"""
@@ -2390,6 +2427,7 @@ def admin_renew_user_document(user_id, doc_id):
     )
 
 @app.route("/pricing")
+@limiter.exempt
 def pricing():
     """Pricing page showing subscription tiers."""
     region = get_user_region()
@@ -2422,18 +2460,21 @@ def pricing():
     )
 
 @app.route("/terms")
+@limiter.exempt
 def terms():
     """Terms of Service page."""
     return render_template("legal/terms.html")
 
 
 @app.route("/privacy")
+@limiter.exempt
 def privacy():
     """Privacy Policy page."""
     return render_template("legal/privacy.html")
 
 
 @app.route("/feedback")
+@limiter.exempt
 def feedback():
     """Feedback page."""
     return render_template("feedback.html")
@@ -2443,7 +2484,7 @@ def feedback():
 # =============================================================================
 
 @app.route("/register", methods=["GET", "POST"])
-@limiter.limit("10 per hour")
+@limiter.limit("5 per hour", error_message="Too many registration attempts. Please try again later.")
 def register():
     """User registration."""
     error = None
@@ -2527,7 +2568,7 @@ def verify_email(token):
 
 
 @app.route("/resend-verification", methods=["GET", "POST"])
-@limiter.limit("3 per hour")
+@limiter.limit("3 per hour", error_message="Too many verification requests. Please wait an hour.")
 def resend_verification():
     """Resend email verification."""
     error = None
@@ -2559,7 +2600,7 @@ def resend_verification():
 
 
 @app.route("/login", methods=["GET", "POST"])
-@limiter.limit("10 per minute")
+@limiter.limit("10 per minute", error_message="Too many login attempts. Please wait a moment.")
 def login():
     """User login."""
     error = None
@@ -2599,7 +2640,7 @@ def logout():
 
 
 @app.route("/forgot-password", methods=["GET", "POST"])
-@limiter.limit("5 per hour")
+@limiter.limit("5 per hour", error_message="Too many password reset requests. Please try again later.")
 def forgot_password():
     """Request password reset."""
     message = None
@@ -2640,7 +2681,7 @@ def forgot_password():
 
 
 @app.route("/reset-password/<token>", methods=["GET", "POST"])
-@limiter.limit("15 per hour")
+@limiter.limit("15 per hour", error_message="Too many reset attempts. Please try again later.")
 def reset_password(token):
     """Reset password with token."""
     user = get_user_by_reset_token(token)
@@ -2767,6 +2808,7 @@ def delete_account():
 # =============================================================================
 
 @app.route("/add", methods=["GET", "POST"])
+# @limiter.limit("30 per hour", error_message="You're adding documents too quickly. Please slow down.")
 def add_document():
     """Add a new document."""
     auth = require_verified()
@@ -2819,6 +2861,7 @@ def add_document():
 
 
 @app.route("/edit/<int:doc_id>", methods=["GET", "POST"])
+@limiter.limit("60 per hour", error_message="Too many edits. Please slow down.")
 def edit_document(doc_id):
     """Edit an existing document."""
     auth = require_verified()
@@ -2862,6 +2905,7 @@ def edit_document(doc_id):
 
 
 @app.route("/delete/<int:doc_id>", methods=["POST"])
+@limiter.limit("60 per hour", error_message="Too many deletions. Please slow down.")
 def delete_document(doc_id):
     """Delete a document."""
     auth = require_verified()
@@ -2887,6 +2931,7 @@ def delete_document(doc_id):
 
 
 @app.route("/renewed/<int:doc_id>", methods=["GET", "POST"])
+@limiter.limit("60 per hour", error_message="Too many renewals. Please slow down.")
 def mark_renewed(doc_id):
     """Mark a document as renewed and set a new expiry date."""
     auth = require_verified()
@@ -2938,6 +2983,7 @@ def mark_renewed(doc_id):
 # =============================================================================
 
 @app.route("/import-csv", methods=["GET", "POST"])
+@limiter.limit(lambda: "20 per day" if session.get('user_id') and get_user_tier(session['user_id']) == 'vip' else "5 per day")
 def import_csv():
     """Import documents from CSV file."""
     auth = require_verified()
@@ -3050,6 +3096,7 @@ def import_csv():
 # =============================================================================
 
 @app.route("/subscribe/<plan_type>")
+@limiter.limit("10 per hour", error_message="Too many subscription page views. Please slow down.")
 def subscribe(plan_type):
     """Show payment page for subscription."""    
     auth = require_verified()
@@ -3092,6 +3139,7 @@ def subscribe(plan_type):
     )
 
 @app.route("/cancel-subscription", methods=["POST"])
+@limiter.limit("5 per hour", error_message="Too many cancellation attempts. Please wait.")
 def cancel_subscription():
     """Cancel user's subscription."""
     auth = require_verified()
@@ -3129,6 +3177,7 @@ def cancel_subscription():
     return redirect(url_for("home"))
 
 @app.route("/payment/initiate", methods=["POST"])
+@limiter.limit("5 per hour", error_message="Too many payment initiations. Please wait before trying again.")
 def initiate_payment():
     """Initialize Flutterwave payment."""
     auth = require_verified()
@@ -3227,6 +3276,7 @@ def initiate_payment():
 
 
 @app.route("/payment/callback")
+@limiter.exempt  # Payment callbacks should never be rate limited
 def payment_callback():
     """Handle payment callback from Flutterwave."""
     auth = require_verified()
@@ -3325,21 +3375,28 @@ def payment_cancel():
 # =============================================================================
 
 @app.route("/webhook/flutterwave", methods=["POST"])
-@csrf.exempt 
+@csrf.exempt
+@limiter.exempt  # Webhooks should NEVER be rate limited
 def flutterwave_webhook():
     """Handle Flutterwave webhook for subscription events."""
-    #*********
-    if request.method == "GET":
-        return "Webhook endpoint is ready", 200
-    #************
     try:
         data = request.json
+        if not data:
+            print("❌ No JSON data received")
+            return "No data", 400
         
         print(f"📨 Webhook received at {datetime.now(timezone.utc)}")
         print(f"📨 Event: {data.get('event', 'unknown')}")
         print(f"📨 Full data: {data}")
         
         signature = request.headers.get('verif-hash')
+
+        # --- CRITICAL: Enable Signature Verification ---
+        if not verify_flutterwave_webhook(data, signature):
+            print("❌ Webhook signature verification failed.")
+            return "Invalid Signature", 401
+        # -------------------------------------------------
+
         if signature:
             print(f"📨 Signature: {signature[:20]}...")
         
@@ -3418,11 +3475,9 @@ def flutterwave_webhook():
         import traceback
         traceback.print_exc()
         return "OK", 200
-    #*********
-    return "OK", 200
-    #**********
 
 @app.route("/cron/reminders")
+@limiter.exempt  # Cron jobs should NEVER be rate limited
 def run_reminders():
     """Endpoint triggered by cron-job.org to send daily reminders."""
     provided_token = request.args.get("token") or request.headers.get("X-Trigger-Token")
@@ -3442,7 +3497,7 @@ def run_reminders():
 # =============================================================================
 
 @app.route("/newsletter/subscribe", methods=["POST"])
-@limiter.limit("5 per hour")
+@limiter.limit("5 per hour", error_message="Too many subscription attempts. Please wait an hour.")
 def subscribe_newsletter():
     """Subscribe to newsletter."""
     email = request.form.get("email", "").strip().lower()
