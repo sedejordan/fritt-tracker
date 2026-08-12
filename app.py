@@ -161,13 +161,6 @@ limiter = Limiter(
     # No default limits - we'll apply per-route instead
     enabled=os.environ.get("DISABLE_RATE_LIMITING", "false").lower() != "true"
 )
-# Custom error handler for rate limit exceeded
-@app.errorhandler(429)
-def ratelimit_handler(e):
-    """Return a user-friendly message when rate limit is exceeded."""
-    # e.description contains the custom error message
-    error_message = e.description if e.description else "Too many requests. Please slow down."
-    return render_template('errors/429.html', error_message=error_message), 429
 
 # =============================================================================
 # DATABASE INITIALIZATION
@@ -1116,6 +1109,12 @@ def send_subscription_expiry_email(user_email, user_name=None):
 # =============================================================================
 # ERROR HANDLERS
 # =============================================================================
+@app.errorhandler(401)
+def unauthorized(e):
+    """Unauthorized - user isn't logged in but tried to access a protected page."""
+    # This will usually be caught by your require_login() redirect first,
+    # but just in case Flask's auth machinery triggers it:
+    return redirect(url_for('login'))
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -1139,6 +1138,13 @@ def forbidden(e):
 def method_not_allowed(e):
     """Method not allowed - e.g., GET instead of POST."""
     return render_template('errors/405.html'), 405
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    """Return a user-friendly message when rate limit is exceeded."""
+    # e.description contains the custom error message
+    error_message = e.description if e.description else "Too many requests. Please slow down."
+    return render_template('errors/429.html', error_message=error_message), 429
 
 # =============================================================================
 # ROUTES - PUBLIC
@@ -3227,7 +3233,8 @@ def initiate_payment():
                 'user_id': session['user_id'],
                 'plan_type': plan_type,
                 'region': region
-            }
+            },
+            'payment_options': 'card,banktransfer,ussd,mobilemoney,qr',  # Still works with payment_plan
         }
         
         print(f"🔍 Sending payment request: {payload}")

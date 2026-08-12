@@ -1,88 +1,94 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Subscribe - Fritt Tracker</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #2563eb;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .btn-loading {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <div class="container mx-auto px-4 py-12 max-w-md">
-        <div class="bg-white rounded-xl shadow-md p-8">
-            <div class="text-center">
-                <h1 class="text-2xl font-bold text-gray-800 mb-2">Upgrade to {{ plan_details.tier }}</h1>
-                <p class="text-gray-600">{{ plan_details.name }}</p>
-            </div>
-            
-            <div class="text-center my-8">
-                <p class="text-4xl font-bold text-blue-600">
-                    {{ pricing.currency }}{{ plan_details.price }}
-                </p>
-                <p class="text-gray-500 text-sm mt-1">per month</p>
-                {% if currency %}
-                    <p class="text-xs text-gray-400 mt-1">Payment in {{ currency }}</p>
-                {% endif %}
-            </div>
-            
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <p class="text-sm text-gray-700">
-                    <i class="fas fa-lock text-blue-600 mr-2"></i>
-                    Secure payment powered by Flutterwave
-                </p>
-            </div>
-            
-            <form action="{{ url_for('initiate_payment') }}" method="POST" id="payment-form">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="plan_id" value="{{ plan_id }}">
-                <input type="hidden" name="plan_type" value="{{ plan_type }}">
-                
-                <button type="submit" 
-                        id="pay-button"
-                        class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
-                    <span id="button-text"><i class="fas fa-credit-card mr-2"></i> Pay {{ pricing.currency }}{{ plan_details.price }}</span>
-                    <span id="button-loading" class="hidden"><span class="spinner mr-2"></span> Processing...</span>
-                </button>
-            </form>
-            
-            <p class="text-center text-xs text-gray-500 mt-4">
-                You'll be redirected to Flutterwave's secure payment page.
-                <br>Accepted: All Cards, Bank Transfer, USSD, QR Code
-            </p>
-            
-            <a href="{{ url_for('pricing') }}" class="block text-center text-blue-600 mt-6 hover:underline">
-                ← Back to Pricing
-            </a>
-        </div>
-    </div>
+{% extends "base.html" %}
+{% block title %}Subscribe - Fritt Tracker{% endblock %}
 
-    <script>
-        document.getElementById('payment-form').addEventListener('submit', function() {
-            const button = document.getElementById('pay-button');
-            const buttonText = document.getElementById('button-text');
-            const buttonLoading = document.getElementById('button-loading');
+{% block content %}
+<div class="container mx-auto px-4 py-12 max-w-md">
+    <div class="bg-white rounded-xl shadow-md p-8 border border-line">
+        <div class="text-center">
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Upgrade to {{ plan_details.tier }}</h1>
+            <p class="text-gray-600">{{ plan_details.name }}</p>
+        </div>
+        
+        <!-- Price Display -->
+        <div class="text-center my-8">
+            <p class="text-4xl font-bold text-blue-600">
+                {{ pricing.currency }}{{ plan_details.price }}
+            </p>
+            <p class="text-gray-500 text-sm mt-1">per month</p>
+            {% if currency %}
+                <p class="text-xs text-gray-400 mt-1">Payment in {{ currency }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- Fee Notice -->
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+            <p class="text-sm text-gray-700">
+                <i class="fas fa-info-circle text-yellow-600 mr-2"></i>
+                Total payable: <strong>{{ pricing.currency }}{{ plan_details.price }}</strong>
+                <span class="text-xs text-gray-500">(includes processing fees)</span>
+            </p>
+        </div>
+        
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <p class="text-sm text-gray-700">
+                <i class="fas fa-lock text-blue-600 mr-2"></i>
+                Secure payment powered by Flutterwave
+            </p>
+        </div>
+        
+        <form action="{{ url_for('initiate_payment') }}" method="POST" id="payment-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="plan_id" value="{{ plan_id }}">
+            <input type="hidden" name="plan_type" value="{{ plan_type }}">
             
-            button.classList.add('btn-loading');
-            buttonText.classList.add('hidden');
-            buttonLoading.classList.remove('hidden');
-        });
-    </script>
-</body>
-</html>
+            <button type="submit" 
+                    id="pay-button"
+                    class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center font-medium">
+                <span id="button-text"><i class="fas fa-credit-card mr-2"></i> Pay {{ pricing.currency }}{{ plan_details.price }}</span>
+                <span id="button-loading" class="hidden"><span class="spinner mr-2"></span> Processing...</span>
+            </button>
+        </form>
+        
+        <p class="text-center text-xs text-gray-500 mt-4">
+            You'll be redirected to Flutterwave's secure payment page.
+            <br>Accepted: All Cards, Bank Transfer, USSD, QR Code
+        </p>
+        
+        <a href="{{ url_for('pricing') }}" class="block text-center text-blue-600 mt-6 hover:underline">
+            ← Back to Pricing
+        </a>
+    </div>
+</div>
+
+<style>
+    .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #2563eb;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .btn-loading {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+</style>
+
+<script>
+    document.getElementById('payment-form').addEventListener('submit', function() {
+        const button = document.getElementById('pay-button');
+        const buttonText = document.getElementById('button-text');
+        const buttonLoading = document.getElementById('button-loading');
+        
+        button.classList.add('btn-loading');
+        buttonText.classList.add('hidden');
+        buttonLoading.classList.remove('hidden');
+    });
+</script>
+{% endblock %}
