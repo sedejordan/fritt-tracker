@@ -190,7 +190,7 @@
                         <i class="fas fa-check text-green-500 mr-2"></i>
                         CSV import
                     </li>
-                    <li class="flex items-center text-gray-600">
+                    <!--<li class="flex items-center text-gray-600">
                         <i class="fas fa-check text-green-500 mr-2"></i>
                         Priority support
                     </li>
@@ -201,9 +201,25 @@
                     <li class="flex items-center text-gray-600">
                         <i class="fas fa-check text-green-500 mr-2"></i>
                         Bulk operations
-                    </li>
+                    </li>-->
                 </ul>
                 {% if session.get('user_id') %}
+                
+                    <!-- Free trial button -->
+                    {% if subscription_tier == 'free' and not trial_used %}
+                        <form method="POST" action="{{ url_for('start_trial') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="tier" value="pro">
+                            <button type="submit" class="block w-full mt-6 text-center bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 rounded-lg hover:opacity-90 transition">
+                                🎁 Start 7-Day Free Trial
+                            </button>
+                            <p class="text-xs text-gray-500 mt-2 text-center">No credit card required. Cancel anytime.</p>
+                        </form>
+                    {% elif subscription_tier == 'pro' and trial_used %}
+                        <button class="block w-full mt-6 text-center bg-green-500 text-white py-3 rounded-lg cursor-default font-medium" disabled>
+                            ⏳ Trial in Progress
+                        </button>
+                    {% endif %}
                     {% if subscription_tier != 'pro' %}
                         <!-- Monthly Subscribe Button -->
                         <a href="{{ url_for('subscribe', plan_type='pro_monthly') }}" 
@@ -271,7 +287,7 @@
                         <i class="fas fa-check text-green-500 mr-2"></i>
                         Priority support
                     </li>
-                    <li class="flex items-center text-gray-600">
+                    <!--<li class="flex items-center text-gray-600">
                         <i class="fas fa-check text-green-500 mr-2"></i>
                         Advanced analytics
                     </li>
@@ -282,9 +298,25 @@
                     <li class="flex items-center text-gray-600">
                         <i class="fas fa-check text-green-500 mr-2"></i>
                         Team sharing
-                    </li>
+                    </li>-->
                 </ul>
                 {% if session.get('user_id') %}
+                    <!-- Free trial button -->
+                    {% if subscription_tier == 'free' and not trial_used %}
+                        <form method="POST" action="{{ url_for('start_trial') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="tier" value="vip">
+                            <button type="submit" class="block w-full mt-6 text-center bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 rounded-lg hover:opacity-90 transition">
+                                🎁 Start 7-Day Free Trial
+                            </button>
+                            <p class="text-xs text-gray-500 mt-2 text-center">No credit card required. Cancel anytime.</p>
+                        </form>
+                    {% elif subscription_tier == 'vip' and trial_used %}
+                        <button class="block w-full mt-6 text-center bg-green-500 text-white py-3 rounded-lg cursor-default font-medium" disabled>
+                            ⏳ Trial in Progress
+                        </button>
+                    {% endif %}
+
                     {% if subscription_tier != 'vip' %}
                         <!-- Monthly Subscribe Button -->
                         <a href="{{ url_for('subscribe', plan_type='vip_monthly') }}" 

@@ -192,14 +192,14 @@ def get_subscription_status(user_id):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT subscription_tier, subscription_status, subscription_expiry FROM users WHERE id = %s",
+            "SELECT subscription_tier, subscription_status, subscription_expiry, trial_used, documents_trimmed, trial_ends_at FROM users WHERE id = %s",
             (user_id,)
         )
         result = cursor.fetchone()
         cursor.close()
         
         if result:
-            tier, status, expiry = result
+            tier, status, expiry, trial_used, documents_trimmed, trial_ends_at = result
             # Make expiry timezone-aware if it's naive
             if expiry and expiry.tzinfo is None:
                 expiry = expiry.replace(tzinfo=timezone.utc)
@@ -211,16 +211,26 @@ def get_subscription_status(user_id):
             elif tier == 'free':
                 is_active = True
             else:
-                # If status is 'cancelled' but expiry is in future, still active
                 is_active = status == 'active' or (status == 'cancelled' and expiry and expiry > datetime.now(timezone.utc))
             
             return {
                 'tier': tier,
                 'status': status,
                 'expiry': expiry,
-                'is_active': is_active
+                'is_active': is_active,
+                'trial_used': trial_used or False,
+                'documents_trimmed': documents_trimmed or False,
+                'trial_ends_at': trial_ends_at
             }
-        return {'tier': 'free', 'status': 'active', 'expiry': None, 'is_active': True}
+        return {
+            'tier': 'free', 
+            'status': 'active', 
+            'expiry': None, 
+            'is_active': True,
+            'trial_used': False,
+            'documents_trimmed': False,
+            'trial_ends_at': trial_ends_at
+        }
     finally:
         put_db(conn)
 
@@ -1172,6 +1182,37 @@ def home():
     tier = sub_status['tier']
     status = sub_status['status']  # ✅ Get the status
     is_active = sub_status['is_active']
+
+    # Check if trial has expired
+    if tier in ['pro', 'vip'] and status == 'active' and sub_status.get('trial_used', False):
+        trial_ends_at = sub_status.get('trial_ends_at')
+        if trial_ends_at and trial_ends_at <= datetime.now(timezone.utc):
+            # Trial expired - downgrade to free
+            conn = get_db()
+            try:
+                cursor = conn.cursor()
+                # Trim documents if over limit
+                trim_documents_to_free_limit(user_id)
+                cursor.execute("""
+                    UPDATE users 
+                    SET subscription_tier = 'free',
+                        subscription_status = 'expired',
+                        subscription_expiry = NULL,
+                        trial_ends_at = NULL
+                    WHERE id = %s
+                """, (user_id,))
+                conn.commit()
+                cursor.close()
+                flash("⚠️ Your free trial has ended. Upgrade to continue using Pro features.", "warning")
+                tier = 'free'
+                status = 'expired'
+                sub_status['tier'] = 'free'
+                sub_status['status'] = 'expired'
+                sub_status['expiry'] = None
+            except Exception as e:
+                print(f"❌ Error ending trial: {e}")
+            finally:
+                put_db(conn)
     
     # If Pro/VIP expired, downgrade to free and trim documents
     if tier != 'free' and tier != 'suspended' and not is_active:
@@ -1272,8 +1313,11 @@ def home():
         documents=documents, 
         doc_count=doc_count,  
         subscription_tier=tier,
-        subscription_status=status,  # ✅ Pass the status
+        subscription_status=status,
         subscription_expiry=sub_status.get('expiry'),
+        trial_used=sub_status.get('trial_used', False),
+        documents_trimmed=sub_status.get('documents_trimmed', False),
+        trial_ends_at=sub_status.get('trial_ends_at'),
         now=datetime.now(timezone.utc)
     )
 
@@ -2480,6 +2524,8 @@ def pricing():
         subscription_tier=subscription_tier,
         subscription_expiry=subscription_expiry,
         doc_count=doc_count,
+        trial_used=sub_status.get('trial_used', False) if session.get('user_id') else False,
+        trial_ends_at=sub_status.get('trial_ends_at') if session.get('user_id') else None,
         now=datetime.now(timezone.utc),
         billing_period=billing_period
     )
@@ -3212,6 +3258,64 @@ def cancel_subscription():
     except Exception as e:
         print(f"❌ Error cancelling subscription: {e}")
         conn.rollback()
+        flash("Something went wrong. Please try again.", "error")
+    finally:
+        put_db(conn)
+    
+    return redirect(url_for("home"))
+
+@app.route("/start-trial", methods=["POST"])
+@limiter.limit("1 per day", error_message="You can only start one trial.")
+def start_trial():
+    """Manually start a free trial."""
+    auth = require_verified()
+    if auth:
+        return auth
+    
+    user_id = session["user_id"]
+    sub_status = get_subscription_status(user_id)
+    
+    # Check eligibility
+    if sub_status['tier'] != 'free':
+        flash("You're already on a paid plan.", "info")
+        return redirect(url_for("pricing"))
+    
+    if sub_status.get('trial_used', False):
+        flash("You've already used your free trial.", "warning")
+        return redirect(url_for("pricing"))
+    
+    if sub_status.get('documents_trimmed', False):
+        flash("You've been on a paid plan before. Please subscribe to get Pro features.", "warning")
+        return redirect(url_for("pricing"))
+    
+    # Start trial
+    trial_ends_at = datetime.now(timezone.utc) + timedelta(days=7)
+    
+    conn = get_db()
+    try:# To: Make it configurable
+        tier_to_try = request.form.get('tier', 'pro')  # Default to 'pro'
+        if tier_to_try not in ['pro', 'vip']:
+            tier_to_try = 'pro'
+
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE users 
+            SET trial_used = TRUE,
+                trial_ends_at = %s,
+                subscription_tier = %s,
+                subscription_status = 'active',
+                subscription_expiry = %s
+            WHERE id = %s
+        """, (trial_ends_at, tier_to_try, trial_ends_at, user_id))
+        conn.commit()
+        cursor.close()
+
+        # After the UPDATE, before flash
+        _subscription_cache.pop(f"sub_{user_id}", None)
+        
+        flash(f"🎉 Your 7-day free trial has started! Expires {trial_ends_at.strftime('%B %d, %Y')}.", "success")
+    except Exception as e:
+        print(f"❌ Error starting trial: {e}")
         flash("Something went wrong. Please try again.", "error")
     finally:
         put_db(conn)
