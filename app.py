@@ -1367,32 +1367,36 @@ def health_check():
 @app.route("/contact", methods=["GET", "POST"])
 @limiter.limit("10 per hour", error_message="Too many contact form submissions. Please try again later.")
 def contact():
-    """Contact page for support and business inquiries."""
+    """Contact page for support and business inquiries. Also handles
+    feedback submissions (routed here from /feedback so they share one
+    inquiries table and one notification/auto-reply pipeline)."""
     error = None
     success = None
-    
+
     if request.method == "POST":
         name = request.form.get("name", "").strip()
         email = request.form.get("email", "").strip().lower()
         subject = request.form.get("subject", "").strip()
         message = request.form.get("message", "").strip()
         inquiry_type = request.form.get("inquiry_type", "support")
-        
+        is_feedback = inquiry_type == "feedback"
+
         # Validation
         if not name:
             error = "Please enter your name."
         elif not email:
             error = "Please enter your email address."
-        elif not subject:
+        else:
+            try:
+                validate_email(email)
+            except EmailNotValidError:
+                error = "Please enter a valid email address."
+
+        if not error and not subject:
             error = "Please enter a subject."
-        elif not message or len(message) < 10:
+        elif not error and (not message or len(message) < 10):
             error = "Please enter a message (at least 10 characters)."
 
-        try:
-            validate_email.email
-        except EmailNotValidError:
-            error = "Please enter a valid email address."
-        
         if not error:
             try:
                 # Store in database
@@ -1410,21 +1414,28 @@ def contact():
                     cursor.close()
                 finally:
                     put_db(conn)
-                
+
                 # Send notification to you (support@fritt.org or your personal email)
                 send_inquiry_notification(name, email, subject, message, inquiry_type, inquiry_id)
-                
+
                 # Send auto-reply to user
                 send_auto_reply(email, name, inquiry_type)
-                
+
+                if is_feedback:
+                    flash("✅ Thanks for your feedback! We read every submission.", "success")
+                    return redirect(url_for("home"))
+
                 success = "✅ Your message has been sent! We'll get back to you within 24 hours."
-                
+
             except Exception as e:
                 print(f"❌ Error saving inquiry: {e}")
                 error = "Something went wrong. Please try again later."
-    
-    return render_template("contact.html", error=error, success=success)
 
+        # Validation failed, or the try block above raised before returning
+        if error and is_feedback:
+            return render_template("feedback.html", error=error)
+
+    return render_template("contact.html", error=error, success=success)
 
 @app.route("/business", methods=["GET", "POST"])
 @limiter.limit("10 per hour", error_message="Too many business inquiries. Please try again later.")
@@ -1445,13 +1456,17 @@ def business():
             error = "Please enter your name."
         elif not email:
             error = "Please enter your email address."
-        elif not validate_email.email:
-            error = "Please enter a valid email address."
-        elif not company:
+        else:
+            try:
+                validate_email(email)
+            except EmailNotValidError:
+                error = "Please enter a valid email address."
+
+        if not error and not company:
             error = "Please enter your company name."
-        elif not message or len(message) < 10:
+        elif not error and (not message or len(message) < 10):
             error = "Please enter a message (at least 10 characters)."
-        
+
         if not error:
             try:
                 # Store in database
@@ -2653,7 +2668,8 @@ def register():
                     conn.commit()
 
                     send_verification_email(email, new_user_id)
-                    cursor.close()            finally:
+                    cursor.close()
+            finally:
                 put_db(conn)
 
             if not error:
