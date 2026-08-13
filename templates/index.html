@@ -104,30 +104,6 @@
 </div>
 {% endif %}
 
-<!-- TRIAL BANNER -->
-{% if on_trial and trial_ends_at and trial_ends_at > now %}
-<div class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 mb-4">
-    <div class="flex items-start gap-3">
-        <span class="text-purple-600 text-xl">🎁</span>
-        <div>
-            <p class="text-sm text-purple-800">
-                <strong>You're on a FREE trial!</strong>
-                {% set days_left = ((trial_ends_at - now).days) %}
-                {% if days_left > 0 %}
-                    {{ days_left }} days remaining
-                {% else %}
-                    Expires today!
-                {% endif %}
-            </p>
-            <p class="text-xs text-purple-700 mt-1">
-                Enjoy full Pro features with <strong>100 documents</strong>.
-                <a href="{{ url_for('pricing') }}" class="underline font-medium">Upgrade to VIP</a> or wait for trial to end.
-            </p>
-        </div>
-    </div>
-</div>
-{% endif %}
-
 <!-- GRACE PERIOD BANNER -->
 {% if subscription_tier != 'free' and subscription_status == 'expired' and grace_period_end and grace_period_end > now %}
 <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">

@@ -1203,48 +1203,9 @@ def home():
     is_active = sub_status['is_active']
     in_grace_period = sub_status.get('in_grace_period', False)
     documents_trimmed = sub_status.get('documents_trimmed', False)
-    
-    # ============================================================
-    # FREE TRIAL LOGIC - Add this section
-    # ============================================================
-    # Check if user should get a free trial
-    # Only give trial if:
-    # 1. User is on free plan
-    # 2. Hasn't used a trial before
-    # 3. Hasn't already started a trial
-    # 4. Hasn't been downgraded from a paid plan (documents_trimmed is False)
-    if tier == 'free' and not sub_status.get('trial_used', False) and not documents_trimmed:
-        # Start 7-day free trial
-        trial_ends_at = datetime.now(timezone.utc) + timedelta(days=7)
-        conn = get_db()
-        try:
-            cursor = conn.cursor()
-            cursor.execute("""
-                UPDATE users 
-                SET trial_used = TRUE,
-                    trial_ends_at = %s,
-                    subscription_tier = 'pro',
-                    subscription_status = 'active',
-                    subscription_expiry = %s
-                WHERE id = %s
-            """, (trial_ends_at, trial_ends_at, user_id))
-            conn.commit()
-            cursor.close()
-            flash(f"🎉 Welcome! You're on a 7-day free trial of Pro. Expires {trial_ends_at.strftime('%B %d, %Y')}.", "success")
-            tier = 'pro'
-            status = 'active'
-            sub_status['tier'] = 'pro'
-            sub_status['status'] = 'active'
-            sub_status['expiry'] = trial_ends_at
-            sub_status['trial_used'] = True
-            sub_status['trial_ends_at'] = trial_ends_at
-        except Exception as e:
-            print(f"❌ Error starting trial: {e}")
-        finally:
-            put_db(conn)
-    
-    # Check if trial has expired
-    elif tier == 'pro' and status == 'active' and sub_status.get('trial_used', False):
+
+    # Check if trial has expired (for both Pro and VIP)
+    if tier in ['pro', 'vip'] and status == 'active' and sub_status.get('trial_used', False):
         trial_ends_at = sub_status.get('trial_ends_at')
         if trial_ends_at and trial_ends_at <= datetime.now(timezone.utc):
             # Trial expired - downgrade to free
@@ -1273,128 +1234,125 @@ def home():
                 print(f"❌ Error ending trial: {e}")
             finally:
                 put_db(conn)
-    # ============================================================
-    # END FREE TRIAL LOGIC
-    # ============================================================
-    
-    # If subscription expired, start grace period
-    if tier != 'free' and tier != 'suspended' and not is_active and not in_grace_period and not documents_trimmed:
-        # Start 7-day grace period
-        grace_period_end = datetime.now(timezone.utc) + timedelta(days=7)
         
-        conn = get_db()
-        try:
-            cursor = conn.cursor()
-            cursor.execute("""
-                UPDATE users 
-                SET grace_period_end = %s
-                WHERE id = %s
-            """, (grace_period_end, user_id))
-            conn.commit()
-            cursor.close()
-        finally:
-            put_db(conn)
-        
-        flash(
-            f"⚠️ Your {tier} subscription has expired. You have until {grace_period_end.strftime('%B %d, %Y')} to reactivate without losing your documents. "
-            "After that, we'll keep your 20 most important documents and remove the rest.",
-            "warning"
-        )
-        in_grace_period = True
-    
-    # If grace period ended and documents haven't been trimmed yet
-    if tier != 'free' and tier != 'suspended' and not is_active and not documents_trimmed:
-        grace_period_end = sub_status.get('grace_period_end')
-        if grace_period_end and grace_period_end <= datetime.now(timezone.utc):
-            # Grace period ended - trim documents
-            deleted_count = trim_documents_to_free_limit(user_id)
+        # If subscription expired, start grace period
+        if tier != 'free' and tier != 'suspended' and not is_active and not in_grace_period and not documents_trimmed:
+            # Start 7-day grace period
+            grace_period_end = datetime.now(timezone.utc) + timedelta(days=7)
             
             conn = get_db()
             try:
                 cursor = conn.cursor()
                 cursor.execute("""
                     UPDATE users 
-                    SET subscription_tier = 'free',
-                        subscription_status = 'expired',
-                        subscription_expiry = NULL,
-                        grace_period_end = NULL,
-                        documents_trimmed = TRUE
+                    SET grace_period_end = %s
                     WHERE id = %s
-                """, (user_id,))
+                """, (grace_period_end, user_id))
                 conn.commit()
                 cursor.close()
             finally:
                 put_db(conn)
             
+            flash(
+                f"⚠️ Your {tier} subscription has expired. You have until {grace_period_end.strftime('%B %d, %Y')} to reactivate without losing your documents. "
+                "After that, we'll keep your 20 most important documents and remove the rest.",
+                "warning"
+            )
+            in_grace_period = True
+        
+        # If grace period ended and documents haven't been trimmed yet
+        if tier != 'free' and tier != 'suspended' and not is_active and not documents_trimmed:
+            grace_period_end = sub_status.get('grace_period_end')
+            if grace_period_end and grace_period_end <= datetime.now(timezone.utc):
+                # Grace period ended - trim documents
+                deleted_count = trim_documents_to_free_limit(user_id)
+                
+                conn = get_db()
+                try:
+                    cursor = conn.cursor()
+                    cursor.execute("""
+                        UPDATE users 
+                        SET subscription_tier = 'free',
+                            subscription_status = 'expired',
+                            subscription_expiry = NULL,
+                            grace_period_end = NULL,
+                            documents_trimmed = TRUE
+                        WHERE id = %s
+                    """, (user_id,))
+                    conn.commit()
+                    cursor.close()
+                finally:
+                    put_db(conn)
+                
+                if deleted_count > 0:
+                    flash(
+                        f"⚠️ Your grace period has ended. We've kept your 20 most important documents "
+                        f"(farthest from expiry) and removed {deleted_count} documents. "
+                        f"Upgrade to Pro or VIP to track more than 20 documents.",
+                        "warning"
+                    )
+                else:
+                    flash("⚠️ Your grace period has ended. You're now on the Free plan.", "warning")
+                
+                tier = 'free'
+                status = 'expired'
+                documents_trimmed = True
+        
+        # Get document count
+        doc_count = get_document_count(user_id)
+        
+        # If on free plan and over limit (shouldn't happen after trim, but just in case)
+        if tier == 'free' and doc_count > 20:
+            deleted_count = trim_documents_to_free_limit(user_id)
             if deleted_count > 0:
                 flash(
-                    f"⚠️ Your grace period has ended. We've kept your 20 most important documents "
-                    f"(farthest from expiry) and removed {deleted_count} documents. "
+                    f"⚠️ You have more than 20 documents on the Free plan. "
+                    f"We've kept your 20 most important documents (farthest from expiry) "
+                    f"and removed {deleted_count} documents. "
                     f"Upgrade to Pro or VIP to track more than 20 documents.",
                     "warning"
                 )
+                doc_count = get_document_count(user_id)
+        
+        search_query = request.args.get("q", "").strip()
+        status_filter = request.args.get("status", "")
+
+        docs = get_documents(user_id, search_query)
+        documents = []
+
+        for doc_id, title, expiry_date in docs:
+            days_left, doc_status, color, icon = get_status(expiry_date)
+
+            if status_filter and doc_status != status_filter:
+                continue
+
+            if days_left < 0:
+                display_days = f"{abs(days_left)} days overdue"
             else:
-                flash("⚠️ Your grace period has ended. You're now on the Free plan.", "warning")
-            
-            tier = 'free'
-            status = 'expired'
-            documents_trimmed = True
-    
-    # Get document count
-    doc_count = get_document_count(user_id)
-    
-    # If on free plan and over limit (shouldn't happen after trim, but just in case)
-    if tier == 'free' and doc_count > 20:
-        deleted_count = trim_documents_to_free_limit(user_id)
-        if deleted_count > 0:
-            flash(
-                f"⚠️ You have more than 20 documents on the Free plan. "
-                f"We've kept your 20 most important documents (farthest from expiry) "
-                f"and removed {deleted_count} documents. "
-                f"Upgrade to Pro or VIP to track more than 20 documents.",
-                "warning"
-            )
-            doc_count = get_document_count(user_id)
-    
-    search_query = request.args.get("q", "").strip()
-    status_filter = request.args.get("status", "")
+                display_days = f"{days_left} days left"
 
-    docs = get_documents(user_id, search_query)
-    documents = []
+            documents.append({
+                "id": doc_id,
+                "title": title,
+                "expiry_date": expiry_date,
+                "display_days": display_days,
+                "status": doc_status,
+                "color": color,
+                "icon": icon
+            })
 
-    for doc_id, title, expiry_date in docs:
-        days_left, doc_status, color, icon = get_status(expiry_date)
-
-        if status_filter and doc_status != status_filter:
-            continue
-
-        if days_left < 0:
-            display_days = f"{abs(days_left)} days overdue"
-        else:
-            display_days = f"{days_left} days left"
-
-        documents.append({
-            "id": doc_id,
-            "title": title,
-            "expiry_date": expiry_date,
-            "display_days": display_days,
-            "status": doc_status,
-            "color": color,
-            "icon": icon
-        })
-
-    return render_template(
-        "index.html", 
-        documents=documents, 
-        doc_count=doc_count,  
-        subscription_tier=tier,
-        subscription_status=status,
-        subscription_expiry=sub_status.get('expiry'),
-        grace_period_end=sub_status.get('grace_period_end'),
-        on_trial=sub_status.get('on_trial', False),  # ✅ Add this
-        trial_ends_at=sub_status.get('trial_ends_at'),  # ✅ Add this
-        now=datetime.now(timezone.utc)
-    )
+        return render_template(
+            "index.html", 
+            documents=documents, 
+            doc_count=doc_count,  
+            subscription_tier=tier,
+            subscription_status=status,
+            subscription_expiry=sub_status.get('expiry'),
+            grace_period_end=sub_status.get('grace_period_end'),
+            on_trial=sub_status.get('on_trial', False),  # ✅ Add this
+            trial_ends_at=sub_status.get('trial_ends_at'),  # ✅ Add this
+            now=datetime.now(timezone.utc)
+        )
 
 @app.route("/health")
 @limiter.exempt
@@ -3317,6 +3275,65 @@ def subscribe(plan_type):
         currency=currency,
         user_email=user_email
     )
+
+@app.route("/start-trial", methods=["POST"])
+@limiter.limit("1 per day", error_message="You can only start one trial.")
+def start_trial():
+    """Manually start a free trial."""
+    auth = require_verified()
+    if auth:
+        return auth
+    
+    user_id = session["user_id"]
+    sub_status = get_subscription_status(user_id)
+    
+    # Check eligibility
+    if sub_status['tier'] != 'free':
+        flash("You're already on a paid plan.", "info")
+        return redirect(url_for("pricing"))
+    
+    if sub_status.get('trial_used', False):
+        flash("You've already used your free trial.", "warning")
+        return redirect(url_for("pricing"))
+    
+    if sub_status.get('documents_trimmed', False):
+        flash("You've been on a paid plan before. Please subscribe to get Pro features.", "warning")
+        return redirect(url_for("pricing"))
+    
+    # Get tier from form
+    tier_to_try = request.form.get('tier', 'pro')
+    if tier_to_try not in ['pro', 'vip']:
+        tier_to_try = 'pro'
+    
+    # Start trial
+    trial_ends_at = datetime.now(timezone.utc) + timedelta(days=7)
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE users 
+            SET trial_used = TRUE,
+                trial_ends_at = %s,
+                subscription_tier = %s,
+                subscription_status = 'active',
+                subscription_expiry = %s
+            WHERE id = %s
+        """, (trial_ends_at, tier_to_try, trial_ends_at, user_id))
+        conn.commit()
+        cursor.close()
+
+        # Clear the cache
+        _subscription_cache.pop(f"sub_{user_id}", None)
+        
+        flash(f"🎉 Your 7-day free trial of {tier_to_try.upper()} has started! Expires {trial_ends_at.strftime('%B %d, %Y')}.", "success")
+    except Exception as e:
+        print(f"❌ Error starting trial: {e}")
+        flash("Something went wrong. Please try again.", "error")
+    finally:
+        put_db(conn)
+    
+    return redirect(url_for("home"))
 
 def cancel_flutterwave_subscription(flw_subscription_id):
     """
