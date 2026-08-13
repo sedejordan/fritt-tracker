@@ -140,21 +140,29 @@
 {% endif %}
 
 <!-- PRO BANNER - Cancelled (still has access) -->
-{% if subscription_tier == 'pro' and subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
+{% if subscription_tier == 'pro' and subscription_status == 'cancelled' and (subscription_expiry is none or subscription_expiry > now) %}
 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
     <div class="flex items-start gap-3">
         <span class="text-yellow-600 text-xl">⏳</span>
         <div>
             <p class="text-sm text-yellow-800">
                 <strong>Your Pro plan has been cancelled.</strong>
-                {% set days_left = ((subscription_expiry - now).days) %}
-                {% if days_left > 0 %}
-                    Access until {{ subscription_expiry.strftime('%B %d, %Y') }} ({{ days_left }} days remaining)
+                {% if subscription_expiry %}
+                    {% set days_left = ((subscription_expiry - now).days) %}
+                    {% if days_left > 0 %}
+                        Access until {{ subscription_expiry.strftime('%B %d, %Y') }} ({{ days_left }} days remaining)
+                    {% endif %}
+                {% else %}
+                    Active until you downgrade (Indefinite)
                 {% endif %}
             </p>
             <div class="flex items-center gap-3 mt-1">
                 <p class="text-xs text-yellow-700">
-                    Your Pro features will end on {{ subscription_expiry.strftime('%B %d, %Y') }}.
+                    {% if subscription_expiry %}
+                        Your Pro features will end on {{ subscription_expiry.strftime('%B %d, %Y') }}.
+                    {% else %}
+                        You're on an indefinite plan. Reactivate anytime.
+                    {% endif %}
                 </p>
                 <form method="POST" action="{{ url_for('reactivate_subscription') }}" class="inline">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -203,21 +211,29 @@
 {% endif %}
 
 <!-- VIP BANNER - Cancelled (still has access) -->
-{% if subscription_tier == 'vip' and subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
+{% if subscription_tier == 'vip' and subscription_status == 'cancelled' and (subscription_expiry is none or subscription_expiry > now) %}
 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
     <div class="flex items-start gap-3">
         <span class="text-yellow-600 text-xl">⏳</span>
         <div>
             <p class="text-sm text-yellow-800">
                 <strong>Your VIP plan has been cancelled.</strong>
-                {% set days_left = ((subscription_expiry - now).days) %}
-                {% if days_left > 0 %}
-                    Access until {{ subscription_expiry.strftime('%B %d, %Y') }} ({{ days_left }} days remaining)
+                {% if subscription_expiry %}
+                    {% set days_left = ((subscription_expiry - now).days) %}
+                    {% if days_left > 0 %}
+                        Access until {{ subscription_expiry.strftime('%B %d, %Y') }} ({{ days_left }} days remaining)
+                    {% endif %}
+                {% else %}
+                    Active until you downgrade (Indefinite)
                 {% endif %}
             </p>
             <div class="flex items-center gap-3 mt-1">
                 <p class="text-xs text-yellow-700">
-                    Your VIP features will end on {{ subscription_expiry.strftime('%B %d, %Y') }}.
+                    {% if subscription_expiry %}
+                        Your VIP features will end on {{ subscription_expiry.strftime('%B %d, %Y') }}.
+                    {% else %}
+                        You're on an indefinite plan. Reactivate anytime.
+                    {% endif %}
                 </p>
                 <form method="POST" action="{{ url_for('reactivate_subscription') }}" class="inline">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

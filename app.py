@@ -2114,15 +2114,23 @@ def admin_user_action(user_id):
                 expiry = datetime.now(timezone.utc) + timedelta(days=days)
                 expiry_display = expiry.strftime('%B %d, %Y')
             
+            # ✅ Add debug logging
+            print(f"🔄 Upgrading user {user_id} to {new_tier} with duration {duration}, expiry: {expiry}")
+            
             cursor.execute("""
                 UPDATE users 
                 SET subscription_tier = %s,
                     subscription_status = 'active',
                     subscription_expiry = %s,
-                    flw_subscription_id = NULL  -- Admin upgrades don't have Flutterwave IDs
+                    flw_subscription_id = NULL
                 WHERE id = %s
             """, (new_tier, expiry, user_id))
             conn.commit()
+            
+            # ✅ Verify the update
+            cursor.execute("SELECT subscription_expiry FROM users WHERE id = %s", (user_id,))
+            result = cursor.fetchone()
+            print(f"✅ After update, expiry is: {result[0] if result else 'NOT FOUND'}")
             
             log_admin_action("upgrade_user", "user", user_id, {
                 "new_tier": new_tier, 
@@ -2131,7 +2139,7 @@ def admin_user_action(user_id):
             })
             
             flash(f"✅ User upgraded to {new_tier.capitalize()} plan ({expiry_display})", "success")
-
+            
         elif action == "downgrade_user":
             new_tier = request.form.get("new_tier")
             if new_tier != 'free':
@@ -3383,7 +3391,7 @@ def cancel_subscription():
 @app.route("/reactivate-subscription", methods=["POST"])
 @limiter.limit("5 per hour", error_message="Too many reactivation attempts. Please wait.")
 def reactivate_subscription():
-    """Reactivate a cancelled or expired subscription during grace period."""
+    """Reactivate a cancelled subscription."""
     auth = require_verified()
     if auth:
         return auth
@@ -3397,55 +3405,93 @@ def reactivate_subscription():
     in_grace_period = sub_status.get('in_grace_period', False)
     documents_trimmed = sub_status.get('documents_trimmed', False)
     
-    # If already active
-    if status == 'active' and sub_status['is_active']:
+    # CASE 1: Already active → Just inform user
+    if status == 'active':
         flash("Your subscription is already active.", "info")
         return redirect(url_for("home"))
-
-    # If documents have been trimmed → CAN'T reactivate!
-    if documents_trimmed:
-        flash("Your documents have been trimmed to the Free plan limit. Please purchase a new subscription to get Pro features again.", "warning")
-        return redirect(url_for("pricing"))
     
-    # If on free plan
-    if tier == 'free':
-        flash("You're on the Free plan. Please purchase a new subscription.", "warning")
-        return redirect(url_for("pricing"))
-    
-    # Check if grace period has expired
-    if not in_grace_period:
-        flash("Your grace period has expired. Please purchase a new subscription.", "warning")
-        return redirect(url_for("pricing"))
-    
-    # Check if still within billing period
-    if current_expiry and current_expiry <= datetime.now(timezone.utc):
+    # CASE 2: On free plan (documents trimmed) → Can't reactivate
+    if tier == 'free' or documents_trimmed:
         flash("Your subscription has expired. Please purchase a new subscription.", "warning")
         return redirect(url_for("pricing"))
-
-    # Reactivate - set status back to 'active'
-    conn = get_db()
-    try:
-        cursor = conn.cursor()
-        cursor.execute("""
-            UPDATE users 
-            SET subscription_status = 'active',
-                grace_period_end = NULL
-            WHERE id = %s
-        """, (user_id,))
-        conn.commit()
-        cursor.close()
-        
-        days_left = (current_expiry - datetime.now(timezone.utc)).days
-        flash(f"✅ Your {tier.upper()} subscription has been reactivated! Access until {current_expiry.strftime('%B %d, %Y')} ({days_left} days remaining). All your documents are safe.", "success")
-        
-    except Exception as e:
-        print(f"❌ Error reactivating subscription: {e}")
-        conn.rollback()
-        flash("Something went wrong. Please try again.", "error")
-    finally:
-        put_db(conn)
     
-    return redirect(url_for("home"))
+    # CASE 3: Admin-upgraded with no expiry → Reactivate immediately!
+    if current_expiry is None:
+        conn = get_db()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE users 
+                SET subscription_status = 'active',
+                    grace_period_end = NULL
+                WHERE id = %s
+            """, (user_id,))
+            conn.commit()
+            cursor.close()
+            flash(f"✅ Your {tier.upper()} subscription has been reactivated!", "success")
+            return redirect(url_for("home"))
+        except Exception as e:
+            print(f"❌ Error reactivating: {e}")
+            conn.rollback()
+            flash("Something went wrong. Please try again.", "error")
+            return redirect(url_for("home"))
+    
+    # CASE 4: Has expiry but expired → Check grace period
+    if current_expiry <= datetime.now(timezone.utc):
+        # Check if in grace period
+        if in_grace_period:
+            # Reactivate during grace period!
+            conn = get_db()
+            try:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    UPDATE users 
+                    SET subscription_status = 'active',
+                        grace_period_end = NULL
+                    WHERE id = %s
+                """, (user_id,))
+                conn.commit()
+                cursor.close()
+                
+                days_left = (current_expiry - datetime.now(timezone.utc)).days
+                flash(f"✅ Your {tier.upper()} subscription has been reactivated! Access until {current_expiry.strftime('%B %d, %Y')} ({days_left} days remaining). All your documents are safe.", "success")
+                return redirect(url_for("home"))
+            except Exception as e:
+                print(f"❌ Error reactivating: {e}")
+                conn.rollback()
+                flash("Something went wrong. Please try again.", "error")
+                return redirect(url_for("home"))
+        else:
+            # Grace period expired → Can't reactivate
+            flash("Your grace period has expired. Please purchase a new subscription.", "warning")
+            return redirect(url_for("pricing"))
+    
+    # CASE 5: Has expiry and is still valid → Reactivate!
+    if current_expiry > datetime.now(timezone.utc):
+        conn = get_db()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE users 
+                SET subscription_status = 'active',
+                    grace_period_end = NULL
+                WHERE id = %s
+            """, (user_id,))
+            conn.commit()
+            cursor.close()
+            
+            days_left = (current_expiry - datetime.now(timezone.utc)).days
+            flash(f"✅ Your {tier.upper()} subscription has been reactivated! Access until {current_expiry.strftime('%B %d, %Y')} ({days_left} days remaining).", "success")
+            return redirect(url_for("home"))
+        except Exception as e:
+            print(f"❌ Error reactivating: {e}")
+            conn.rollback()
+            flash("Something went wrong. Please try again.", "error")
+            return redirect(url_for("home"))
+    
+    # Fallback
+    flash("Unable to reactivate subscription. Please contact support.", "error")
+    return redirect(url_for("pricing"))
 
 @app.route("/payment/initiate", methods=["POST"])
 @limiter.limit("5 per hour", error_message="Too many payment initiations. Please wait before trying again.")
