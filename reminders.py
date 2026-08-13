@@ -3,7 +3,11 @@ import psycopg2
 from datetime import datetime, timedelta
 import requests
 
-APP_URL = os.environ.get("APP_URL", "https://tracker.fritt.org")
+APP_URL = os.environ.get("APP_URL", "tracker.fritt.org")
+# Ensure APP_URL has https:// prefix for links
+if not APP_URL.startswith('http://') and not APP_URL.startswith('https://'):
+    APP_URL = f"https://{APP_URL}"
+
 DATABASE_URL = os.environ.get("DATABASE_URL")
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 # FIXED: Use a default sender email that's more likely to be verified

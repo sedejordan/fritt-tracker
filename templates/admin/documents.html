@@ -23,23 +23,24 @@
             <tbody>
                 {% for doc in documents %}
                 <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="px-6 py-3 font-medium">{{ doc[1] }}</td>
+                    <td class="px-6 py-3 font-medium">{{ doc.title }}</td>
                     <td class="px-6 py-3">
-                        <a href="{{ url_for('admin_user_detail', user_id=doc[3]) }}" 
-                           class="text-blue-600 hover:underline">{{ doc[4] }}</a>
+                        <a href="{{ url_for('admin_user_detail', user_id=doc.user_id) }}" 
+                           class="text-blue-600 hover:underline">{{ doc.email }}</a>
                     </td>
-                    <td class="px-6 py-3">{{ doc[2] }}</td>
+                    <td class="px-6 py-3">{{ doc.expiry_date }}</td>
                     <td class="px-6 py-3">
                         <span class="px-2 py-1 rounded-full text-xs
-                            {% if doc[5] == 'Safe' %}bg-blue-100 text-blue-700
-                            {% elif doc[5] == 'Good' %}bg-green-100 text-green-700
-                            {% elif doc[5] == 'Warning' %}bg-orange-100 text-orange-700
-                            {% else %}bg-red-100 text-red-700{% endif %}">
-                            {{ doc[5] }}
+                            {% if doc.color == 'blue' %}bg-blue-100 text-blue-700
+                            {% elif doc.color == 'green' %}bg-green-100 text-green-700
+                            {% elif doc.color == 'orange' %}bg-orange-100 text-orange-700
+                            {% elif doc.color == 'red' %}bg-red-100 text-red-700
+                            {% else %}bg-slate-100 text-slate-700{% endif %}">
+                            {{ doc.icon }} {{ doc.status }}
                         </span>
                     </td>
                     <td class="px-6 py-3">
-                        <a href="{{ url_for('admin_user_detail', user_id=doc[3]) }}#documents" 
+                        <a href="{{ url_for('admin_user_detail', user_id=doc.user_id) }}#documents" 
                            class="text-blue-600 hover:underline text-xs">View User</a>
                     </td>
                 </tr>

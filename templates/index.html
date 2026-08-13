@@ -104,6 +104,59 @@
 </div>
 {% endif %}
 
+<!-- TRIAL BANNER -->
+{% if on_trial and trial_ends_at and trial_ends_at > now %}
+<div class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 mb-4">
+    <div class="flex items-start gap-3">
+        <span class="text-purple-600 text-xl">🎁</span>
+        <div>
+            <p class="text-sm text-purple-800">
+                <strong>You're on a FREE trial!</strong>
+                {% set days_left = ((trial_ends_at - now).days) %}
+                {% if days_left > 0 %}
+                    {{ days_left }} days remaining
+                {% else %}
+                    Expires today!
+                {% endif %}
+            </p>
+            <p class="text-xs text-purple-700 mt-1">
+                Enjoy full Pro features with <strong>100 documents</strong>.
+                <a href="{{ url_for('pricing') }}" class="underline font-medium">Upgrade to VIP</a> or wait for trial to end.
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- GRACE PERIOD BANNER -->
+{% if subscription_tier != 'free' and subscription_status == 'expired' and grace_period_end and grace_period_end > now %}
+<div class="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
+    <div class="flex items-start gap-3">
+        <span class="text-orange-600 text-xl">⏳</span>
+        <div>
+            <p class="text-sm text-orange-800">
+                <strong>Your {{ subscription_tier|upper }} plan has expired.</strong>
+                {% set days_left = ((grace_period_end - now).days) %}
+                {% if days_left > 0 %}
+                    Grace period: {{ days_left }} days remaining to reactivate without losing documents.
+                {% endif %}
+            </p>
+            <div class="flex items-center gap-3 mt-1">
+                <p class="text-xs text-orange-700">
+                    Reactivate by {{ grace_period_end.strftime('%B %d, %Y') }} to keep all your documents.
+                </p>
+                <form method="POST" action="{{ url_for('reactivate_subscription') }}" class="inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition font-medium">
+                        🔄 Reactivate Now
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- PRO BANNER - Active -->
 {% if subscription_tier == 'pro' and subscription_status == 'active' %}
 <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
@@ -138,26 +191,42 @@
 {% endif %}
 
 <!-- PRO BANNER - Cancelled (still has access) -->
-{% if subscription_tier == 'pro' and subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
+{% if subscription_tier == 'pro' and subscription_status == 'cancelled' and (subscription_expiry is none or subscription_expiry > now) %}
 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
     <div class="flex items-start gap-3">
         <span class="text-yellow-600 text-xl">⏳</span>
         <div>
             <p class="text-sm text-yellow-800">
                 <strong>Your Pro plan has been cancelled.</strong>
-                {% set days_left = ((subscription_expiry - now).days) %}
-                {% if days_left > 0 %}
-                    Access until {{ subscription_expiry.strftime('%B %d, %Y') }} ({{ days_left }} days remaining)
+                {% if subscription_expiry %}
+                    {% set days_left = ((subscription_expiry - now).days) %}
+                    {% if days_left > 0 %}
+                        Access until {{ subscription_expiry.strftime('%B %d, %Y') }} ({{ days_left }} days remaining)
+                    {% endif %}
+                {% else %}
+                    Active until you downgrade (Indefinite)
                 {% endif %}
             </p>
-            <p class="text-xs text-yellow-700 mt-1">
-                Your Pro features will end on {{ subscription_expiry.strftime('%B %d, %Y') }}.
-                <a href="{{ url_for('pricing') }}" class="underline font-medium">Reactivate</a> to keep your Pro features.
-            </p>
+            <div class="flex items-center gap-3 mt-1">
+                <p class="text-xs text-yellow-700">
+                    {% if subscription_expiry %}
+                        Your Pro features will end on {{ subscription_expiry.strftime('%B %d, %Y') }}.
+                    {% else %}
+                        You're on an indefinite plan. Reactivate anytime.
+                    {% endif %}
+                </p>
+                <form method="POST" action="{{ url_for('reactivate_subscription') }}" class="inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition font-medium">
+                        🔄 Reactivate Now
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 {% endif %}
+
 
 <!-- VIP BANNER - Active -->
 {% if subscription_tier == 'vip' and subscription_status == 'active' %}
@@ -193,22 +262,37 @@
 {% endif %}
 
 <!-- VIP BANNER - Cancelled (still has access) -->
-{% if subscription_tier == 'vip' and subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
+{% if subscription_tier == 'vip' and subscription_status == 'cancelled' and (subscription_expiry is none or subscription_expiry > now) %}
 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
     <div class="flex items-start gap-3">
         <span class="text-yellow-600 text-xl">⏳</span>
         <div>
             <p class="text-sm text-yellow-800">
                 <strong>Your VIP plan has been cancelled.</strong>
-                {% set days_left = ((subscription_expiry - now).days) %}
-                {% if days_left > 0 %}
-                    Access until {{ subscription_expiry.strftime('%B %d, %Y') }} ({{ days_left }} days remaining)
+                {% if subscription_expiry %}
+                    {% set days_left = ((subscription_expiry - now).days) %}
+                    {% if days_left > 0 %}
+                        Access until {{ subscription_expiry.strftime('%B %d, %Y') }} ({{ days_left }} days remaining)
+                    {% endif %}
+                {% else %}
+                    Active until you downgrade (Indefinite)
                 {% endif %}
             </p>
-            <p class="text-xs text-yellow-700 mt-1">
-                Your VIP features will end on {{ subscription_expiry.strftime('%B %d, %Y') }}.
-                <a href="{{ url_for('pricing') }}" class="underline font-medium">Reactivate</a> to keep your VIP features.
-            </p>
+            <div class="flex items-center gap-3 mt-1">
+                <p class="text-xs text-yellow-700">
+                    {% if subscription_expiry %}
+                        Your VIP features will end on {{ subscription_expiry.strftime('%B %d, %Y') }}.
+                    {% else %}
+                        You're on an indefinite plan. Reactivate anytime.
+                    {% endif %}
+                </p>
+                <form method="POST" action="{{ url_for('reactivate_subscription') }}" class="inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition font-medium">
+                        🔄 Reactivate Now
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -249,7 +333,7 @@
           </a>
           {% endif %}
 
-          <form method="POST" action="/delete/{{ doc.id }}" class="inline"
+          <form method="POST" action="/delete/{{ doc.id }}" class="inline no-loading"
                 onsubmit="return confirm('Delete this document?')">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="px-2 py-1 rounded-md border border-red-200 text-red-600 text-xs hover:bg-red-50 transition-colors">Delete</button>
