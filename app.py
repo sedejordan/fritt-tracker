@@ -863,9 +863,13 @@ def send_verification_email(user_email, user_id):
         finally:
             put_db(conn)
         
+        # In send_verification_email()
         base_url = os.environ.get("APP_URL", "tracker.fritt.org")
-        verification_link = f"https://{base_url}{url_for('verify_email', token=token)}"
-        
+        # Ensure base_url has https://
+        if not base_url.startswith('http://') and not base_url.startswith('https://'):
+            base_url = f"https://{base_url}"
+        verification_link = f"{base_url}{url_for('verify_email', token=token)}"
+                
         response = requests.post(
             "https://api.resend.com/emails",
             headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
@@ -2159,7 +2163,7 @@ def admin_user_action(user_id):
             cursor.execute("""
                 UPDATE users 
                 SET subscription_tier = 'free',
-                    subscription_status = 'expired',  # ✅ Changed from 'active' to 'expired'
+                    subscription_status = 'expired',
                     subscription_expiry = NULL
                 WHERE id = %s
             """, (user_id,))
