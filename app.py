@@ -1383,12 +1383,15 @@ def contact():
             error = "Please enter your name."
         elif not email:
             error = "Please enter your email address."
-        elif not validate_email.email:
-            error = "Please enter a valid email address."
         elif not subject:
             error = "Please enter a subject."
         elif not message or len(message) < 10:
             error = "Please enter a message (at least 10 characters)."
+
+        try:
+            validate_email.email
+        except EmailNotValidError:
+            error = "Please enter a valid email address."
         
         if not error:
             try:
@@ -2556,7 +2559,7 @@ def admin_renew_user_document(user_id, doc_id):
         put_db(conn)
     
     return render_template(
-        "admin/renew_document.html",
+        "admin/renew_documents.html",
         user_id=user_id,
         doc_id=doc_id,
         doc=doc
