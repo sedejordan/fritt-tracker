@@ -46,6 +46,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Database utilities
 from database import get_db, init_db, put_db
@@ -116,8 +117,9 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 # =============================================================================
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 app.secret_key = os.environ.get("SECRET_KEY")
-app.config['SERVER_NAME'] = os.environ.get("APP_URL", "tracker.fritt.org")
+# app.config['SERVER_NAME'] = os.environ.get("APP_URL", "tracker.fritt.org")
 
 # Make sure secret key exists
 if not app.secret_key:
@@ -533,35 +535,33 @@ def get_status(expiry_date_str):
     else:
         return days_left, "Expired", "black", "⚫"
 
-
 def get_user_region():
     """Detect user's region based on IP address."""
+
+    if 'region' in session:
+        return session['region']
+
+    region = 'us'
     try:
-        # Get user's IP address
         if request.headers.get('X-Forwarded-For'):
             ip = request.headers.get('X-Forwarded-For').split(',')[0]
         else:
             ip = request.remote_addr
-        
-        # Skip for localhost (testing)
-        if ip in ['127.0.0.1', 'localhost']:
-            return 'us'
-        
-        # Use free API to get country
-        response = requests.get(f'http://ip-api.com/json/{ip}', timeout=3)
-        if response.status_code == 200:
-            data = response.json()
-            country_code = data.get('countryCode', '').upper()
-            
-            if country_code == 'NG':
-                return 'ng'
-            elif country_code == 'GB' or country_code == 'UK':
-                return 'uk'
+
+        if ip not in ['127.0.0.1', 'localhost']:
+            response = requests.get(f'http://ip-api.com/json/{ip}', timeout=1.5)
+            if response.status_code == 200:
+                data = response.json()
+                country_code = data.get('countryCode', '').upper()
+                if country_code == 'NG':
+                    region = 'ng'
+                elif country_code in ('GB', 'UK'):
+                    region = 'uk'
     except Exception as e:
         print(f"Warning: Could not detect region: {e}")
-    
-    return 'us'  # Default fallback
 
+    session['region'] = region
+    return region
 
 def get_pricing(region='us'):
     """Return pricing based on region."""
@@ -2653,9 +2653,7 @@ def register():
                     conn.commit()
 
                     send_verification_email(email, new_user_id)
-                    cursor.close()
-                conn.commit()
-            finally:
+                    cursor.close()            finally:
                 put_db(conn)
 
             if not error:
