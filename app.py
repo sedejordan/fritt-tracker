@@ -1275,8 +1275,8 @@ def home():
     
     # If subscription expired, start grace period
     if tier != 'free' and tier != 'suspended' and not is_active and not in_grace_period and not documents_trimmed:
-        # Start 30-day grace period
-        grace_period_end = datetime.now(timezone.utc) + timedelta(days=30)
+        # Start 7-day grace period
+        grace_period_end = datetime.now(timezone.utc) + timedelta(days=7)
         
         conn = get_db()
         try:
@@ -3401,30 +3401,31 @@ def reactivate_subscription():
     if status == 'active' and sub_status['is_active']:
         flash("Your subscription is already active.", "info")
         return redirect(url_for("home"))
+
+    # If documents have been trimmed → CAN'T reactivate!
+    if documents_trimmed:
+        flash("Your documents have been trimmed to the Free plan limit. Please purchase a new subscription to get Pro features again.", "warning")
+        return redirect(url_for("pricing"))
     
     # If on free plan
     if tier == 'free':
         flash("You're on the Free plan. Please purchase a new subscription.", "warning")
         return redirect(url_for("pricing"))
     
-    # Check if still within grace period
+    # Check if grace period has expired
     if not in_grace_period:
-        if documents_trimmed:
-            flash("Your documents have already been trimmed. Please purchase a new subscription to regain access.", "warning")
-        else:
-            flash("Your grace period has expired. Please purchase a new subscription.", "warning")
+        flash("Your grace period has expired. Please purchase a new subscription.", "warning")
         return redirect(url_for("pricing"))
     
     # Check if still within billing period
     if current_expiry and current_expiry <= datetime.now(timezone.utc):
         flash("Your subscription has expired. Please purchase a new subscription.", "warning")
         return redirect(url_for("pricing"))
-    
+
+    # Reactivate - set status back to 'active'
     conn = get_db()
     try:
         cursor = conn.cursor()
-        
-        # Reactivate - set status back to 'active'
         cursor.execute("""
             UPDATE users 
             SET subscription_status = 'active',
