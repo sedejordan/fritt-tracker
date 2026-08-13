@@ -1960,21 +1960,28 @@ def admin_user_detail(user_id):
         if not user:
             abort(404)
         
-        # Get user documents with UPDATED status logic matching home page
+        # Get user documents - just get the raw data
         cursor.execute("""
-            SELECT id, title, expiry_date,
-                   CASE 
-                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '120 days' THEN 'Safe'
-                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '60 days' THEN 'Good'
-                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '15 days' THEN 'Warning'
-                       WHEN expiry_date::date >= CURRENT_DATE THEN 'Urgent'
-                       ELSE 'Expired'
-                   END as status
+            SELECT id, title, expiry_date
             FROM documents
             WHERE user_id = %s
             ORDER BY expiry_date ASC
         """, (user_id,))
-        documents = cursor.fetchall()
+        raw_documents = cursor.fetchall()
+        
+        # Process documents through get_status() for consistency
+        documents = []
+        for doc_id, title, expiry_date in raw_documents:
+            days_left, status, color, icon = get_status(expiry_date)
+            documents.append({
+                'id': doc_id,
+                'title': title,
+                'expiry_date': expiry_date,
+                'days_left': days_left,
+                'status': status,
+                'color': color,
+                'icon': icon
+            })
         
         # Get user activity logs
         cursor.execute("""
@@ -2324,21 +2331,31 @@ def admin_documents():
     try:
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT d.id, d.title, d.expiry_date, d.user_id, u.email,
-                CASE 
-                    WHEN d.expiry_date::date > CURRENT_DATE + INTERVAL '120 days' THEN 'Safe'
-                    WHEN d.expiry_date::date > CURRENT_DATE + INTERVAL '60 days' THEN 'Good'
-                    WHEN d.expiry_date::date > CURRENT_DATE + INTERVAL '15 days' THEN 'Warning'
-                    WHEN d.expiry_date::date >= CURRENT_DATE THEN 'Urgent'
-                    ELSE 'Expired'
-                END as status
+            SELECT d.id, d.title, d.expiry_date, d.user_id, u.email
             FROM documents d
             JOIN users u ON u.id = d.user_id
             ORDER BY u.email ASC, d.expiry_date ASC
             LIMIT 100
         """)
-        documents = cursor.fetchall()
+        raw_documents = cursor.fetchall()
         cursor.close()
+        
+        # Process documents through get_status() for consistency
+        documents = []
+        for doc_id, title, expiry_date, user_id, email in raw_documents:
+            days_left, status, color, icon = get_status(expiry_date)
+            documents.append({
+                'id': doc_id,
+                'title': title,
+                'expiry_date': expiry_date,
+                'user_id': user_id,
+                'email': email,
+                'days_left': days_left,
+                'status': status,
+                'color': color,
+                'icon': icon
+            })
+        
     finally:
         put_db(conn)
     
@@ -2449,21 +2466,29 @@ def admin_user_documents(user_id):
             flash("User not found.", "error")
             return redirect(url_for("admin_users"))
         
-        # Get user documents
+        # Get user documents - just the raw data
         cursor.execute("""
-            SELECT id, title, expiry_date,
-                   CASE 
-                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '60 days' THEN 'Safe'
-                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '15 days' THEN 'Good'
-                       WHEN expiry_date::date >= CURRENT_DATE THEN 'Warning'
-                       ELSE 'Expired'
-                   END as status
+            SELECT id, title, expiry_date
             FROM documents
             WHERE user_id = %s
             ORDER BY expiry_date ASC
         """, (user_id,))
-        documents = cursor.fetchall()
+        raw_documents = cursor.fetchall()
         cursor.close()
+        
+        # Process documents through get_status() for consistency
+        documents = []
+        for doc_id, title, expiry_date in raw_documents:
+            days_left, status, color, icon = get_status(expiry_date)
+            documents.append({
+                'id': doc_id,
+                'title': title,
+                'expiry_date': expiry_date,
+                'days_left': days_left,
+                'status': status,
+                'color': color,
+                'icon': icon
+            })
         
     finally:
         put_db(conn)
@@ -2474,7 +2499,6 @@ def admin_user_documents(user_id):
         user_id=user_id,
         documents=documents
     )
-
 
 @app.route("/admin/user/<int:user_id>/document/<int:doc_id>/delete", methods=["POST"])
 def admin_delete_user_document(user_id, doc_id):
