@@ -1960,13 +1960,14 @@ def admin_user_detail(user_id):
         if not user:
             abort(404)
         
-        # Get user documents
+        # Get user documents with UPDATED status logic matching home page
         cursor.execute("""
             SELECT id, title, expiry_date,
                    CASE 
-                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '60 days' THEN 'Safe'
-                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '15 days' THEN 'Good'
-                       WHEN expiry_date::date >= CURRENT_DATE THEN 'Warning'
+                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '120 days' THEN 'Safe'
+                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '60 days' THEN 'Good'
+                       WHEN expiry_date::date > CURRENT_DATE + INTERVAL '15 days' THEN 'Warning'
+                       WHEN expiry_date::date >= CURRENT_DATE THEN 'Urgent'
                        ELSE 'Expired'
                    END as status
             FROM documents
@@ -2007,7 +2008,6 @@ def admin_user_detail(user_id):
         activity_logs=activity_logs,
         audit_logs=audit_logs
     )
-
 
 @app.route("/admin/user/<int:user_id>/action", methods=["POST"])
 def admin_user_action(user_id):
@@ -2325,12 +2325,13 @@ def admin_documents():
         cursor = conn.cursor()
         cursor.execute("""
             SELECT d.id, d.title, d.expiry_date, d.user_id, u.email,
-                   CASE 
-                       WHEN d.expiry_date::date > CURRENT_DATE + INTERVAL '60 days' THEN 'Safe'
-                       WHEN d.expiry_date::date > CURRENT_DATE + INTERVAL '15 days' THEN 'Good'
-                       WHEN d.expiry_date::date >= CURRENT_DATE THEN 'Warning'
-                       ELSE 'Expired'
-                   END as status
+                CASE 
+                    WHEN d.expiry_date::date > CURRENT_DATE + INTERVAL '120 days' THEN 'Safe'
+                    WHEN d.expiry_date::date > CURRENT_DATE + INTERVAL '60 days' THEN 'Good'
+                    WHEN d.expiry_date::date > CURRENT_DATE + INTERVAL '15 days' THEN 'Warning'
+                    WHEN d.expiry_date::date >= CURRENT_DATE THEN 'Urgent'
+                    ELSE 'Expired'
+                END as status
             FROM documents d
             JOIN users u ON u.id = d.user_id
             ORDER BY u.email ASC, d.expiry_date ASC
