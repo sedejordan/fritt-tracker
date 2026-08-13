@@ -2152,7 +2152,7 @@ def admin_user_action(user_id):
             cursor.execute("""
                 UPDATE users 
                 SET subscription_tier = 'free',
-                    subscription_status = 'active',
+                    subscription_status = 'expired',  # ✅ Changed from 'active' to 'expired'
                     subscription_expiry = NULL
                 WHERE id = %s
             """, (user_id,))
