@@ -2955,7 +2955,7 @@ def delete_account():
 
         if not error:
             session.clear()
-            return redirect(url_for("login"))
+            return redirect(url_for("register"))
 
     return render_template("delete_account.html", error=error)
 

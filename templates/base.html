@@ -55,152 +55,226 @@
   </div>
 
   <!-- HEADER -->
-<header class="bg-white border-b border-line sticky top-0 z-40">
-  <div class="px-4 py-4">
-    <div class="flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2 shrink-0">
-        <img src="/static/fritt-tracker-logo.svg" alt="" class="w-8 h-8 rounded-md">
-        <span class="font-display font-bold text-xl text-fritt">Fritt Tracker</span>
-      </a>
-      
-      <!-- Menu toggle - visible on all screens -->
-      <button 
-        id="menu-toggle"
-        class="p-2 rounded-md hover:bg-paper transition-colors focus:outline-none focus:ring-2 focus:ring-fritt"
-        aria-label="Toggle menu"
-      >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path id="menu-icon-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-          <path id="menu-icon-close" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" class="hidden"/>
-        </svg>
-      </button>
+  <header class="bg-white border-b border-line sticky top-0 z-40">
+    <div class="px-4 py-4">
+      <div class="flex items-center justify-between">
+        <!-- LEFT: Menu toggle + Logo -->
+        <div class="flex items-center gap-3">
+          <button 
+            id="menu-toggle"
+            class="p-2 rounded-md hover:bg-paper transition-colors focus:outline-none focus:ring-2 focus:ring-fritt"
+            aria-label="Toggle menu"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path id="menu-icon-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+              <path id="menu-icon-close" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" class="hidden"/>
+            </svg>
+          </button>
+          
+          <a href="/" class="flex items-center gap-2 shrink-0">
+            <img src="/static/fritt-tracker-logo.svg" alt="" class="w-8 h-8 rounded-md">
+            <span class="font-display font-bold text-xl text-fritt">Fritt Tracker</span>
+          </a>
+        </div>
+        
+        <!-- RIGHT: Account section -->
+        <div class="flex items-center gap-3">
+          {% if session.get("user_id") %}
+            <!-- Logged in - show user avatar/email -->
+            <div class="relative" id="account-dropdown-container">
+              <button 
+                id="account-dropdown-btn"
+                class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-paper transition-colors focus:outline-none focus:ring-2 focus:ring-fritt"
+                aria-label="Account menu"
+              >
+                <!-- Avatar (first letter of email) -->
+                <div class="w-8 h-8 rounded-full bg-fritt text-white flex items-center justify-center text-sm font-medium">
+                  {{ session.get("email", "U")[0].upper() }}
+                </div>
+                <span class="text-sm text-muted hidden sm:inline-block max-w-[120px] truncate">
+                  {{ session.get("email", "") }}
+                </span>
+                <svg class="w-4 h-4 text-muted hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              
+              <!-- Dropdown menu -->
+              <div id="account-dropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-line overflow-hidden hidden z-50">
+                <div class="px-4 py-3 border-b border-line">
+                  <p class="text-sm font-medium truncate">{{ session.get("email", "") }}</p>
+                  <p class="text-xs text-muted mt-1">
+                    Plan: <span class="font-medium">{{ subscription_tier|capitalize }}</span>
+                  </p>
+                </div>
+                
+                <div class="py-1">
+                  <a href="/change-password" class="block px-4 py-2 text-sm text-gray-700 hover:bg-paper transition-colors">
+                    🔑 Change Password
+                  </a>
+                  
+                  <!-- Cancel Subscription - Only show for Pro, VIP, Business users -->
+                  {% if subscription_tier in ['pro', 'vip', 'business'] %}
+                    <form method="POST" action="{{ url_for('cancel_subscription') }}" class="no-loading"
+                          onsubmit="return confirm('⚠️ Are you sure you want to cancel your subscription?\n\nYou will lose Pro features at the end of your billing period.\n\nThis action cannot be undone.');">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                        ❌ Cancel Subscription
+                      </button>
+                    </form>
+                  {% endif %}
+                  
+                  {% if is_admin() %}
+                    <a href="{{ url_for('admin_dashboard') }}" class="block px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 transition-colors border-t border-line">
+                      ⚙️ Admin Dashboard
+                    </a>
+                  {% endif %}
+                  
+                  <a href="/logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-line">
+                    🚪 Logout
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <!-- Not logged in - show Login/Signup buttons -->
+            <a href="/login" class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-paper rounded-md transition-colors">
+              Log In
+            </a>
+            <a href="/register" class="px-4 py-2 text-sm font-medium bg-fritt text-white rounded-md hover:bg-fritt-dark transition-colors">
+              Sign Up
+            </a>
+          {% endif %}
+        </div>
+      </div>
     </div>
-  </div>
-</header>
+  </header>
 
   <!-- Slide-out menu overlay -->
   <div id="menu-overlay" class="fixed inset-0 bg-black/50 z-50 hidden" onclick="closeMenu()"></div>
 
-  <!-- Slide-out menu -->
-  <div id="side-menu" class="fixed top-0 right-0 h-full w-72 bg-white shadow-xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
-      <div class="p-6">
-          <!-- Close button -->
-          <button onclick="closeMenu()" class="absolute top-4 right-4 p-2 rounded-md hover:bg-paper transition-colors">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-          </button>
-          
-          <!-- Logo in menu -->
-          <div class="flex items-center gap-2 mb-8 pt-4">
-              <img src="/static/fritt-tracker-logo.svg" alt="" class="w-8 h-8 rounded-md">
-              <span class="font-display font-bold text-xl text-fritt">Fritt Tracker</span>
-          </div>
-          
-          <!-- Menu items - Show different content based on admin status -->
-          {% if request.endpoint and request.endpoint.startswith('admin_') or request.endpoint == 'newsletter_admin' %}
-              <!-- ADMIN MENU ITEMS -->
-              <div class="flex flex-col gap-1.5">
-                  <p class="text-xs text-purple-600 font-semibold uppercase tracking-wider mb-2">⚙️ Admin</p>
-                  
-                  <a href="{{ url_for('admin_dashboard') }}" 
-                    class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_dashboard' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-                      📊 Dashboard
-                  </a>
-                  <a href="{{ url_for('admin_users') }}" 
-                    class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_users' or request.endpoint == 'admin_user_detail' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-                      👥 Users
-                  </a>
-                  <a href="{{ url_for('admin_documents') }}" 
-                    class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_documents' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-                      📄 Documents
-                  </a>
-                  <a href="{{ url_for('admin_inquiries') }}" 
-                    class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_inquiries' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-                      💬 Inquiries
-                  </a>
-                  <a href="{{ url_for('admin_business_inquiries') }}" 
-                    class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_business_inquiries' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-                      🏢 Business
-                  </a>
-                  <a href="{{ url_for('admin_audit_log') }}" 
-                    class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_audit_log' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-                      📋 Audit Log
-                  </a>
-                  <a href="{{ url_for('admin_payment_plans') }}" 
-                    class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_payment_plans' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-                      💰 Payment Plans
-                  </a>
-                  <a href="{{ url_for('newsletter_admin') }}" 
-                    class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'newsletter_admin' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-                      📬 Newsletter
-                  </a>
-                  
-                  <hr class="my-3 border-line">
-                  
-                  <a href="{{ url_for('home') }}" 
-                    class="block px-4 py-2.5 rounded-md text-sm bg-gray-100 text-gray-600 hover:bg-gray-200 transition text-center">
-                      ← Back to Site
-                  </a>
-              </div>
-          {% else %}
-              <!-- REGULAR USER MENU ITEMS -->
-              <div class="flex flex-col gap-2">
-                  {% if session.get("user_id") %}
-                      <a href="/add" class="block px-4 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-center">+ Add Document</a>
-                      
-                      {% if subscription_tier in ['pro', 'vip', 'business'] %}
-                          <a href="/import-csv" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">📥 Import CSV</a>
-                      {% else %}
-                          <a href="{{ url_for('pricing') }}" 
-                            class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center opacity-60">
-                              📥 Import CSV <span class="text-xs text-muted">(Pro feature)</span>
-                          </a>
-                      {% endif %}
-                      
-                      <a href="/change-password" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">🔑 Change Password</a>
-
-                      <!-- Cancel Subscription - Only show for Pro, VIP, Business users -->
-                      {% if subscription_tier in ['pro', 'vip', 'business'] %}
-                          <form method="POST" action="{{ url_for('cancel_subscription') }}" class="no-loading"
-                                onsubmit="return confirm('⚠️ Are you sure you want to cancel your subscription?\n\nYou will lose Pro features at the end of your billing period.\n\nThis action cannot be undone.');">
-                              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                              <button type="submit" class="block w-full px-4 py-3 rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition-colors text-center">
-                                  Cancel Subscription
-                              </button>
-                          </form>
-                      {% endif %}
-
-                      <hr class="my-2 border-line">
-
-                       <!-- ✅ ADMIN BUTTON IS HERE -->
-                      {% if is_admin() %}
-                      <a href="{{ url_for('admin_dashboard') }}" 
-                        class="block px-4 py-3 rounded-md bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors text-center font-medium">
-                          ⚙️ Admin Dashboard
-                      </a>
-                      {% endif %}
-                      
-                      <a href="/logout" class="block px-4 py-3 rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition-colors text-center">Logout</a>
-                  {% else %}
-                      <a href="/login" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center font-medium">Log In</a>
-                      <a href="/register" class="block px-4 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-center">Sign Up Free</a>
-                  {% endif %}
-              </div>
-              
-              <!-- Show current plan in menu (for logged-in users) -->
-              {% if session.get("user_id") %}
-                  <div class="mt-6 pt-4 border-t border-line">
-                      <p class="text-xs text-muted text-center">
-                          Current plan: <strong>{{ subscription_tier|capitalize }}</strong>
-                          {% if subscription_tier == 'free' %}
-                              <br><a href="{{ url_for('pricing') }}" class="text-fritt hover:underline">Upgrade for more features →</a>
-                          {% endif %}
-                      </p>
-                  </div>
-              {% endif %}
-          {% endif %}
+  <!-- Slide-out menu (LEFT SIDE) -->
+  <div id="side-menu" class="fixed top-0 left-0 h-full w-72 bg-white shadow-xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
+    <div class="p-6">
+      <!-- Close button -->
+      <button onclick="closeMenu()" class="absolute top-4 right-4 p-2 rounded-md hover:bg-paper transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+      
+      <!-- Logo in menu -->
+      <div class="flex items-center gap-2 mb-8 pt-4">
+        <img src="/static/fritt-tracker-logo.svg" alt="" class="w-8 h-8 rounded-md">
+        <span class="font-display font-bold text-xl text-fritt">Fritt Tracker</span>
       </div>
+      
+      <!-- Show user email in menu -->
+      {% if session.get("user_id") %}
+        <div class="mb-6 p-3 bg-paper rounded-lg">
+          <p class="text-sm font-medium truncate">{{ session.get("email", "") }}</p>
+          <p class="text-xs text-muted mt-1">
+            Plan: <span class="font-medium">{{ subscription_tier|capitalize }}</span>
+          </p>
+        </div>
+      {% endif %}
+      
+      <!-- Menu items - Show different content based on admin status -->
+      {% if request.endpoint and request.endpoint.startswith('admin_') or request.endpoint == 'newsletter_admin' %}
+        <!-- ADMIN MENU ITEMS -->
+        <div class="flex flex-col gap-1.5">
+          <p class="text-xs text-purple-600 font-semibold uppercase tracking-wider mb-2">⚙️ Admin</p>
+          
+          <a href="{{ url_for('admin_dashboard') }}" 
+            class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_dashboard' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+            📊 Dashboard
+          </a>
+          <a href="{{ url_for('admin_users') }}" 
+            class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_users' or request.endpoint == 'admin_user_detail' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+            👥 Users
+          </a>
+          <a href="{{ url_for('admin_documents') }}" 
+            class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_documents' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+            📄 Documents
+          </a>
+          <a href="{{ url_for('admin_inquiries') }}" 
+            class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_inquiries' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+            💬 Inquiries
+          </a>
+          <a href="{{ url_for('admin_business_inquiries') }}" 
+            class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_business_inquiries' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+            🏢 Business
+          </a>
+          <a href="{{ url_for('admin_audit_log') }}" 
+            class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_audit_log' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+            📋 Audit Log
+          </a>
+          <a href="{{ url_for('admin_payment_plans') }}" 
+            class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_payment_plans' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+            💰 Payment Plans
+          </a>
+          <a href="{{ url_for('newsletter_admin') }}" 
+            class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'newsletter_admin' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+            📬 Newsletter
+          </a>
+          
+          <hr class="my-3 border-line">
+          
+          <a href="{{ url_for('home') }}" 
+            class="block px-4 py-2.5 rounded-md text-sm bg-gray-100 text-gray-600 hover:bg-gray-200 transition text-center">
+            ← Back to Site
+          </a>
+        </div>
+      {% else %}
+        <!-- REGULAR USER MENU ITEMS -->
+        <div class="flex flex-col gap-2">
+          {% if session.get("user_id") %}
+            <a href="/add" class="block px-4 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-center">+ Add Document</a>
+            
+            {% if subscription_tier in ['pro', 'vip', 'business'] %}
+              <a href="/import-csv" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">📥 Import CSV</a>
+            {% else %}
+              <a href="{{ url_for('pricing') }}" 
+                class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center opacity-60">
+                  📥 Import CSV <span class="text-xs text-muted">(Pro feature)</span>
+              </a>
+            {% endif %}
+            
+            <hr class="my-2 border-line">
+            
+            <a href="{{ url_for('pricing') }}" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">
+              💰 Upgrade Plan
+            </a>
+            
+            <a href="/" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">
+              📊 Dashboard
+            </a>
+            
+            <!-- Show trial info if on trial -->
+            {% if on_trial and trial_ends_at %}
+              <div class="px-4 py-2 text-center text-xs text-muted">
+                ⭐ Trial ends: {{ trial_ends_at.strftime('%B %d, %Y') }}
+              </div>
+            {% endif %}
+          {% else %}
+            <a href="/login" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center font-medium">Log In</a>
+            <a href="/register" class="block px-4 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-center">Sign Up Free</a>
+          {% endif %}
+        </div>
+        
+        <!-- Show current plan in menu (for logged-in users) -->
+        {% if session.get("user_id") %}
+          <div class="mt-6 pt-4 border-t border-line">
+            <p class="text-xs text-muted text-center">
+              Current plan: <strong>{{ subscription_tier|capitalize }}</strong>
+              {% if subscription_tier == 'free' %}
+                <br><a href="{{ url_for('pricing') }}" class="text-fritt hover:underline">Upgrade for more features →</a>
+              {% endif %}
+            </p>
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
   </div>
 
   <!-- Flash Messages -->
@@ -236,7 +310,7 @@
     // Menu toggle functions
     function openMenu() {
       document.getElementById('menu-overlay').classList.remove('hidden');
-      document.getElementById('side-menu').classList.remove('translate-x-full');
+      document.getElementById('side-menu').classList.remove('-translate-x-full');
       document.getElementById('side-menu').classList.add('translate-x-0');
       
       // Toggle icon
@@ -247,12 +321,40 @@
     function closeMenu() {
       document.getElementById('menu-overlay').classList.add('hidden');
       document.getElementById('side-menu').classList.remove('translate-x-0');
-      document.getElementById('side-menu').classList.add('translate-x-full');
+      document.getElementById('side-menu').classList.add('-translate-x-full');
       
       // Toggle icon
       document.getElementById('menu-icon-open').classList.remove('hidden');
       document.getElementById('menu-icon-close').classList.add('hidden');
     }
+    
+    // Account dropdown toggle
+    document.addEventListener("DOMContentLoaded", function () {
+      const dropdownBtn = document.getElementById('account-dropdown-btn');
+      const dropdown = document.getElementById('account-dropdown');
+      
+      if (dropdownBtn && dropdown) {
+        dropdownBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          dropdown.classList.toggle('hidden');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          const container = document.getElementById('account-dropdown-container');
+          if (container && !container.contains(e.target)) {
+            dropdown.classList.add('hidden');
+          }
+        });
+        
+        // Close dropdown on Escape
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            dropdown.classList.add('hidden');
+          }
+        });
+      }
+    });
     
     // Toggle menu on button click
     document.addEventListener("DOMContentLoaded", function () {
@@ -261,7 +363,7 @@
       if (toggle) {
         toggle.addEventListener('click', function() {
           const menu = document.getElementById('side-menu');
-          const isOpen = !menu.classList.contains('translate-x-full');
+          const isOpen = !menu.classList.contains('-translate-x-full');
           
           if (isOpen) {
             closeMenu();
