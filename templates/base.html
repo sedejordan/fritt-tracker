@@ -169,16 +169,6 @@
           <span class="font-display font-bold text-xl text-fritt">Fritt Tracker</span>
         </div>
         
-        <!-- Show user email in menu -->
-        {% if session.get("user_id") %}
-          <div class="mb-6 p-3 bg-paper rounded-lg">
-            <p class="text-sm font-medium truncate">{{ session.get("email", "") }}</p>
-            <p class="text-xs text-muted mt-1">
-              Plan: <span class="font-medium">{{ subscription_tier|capitalize }}</span>
-            </p>
-          </div>
-        {% endif %}
-        
         <!-- Menu items - Show different content based on admin status -->
         {% if request.endpoint and request.endpoint.startswith('admin_') or request.endpoint == 'newsletter_admin' %}
           <!-- ADMIN MENU ITEMS -->
