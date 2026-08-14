@@ -2955,8 +2955,6 @@ def delete_account():
 
         if not error:
             session.clear()
-            # ✅ Redirect to home with a special flag for deleted accounts
-            flash("👋 Your account has been deleted. We're sorry to see you go!", "info")
             return redirect(url_for("home", deleted=True))
 
     return render_template("delete_account.html", error=error)
