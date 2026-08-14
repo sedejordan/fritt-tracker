@@ -1,6 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Fritt Tracker — Never Miss a Document Renewal{% endblock %}
 {% block content %}
+ <!-- Show deletion banner if coming from deleted account -->
+{% if request.args.get('deleted') %}
+  <div class="max-w-4xl mx-auto mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+    <div class="flex items-start gap-3">
+      <span class="text-2xl">👋</span>
+      <div>
+        <h3 class="font-semibold text-blue-700">We're Sorry to See You Go!</h3>
+        <p class="text-sm text-blue-600 mt-1">
+          Your account has been deleted. If this was a mistake or you'd like to come back, 
+          <a href="{{ url_for('register') }}" class="font-medium text-fritt hover:underline">create a new account</a> 
+          or <a href="/contact" class="font-medium text-fritt hover:underline">contact support</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+{% endif %}
 
 <!-- Hero Section -->
 <section class="text-center py-16 md:py-24">

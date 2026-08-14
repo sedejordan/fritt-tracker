@@ -2948,14 +2948,16 @@ def delete_account():
                 cursor.execute("DELETE FROM documents WHERE user_id = %s", (session["user_id"],))
                 cursor.execute("DELETE FROM users WHERE id = %s", (session["user_id"],))
                 conn.commit()
+                cursor.close()
 
-            cursor.close()
         finally:
             put_db(conn)
 
         if not error:
             session.clear()
-            return redirect(url_for("register"))
+            # ✅ Redirect to home with a special flag for deleted accounts
+            flash("👋 Your account has been deleted. We're sorry to see you go!", "info")
+            return redirect(url_for("home", deleted=True))
 
     return render_template("delete_account.html", error=error)
 
