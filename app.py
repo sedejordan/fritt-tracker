@@ -732,12 +732,12 @@ def is_user_suspended(user_id):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT subscription_tier FROM users WHERE id = %s",
+            "SELECT suspended FROM users WHERE id = %s",
             (user_id,)
         )
         result = cursor.fetchone()
         cursor.close()
-        return result and result[0] == 'suspended'
+        return result and result[0] is True
     finally:
         put_db(conn)
 
@@ -771,6 +771,60 @@ def log_user_action(user_id, action, details=None):
         print(f"⚠️ Failed to log user action: {e}")
     finally:
         put_db(conn)
+
+def cancel_flutterwave_subscription_by_user_id(user_id):
+    """
+    Cancel a user's Flutterwave subscription if they have one.
+    Returns True if successful or no subscription exists, False if there was an error.
+    """
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT flw_subscription_id FROM users WHERE id = %s",
+            (user_id,)
+        )
+        result = cursor.fetchone()
+        cursor.close()
+        
+        if not result or not result[0]:
+            # No subscription to cancel
+            return True
+        
+        flw_subscription_id = result[0]
+        
+        # Cancel at Flutterwave
+        try:
+            response = requests.put(
+                f'https://api.flutterwave.com/v3/subscriptions/{flw_subscription_id}/cancel',
+                headers={
+                    'Authorization': f'Bearer {os.getenv("FLW_SECRET_KEY")}',
+                    'Content-Type': 'application/json'
+                },
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') == 'success':
+                    print(f"✅ Flutterwave subscription {flw_subscription_id} cancelled for user {user_id}")
+                    return True
+                else:
+                    print(f"❌ Flutterwave cancellation failed: {data.get('message', 'Unknown error')}")
+                    return False
+            else:
+                print(f"❌ HTTP error cancelling subscription: {response.status_code}")
+                return False
+        except Exception as e:
+            print(f"❌ Error cancelling Flutterwave subscription: {e}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Error fetching subscription for user {user_id}: {e}")
+        return False
+    finally:
+        put_db(conn)
+
 
 # Helper to check if we're in test mode
 def is_test_mode():
@@ -1210,7 +1264,7 @@ def home():
         session.clear()
         flash("❌ Your account has been suspended. Please contact support.", "error")
         return redirect(url_for("login"))
-
+    
     # Get subscription status
     sub_status = get_subscription_status(user_id)
     tier = sub_status['tier']
@@ -2076,25 +2130,95 @@ def admin_user_action(user_id):
             conn.commit()
             log_admin_action("resolve_flag", "user", user_id, {"action": "resolved_flag"})
             flash("✅ Flag resolved.", "success")
-            
+
         elif action == "suspend_user":
-            cursor.execute(
-                "UPDATE users SET subscription_tier = 'suspended' WHERE id = %s",
-                (user_id,)
-            )
+            # Cancel their subscription at Flutterwave first
+            cancel_success = cancel_flutterwave_subscription_by_user_id(user_id)
+            if not cancel_success:
+                flash("⚠️ Could not cancel Flutterwave subscription. Please check manually.", "warning")
+            
+            # Just mark as suspended, keep all subscription info intact
+            cursor.execute("""
+                UPDATE users 
+                SET suspended = TRUE,
+                    subscription_status = 'cancelled',
+                    flw_subscription_id = NULL
+                WHERE id = %s
+            """, (user_id,))
             conn.commit()
+            
             log_admin_action("suspend_user", "user", user_id, {"action": "suspended"})
-            flash("⚠️ User has been suspended.", "warning")
-            
+            flash("⚠️ User has been suspended. Their subscription will be reactivated when unsuspended.", "warning")
+
         elif action == "unsuspend_user":
+            # Get user info before unsuspending
             cursor.execute(
-                "UPDATE users SET subscription_tier = 'free', subscription_status = 'active' WHERE id = %s AND subscription_tier = 'suspended'",
+                "SELECT subscription_tier, subscription_status, subscription_expiry FROM users WHERE id = %s AND suspended = TRUE",
                 (user_id,)
             )
-            conn.commit()
-            log_admin_action("unsuspend_user", "user", user_id, {"action": "unsuspended"})
-            flash("✅ User unsuspended.", "success")
+            user_info = cursor.fetchone()
             
+            if user_info:
+                current_tier, current_status, current_expiry = user_info
+                
+                # Check if they have a valid subscription
+                has_valid_subscription = False
+                if current_tier in ['pro', 'vip', 'business']:
+                    # Check if they have an active or cancelled subscription that's still valid
+                    if current_status in ['active', 'cancelled'] and current_expiry and current_expiry > datetime.now(timezone.utc):
+                        has_valid_subscription = True
+                    # Or if they have an indefinite subscription (no expiry)
+                    elif current_status in ['active', 'cancelled'] and current_expiry is None:
+                        has_valid_subscription = True
+                
+                if has_valid_subscription:
+                    # Reactivate the subscription
+                    cursor.execute("""
+                        UPDATE users 
+                        SET suspended = FALSE,
+                            subscription_status = 'active',
+                            grace_period_end = NULL,
+                            documents_trimmed = FALSE
+                        WHERE id = %s
+                    """, (user_id,))
+                    conn.commit()
+                    
+                    log_admin_action("unsuspend_user", "user", user_id, {
+                        "action": "unsuspended",
+                        "subscription_reactivated": True,
+                        "tier": current_tier
+                    })
+                    
+                    flash(f"✅ User unsuspended and {current_tier.upper()} subscription reactivated!", "success")
+                else:
+                    # No valid subscription - just unsuspend to free
+                    cursor.execute("""
+                        UPDATE users 
+                        SET suspended = FALSE,
+                            subscription_tier = 'free',
+                            subscription_status = 'active'
+                        WHERE id = %s
+                    """, (user_id,))
+                    conn.commit()
+                    
+                    log_admin_action("unsuspend_user", "user", user_id, {
+                        "action": "unsuspended",
+                        "subscription_reactivated": False,
+                        "tier": "free"
+                    })
+                    
+                    flash("✅ User unsuspended and set to Free plan. No active subscription found.", "success")
+            else:
+                # Fallback - just unsuspend
+                cursor.execute("""
+                    UPDATE users 
+                    SET suspended = FALSE
+                    WHERE id = %s
+                """, (user_id,))
+                conn.commit()
+                log_admin_action("unsuspend_user", "user", user_id, {"action": "unsuspended"})
+                flash("✅ User unsuspended.", "success")
+
         elif action == "upgrade_user":
             new_tier = request.form.get("new_tier")
             duration = request.form.get("duration", "indefinite")
@@ -2150,6 +2274,11 @@ def admin_user_action(user_id):
                 flash("Only free downgrade is supported.", "error")
                 return redirect(url_for("admin_user_detail", user_id=user_id))
             
+            # Cancel their subscription first
+            cancel_success = cancel_flutterwave_subscription_by_user_id(user_id)
+            if not cancel_success:
+                flash("⚠️ Could not cancel Flutterwave subscription. Please check manually.", "warning")
+            
             # Trim documents to free limit
             deleted_count = trim_documents_to_free_limit(user_id)
             
@@ -2157,30 +2286,37 @@ def admin_user_action(user_id):
                 UPDATE users 
                 SET subscription_tier = 'free',
                     subscription_status = 'expired',
-                    subscription_expiry = NULL
+                    subscription_expiry = NULL,
+                    flw_subscription_id = NULL
                 WHERE id = %s
             """, (user_id,))
             conn.commit()
             log_admin_action("downgrade_user", "user", user_id, {"deleted_documents": deleted_count})
-            flash(f"✅ User downgraded to Free plan. Removed {deleted_count} documents.", "success")
+            flash(f"✅ User downgraded to Free plan. Removed {deleted_count} documents. Subscription cancelled.", "success")
 
         elif action == "force_fix":
             # Force a subscription check and cleanup
             sub_status = get_subscription_status(user_id)
             tier = sub_status['tier']
             
-            # Check if subscription expired
+            # Check if subscription expired or we need to downgrade
             if tier != 'free' and tier != 'suspended' and not sub_status['is_active']:
+                # Cancel the subscription
+                cancel_success = cancel_flutterwave_subscription_by_user_id(user_id)
+                if not cancel_success:
+                    flash("⚠️ Could not cancel Flutterwave subscription. Please check manually.", "warning")
+                
                 deleted_count = trim_documents_to_free_limit(user_id)
                 cursor.execute("""
                     UPDATE users 
                     SET subscription_tier = 'free', 
                         subscription_status = 'expired',
-                        subscription_expiry = NULL
+                        subscription_expiry = NULL,
+                        flw_subscription_id = NULL
                     WHERE id = %s
                 """, (user_id,))
                 conn.commit()
-                flash(f"✅ User forced to Free plan. Removed {deleted_count} documents.", "success")
+                flash(f"✅ User forced to Free plan. Removed {deleted_count} documents. Subscription cancelled.", "success")
             else:
                 # Just check and trim if over limit on free
                 cursor.execute("SELECT COUNT(*) FROM documents WHERE user_id = %s", (user_id,))
@@ -2192,8 +2328,13 @@ def admin_user_action(user_id):
                     flash(f"✅ User is on {tier} plan with {doc_count} documents. No issues found.", "success")
             
             log_admin_action("force_fix", "user", user_id, {"action": "force_fix_subscription"})
-            
+
         elif action == "delete_user":
+            # FIRST: Cancel their subscription at Flutterwave
+            cancel_success = cancel_flutterwave_subscription_by_user_id(user_id)
+            if not cancel_success:
+                flash("⚠️ Could not cancel Flutterwave subscription. Please check manually.", "warning")
+            
             # Delete user and all their data
             cursor.execute("DELETE FROM documents WHERE user_id = %s", (user_id,))
             cursor.execute("DELETE FROM flagged_users WHERE user_id = %s", (user_id,))
@@ -2201,9 +2342,9 @@ def admin_user_action(user_id):
             cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
             conn.commit()
             log_admin_action("delete_user", "user", user_id, {"action": "deleted_user"})
-            flash("🗑️ User and all associated data deleted.", "warning")
+            flash("🗑️ User and all associated data deleted. Subscription cancelled.", "warning")
             return redirect(url_for("admin_users"))
-        
+
         cursor.close()
         
     except Exception as e:
@@ -2770,7 +2911,6 @@ def resend_verification():
     
     return render_template("resend_verification.html", error=error, success=success)
 
-
 @app.route("/login", methods=["GET", "POST"])
 @limiter.limit("10 per minute", error_message="Too many login attempts. Please wait a moment.")
 def login():
@@ -2784,7 +2924,7 @@ def login():
         conn = get_db()
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT id, email, password_hash, subscription_tier FROM users WHERE email = %s", (email,))
+            cursor.execute("SELECT id, email, password_hash, subscription_tier, suspended FROM users WHERE email = %s", (email,))
             user = cursor.fetchone()
             cursor.close()
         finally:
@@ -2792,7 +2932,7 @@ def login():
 
         if user and check_password_hash(user[2], password):
             # Check if suspended
-            if user[3] == 'suspended':
+            if user[4]:  # suspended column
                 flash("❌ Your account has been suspended. Please contact support.", "error")
                 return render_template("login.html", error="Account suspended. Please contact support.")
             
@@ -2939,7 +3079,6 @@ def change_password():
 
     return render_template("change_password.html", error=error, success=success)
 
-
 @app.route("/delete-account", methods=["GET", "POST"])
 def delete_account():
     """Delete user account."""
@@ -2961,8 +3100,17 @@ def delete_account():
             if not check_password_hash(current_hash, password):
                 error = "Incorrect password"
             else:
-                cursor.execute("DELETE FROM documents WHERE user_id = %s", (session["user_id"],))
-                cursor.execute("DELETE FROM users WHERE id = %s", (session["user_id"],))
+                user_id = session["user_id"]
+                
+                # FIRST: Cancel any active subscription at Flutterwave
+                cancel_success = cancel_flutterwave_subscription_by_user_id(user_id)
+                if not cancel_success:
+                    # Log but don't block - we still want to delete the account
+                    print(f"⚠️ Could not cancel Flutterwave subscription for user {user_id} before deletion")
+                
+                # Delete user data
+                cursor.execute("DELETE FROM documents WHERE user_id = %s", (user_id,))
+                cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
                 conn.commit()
                 cursor.close()
 
@@ -2971,6 +3119,7 @@ def delete_account():
 
         if not error:
             session.clear()
+            flash("Your account has been deleted. We're sorry to see you go!", "info")
             return redirect(url_for("home", deleted=True))
 
     return render_template("delete_account.html", error=error)
@@ -3520,7 +3669,7 @@ def cancel_subscription():
         
         # FIRST: Cancel at Flutterwave
         if flw_subscription_id:
-            cancel_success = cancel_flutterwave_subscription(flw_subscription_id)
+            cancel_success = cancel_flutterwave_subscription_by_user_id(user_id)
             if not cancel_success:
                 flash("Could not cancel subscription at Flutterwave. Please contact support.", "error")
                 return redirect(url_for("home"))
@@ -3530,7 +3679,8 @@ def cancel_subscription():
             # Keep access until expiry, just mark as cancelled
             cursor.execute("""
                 UPDATE users 
-                SET subscription_status = 'cancelled'
+                SET subscription_status = 'cancelled',
+                    flw_subscription_id = NULL
                 WHERE id = %s
             """, (user_id,))
             conn.commit()

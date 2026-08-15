@@ -432,6 +432,18 @@ def init_db():
             except Exception as e:
                 print(f"ℹ️ Could not add trial_ends_at: {e}")
 
+            try:
+                cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS suspended BOOLEAN DEFAULT FALSE;")
+                print("✅ Added suspended column to users")
+            except Exception as e:
+                print(f"ℹ️ Could not add suspended: {e}")
+
+            try:
+                cursor.execute("UPDATE users SET suspended = TRUE WHERE subscription_tier = 'suspended';")
+                print("✅ Updated suspended column")
+            except Exception as e:
+                print(f"ℹ️ Could not update suspended: {e}")
+
             # ---------------------------------------------------------------------
             # DOCUMENTS TABLE
             # ---------------------------------------------------------------------
