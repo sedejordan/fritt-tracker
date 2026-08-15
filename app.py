@@ -862,7 +862,7 @@ def require_verified():
     
     if not is_email_verified(user_id):
         flash("⚠️ Please verify your email address to access all features.", "warning")
-        return redirect(url_for("resend_verification"))
+        return redirect(url_for("request_verification"))  # Changed from resend_verification
     
     return None
 
@@ -2987,11 +2987,17 @@ def verify_email(token):
     finally:
         put_db(conn)
 
-
 @app.route("/resend-verification", methods=["GET", "POST"])
 @limiter.limit("3 per hour", error_message="Too many verification requests. Please wait an hour.")
 def resend_verification():
-    """Resend email verification."""
+    """Redirect to request_verification (legacy route)."""
+    flash("Please request a new verification email below.", "info")
+    return redirect(url_for("request_verification"))
+
+@app.route("/request-verification", methods=["GET", "POST"])
+@limiter.limit("3 per hour", error_message="Too many verification requests. Please wait an hour.")
+def request_verification():
+    """Request a verification email (for users who didn't receive it or it expired)."""
     error = None
     success = None
     
@@ -3009,7 +3015,7 @@ def resend_verification():
 
                 if not email_verified:
                     if send_verification_email(email, user_id):
-                        success = "A new verification email has been sent. Please check your inbox."
+                        success = "✅ A verification email has been sent. Please check your inbox."
                     else:
                         error = "Could not send verification email. Please try again later."
                 else:
@@ -3017,7 +3023,7 @@ def resend_verification():
             else:
                 error = "No unverified account found with that email address."
     
-    return render_template("resend_verification.html", error=error, success=success)
+    return render_template("request_verification.html", error=error, success=success)
 
 @app.route("/login", methods=["GET", "POST"])
 @limiter.limit("10 per minute", error_message="Too many login attempts. Please wait a moment.")

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Resend Verification - Fritt Tracker{% endblock %}
+{% block title %}Verify Your Email - Fritt Tracker{% endblock %}
 
 {% block content %}
 <div class="max-w-md mx-auto mt-12 bg-white border border-line rounded-xl p-8 shadow-sm">
-    <h1 class="font-display font-bold text-2xl text-center mb-6">Resend Verification Email</h1>
+    <h1 class="font-display font-bold text-2xl text-center mb-6">Verify Your Email</h1>
     
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% for category, message in messages %}
@@ -24,13 +24,17 @@
             Go to Login
         </a>
     {% else %}
-        <p class="text-gray-600 mb-4">Enter the email address you used to sign up, and we'll send a new verification link.</p>
+        <div class="bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded mb-4 text-sm">
+            <strong>📧 Check your email</strong>
+            <p class="mt-1">We sent a verification link when you signed up. If you can't find it, enter your email below and we'll send another one.</p>
+        </div>
         
         <form method="POST" class="space-y-4">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div>
                 <label for="email" class="block text-sm font-medium mb-1">Email Address</label>
                 <input type="email" id="email" name="email" required autofocus
+                       placeholder="you@example.com"
                        class="w-full px-3 py-2 border border-line rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-fritt focus:border-transparent">
             </div>
             
@@ -39,9 +43,10 @@
             </button>
         </form>
         
-        <p class="text-center text-sm text-muted mt-4">
-            Already verified? <a href="{{ url_for('login') }}" class="text-fritt hover:underline">Log in</a>
-        </p>
+        <div class="mt-6 text-center text-sm text-muted space-y-2">
+            <p>Already verified? <a href="{{ url_for('login') }}" class="text-fritt hover:underline">Log in</a></p>
+            <p>Need to sign up? <a href="{{ url_for('register') }}" class="text-fritt hover:underline">Create an account</a></p>
+        </div>
     {% endif %}
 </div>
 {% endblock %}
