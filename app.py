@@ -756,6 +756,22 @@ def get_user_tier(user_id):
     finally:
         put_db(conn)
 
+def log_user_action(user_id, action, details=None):
+    """Log user actions for audit purposes."""
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO user_activity_logs (user_id, action, details, created_at)
+            VALUES (%s, %s, %s, %s)
+        """, (user_id, action, json.dumps(details) if details else None, datetime.now(timezone.utc)))
+        conn.commit()
+        cursor.close()
+    except Exception as e:
+        print(f"⚠️ Failed to log user action: {e}")
+    finally:
+        put_db(conn)
+
 # Helper to check if we're in test mode
 def is_test_mode():
     """Check if Flutterwave is in test mode."""
@@ -3085,6 +3101,79 @@ def delete_document(doc_id):
     flash("✅ Document deleted successfully!", "success")
     return redirect("/")
 
+@app.route("/bulk-delete", methods=["POST"])
+@limiter.limit("10 per hour", error_message="Too many bulk delete attempts. Please slow down.")
+def bulk_delete_documents():
+    """Delete multiple documents at once with safety confirmations."""
+    auth = require_verified()
+    if auth:
+        return auth
+    
+    user_id = session["user_id"]
+    
+    # Get document IDs from form
+    doc_ids = request.form.getlist("document_ids")
+    
+    if not doc_ids:
+        flash("No documents selected for deletion.", "error")
+        return redirect("/")
+    
+    # Verify all documents belong to the user
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        
+        # Get the actual document titles for the confirmation message
+        placeholders = ','.join(['%s'] * len(doc_ids))
+        cursor.execute(
+            f"SELECT id, title FROM documents WHERE id IN ({placeholders}) AND user_id = %s",
+            doc_ids + [user_id]
+        )
+        docs_to_delete = cursor.fetchall()
+        
+        # Check if any IDs were invalid (belonged to someone else)
+        if len(docs_to_delete) != len(doc_ids):
+            flash("Some documents could not be found or don't belong to you.", "error")
+            return redirect("/")
+        
+        # Get titles for flash message
+        titles = [doc[1] for doc in docs_to_delete]
+        doc_ids_to_delete = [str(doc[0]) for doc in docs_to_delete]
+        
+        # Delete the documents
+        placeholders = ','.join(['%s'] * len(doc_ids_to_delete))
+        cursor.execute(
+            f"DELETE FROM documents WHERE id IN ({placeholders}) AND user_id = %s",
+            doc_ids_to_delete + [user_id]
+        )
+        deleted_count = cursor.rowcount
+        conn.commit()
+        
+        if deleted_count > 0:
+            # Log the bulk deletion
+            log_user_action(user_id, "bulk_delete_documents", {
+                "count": deleted_count,
+                "titles": titles[:5],  # Only store first 5 to avoid huge logs
+                "total": len(titles)
+            })
+            
+            if deleted_count == 1:
+                flash(f"✅ Document '{titles[0]}' deleted successfully.", "success")
+            else:
+                flash(f"✅ {deleted_count} documents deleted successfully.", "success")
+        else:
+            flash("No documents were deleted.", "warning")
+            
+        cursor.close()
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"❌ Bulk delete error: {e}")
+        flash("An error occurred while deleting documents. Please try again.", "error")
+    finally:
+        put_db(conn)
+    
+    return redirect("/")
 
 @app.route("/renewed/<int:doc_id>", methods=["GET", "POST"])
 @limiter.limit("60 per hour", error_message="Too many renewals. Please slow down.")

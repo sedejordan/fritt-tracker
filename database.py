@@ -646,12 +646,27 @@ def init_db():
             print("✅ Created/verified flagged_users table")
 
             # ---------------------------------------------------------------------
+            # USER ACTIVITY LOGS
+            # ---------------------------------------------------------------------
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS user_activity_logs (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                    action VARCHAR(100) NOT NULL,
+                    details JSONB,
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+
+            # ---------------------------------------------------------------------
             # INDEXES - Speed up common queries
             # ---------------------------------------------------------------------
             indexes = [
                 "CREATE INDEX IF NOT EXISTS idx_users_verification_token ON users(verification_token);",
                 "CREATE INDEX IF NOT EXISTS idx_users_email_verified ON users(email_verified);",
                 "CREATE INDEX IF NOT EXISTS idx_newsletter_email ON newsletter_subscribers(email);",
+                "CREATE INDEX idx_user_activity_logs_user_id ON user_activity_logs(user_id);",
+                "CREATE INDEX idx_user_activity_logs_created_at ON user_activity_logs(created_at);",
             ]
             
             for index_sql in indexes:

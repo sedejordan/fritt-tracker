@@ -26,7 +26,7 @@
   </form>
 </div>
 
-<!-- GRACE PERIOD BANNER - Only show if in grace period, with dismiss button -->
+<!-- GRACE PERIOD BANNER -->
 {% if subscription_tier != 'free' and subscription_status == 'expired' and grace_period_end and grace_period_end > now %}
 <div class="banner-container bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
   <div class="flex items-start gap-3">
@@ -60,7 +60,7 @@
 </div>
 {% endif %}
 
-<!-- FREE PLAN BANNER - Keep this one as it's important usage info, with dismiss -->
+<!-- FREE PLAN BANNER -->
 {% if subscription_tier == 'free' %}
 <div class="banner-container bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
   <div class="flex items-start gap-3">
@@ -75,7 +75,6 @@
           </a>
         {% endif %}
       </div>
-      <!-- Progress bar -->
       <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
         {% set percentage = (doc_count / 20 * 100) %}
         {% if percentage > 100 %}
@@ -96,8 +95,8 @@
 </div>
 {% endif %}
 
-<!-- PRO BANNER - Active (show only if expiring soon, with dismiss) -->
-{% if subscription_tier == 'pro' and subscription_status == 'active' and subscription_expiry and subscription_expiry > now %}
+<!-- EXPIRING SOON BANNERS (for Pro/VIP) -->
+{% if subscription_tier in ['pro', 'vip'] and subscription_status == 'active' and subscription_expiry and subscription_expiry > now %}
   {% set days_left = ((subscription_expiry - now).days) %}
   {% if days_left <= 7 %}
     <div class="banner-container bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
@@ -105,10 +104,10 @@
         <span class="text-yellow-600 text-xl">⚠️</span>
         <div class="flex-1">
           <p class="text-sm text-yellow-800">
-            <strong>Your Pro plan expires in {{ days_left }} days</strong> ({{ subscription_expiry.strftime('%B %d, %Y') }})
+            <strong>Your {{ subscription_tier|upper }} plan expires in {{ days_left }} days</strong> ({{ subscription_expiry.strftime('%B %d, %Y') }})
           </p>
           <p class="text-xs text-yellow-700 mt-1">
-            <a href="{{ url_for('pricing') }}" class="underline font-medium">Renew now</a> to keep your Pro features.
+            <a href="{{ url_for('pricing') }}" class="underline font-medium">Renew now</a> to keep your {{ subscription_tier|upper }} features.
           </p>
         </div>
         <button class="banner-dismiss text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0" aria-label="Dismiss banner">
@@ -121,102 +120,31 @@
   {% endif %}
 {% endif %}
 
-<!-- VIP BANNER - Active (show only if expiring soon, with dismiss) -->
-{% if subscription_tier == 'vip' and subscription_status == 'active' and subscription_expiry and subscription_expiry > now %}
-  {% set days_left = ((subscription_expiry - now).days) %}
-  {% if days_left <= 7 %}
-    <div class="banner-container bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-      <div class="flex items-start gap-3">
-        <span class="text-yellow-600 text-xl">⚠️</span>
-        <div class="flex-1">
-          <p class="text-sm text-yellow-800">
-            <strong>Your VIP plan expires in {{ days_left }} days</strong> ({{ subscription_expiry.strftime('%B %d, %Y') }})
-          </p>
-          <p class="text-xs text-yellow-700 mt-1">
-            <a href="{{ url_for('pricing') }}" class="underline font-medium">Renew now</a> to keep your VIP features.
-          </p>
-        </div>
-        <button class="banner-dismiss text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0" aria-label="Dismiss banner">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  {% endif %}
-{% endif %}
-
-<!-- PRO BANNER - Cancelled (still has access, show only if expiring soon) -->
-{% if subscription_tier == 'pro' and subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
-  {% set days_left = ((subscription_expiry - now).days) %}
-  {% if days_left <= 7 %}
-    <div class="banner-container bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-      <div class="flex items-start gap-3">
-        <span class="text-yellow-600 text-xl">⏳</span>
-        <div class="flex-1">
-          <p class="text-sm text-yellow-800">
-            <strong>Your Pro plan was cancelled.</strong> Access ends in {{ days_left }} days ({{ subscription_expiry.strftime('%B %d, %Y') }})
-          </p>
-          <div class="flex items-center gap-3 mt-1">
-            <p class="text-xs text-yellow-700">
-              Reactivate to keep your Pro features.
-            </p>
-            <form method="POST" action="{{ url_for('reactivate_subscription') }}" class="inline">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button type="submit" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition font-medium">
-                🔄 Reactivate Now
-              </button>
-            </form>
-          </div>
-        </div>
-        <button class="banner-dismiss text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0" aria-label="Dismiss banner">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  {% endif %}
-{% endif %}
-
-<!-- VIP BANNER - Cancelled (still has access, show only if expiring soon) -->
-{% if subscription_tier == 'vip' and subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
-  {% set days_left = ((subscription_expiry - now).days) %}
-  {% if days_left <= 7 %}
-    <div class="banner-container bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-      <div class="flex items-start gap-3">
-        <span class="text-yellow-600 text-xl">⏳</span>
-        <div class="flex-1">
-          <p class="text-sm text-yellow-800">
-            <strong>Your VIP plan was cancelled.</strong> Access ends in {{ days_left }} days ({{ subscription_expiry.strftime('%B %d, %Y') }})
-          </p>
-          <div class="flex items-center gap-3 mt-1">
-            <p class="text-xs text-yellow-700">
-              Reactivate to keep your VIP features.
-            </p>
-            <form method="POST" action="{{ url_for('reactivate_subscription') }}" class="inline">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button type="submit" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition font-medium">
-                🔄 Reactivate Now
-              </button>
-            </form>
-          </div>
-        </div>
-        <button class="banner-dismiss text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0" aria-label="Dismiss banner">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  {% endif %}
-{% endif %}
-
+<!-- Bulk Action Bar -->
 {% if documents %}
+<div class="bg-white border border-line rounded-xl p-3 mb-3 flex flex-wrap items-center justify-between gap-3">
+  <div class="flex items-center gap-3">
+    <input type="checkbox" id="select-all" class="w-4 h-4 rounded border-line text-fritt focus:ring-fritt">
+    <label for="select-all" class="text-sm text-muted">Select All</label>
+    <span class="text-sm text-muted">|</span>
+    <span id="selected-count" class="text-sm text-muted">0 selected</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <button id="bulk-delete-btn" 
+            class="px-4 py-2 rounded-md bg-red-100 text-red-700 text-sm font-medium hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled>
+      🗑️ Delete Selected
+    </button>
+  </div>
+</div>
+
 <div class="bg-white border border-line rounded-xl overflow-x-auto">
   <table class="w-full text-sm">
     <thead>
       <tr class="border-b border-line text-left text-muted text-xs uppercase tracking-wide">
+        <th class="px-4 py-3 font-medium w-10">
+          <input type="checkbox" id="select-all-table" class="w-4 h-4 rounded border-line text-fritt focus:ring-fritt">
+        </th>
         <th class="px-4 py-3 font-medium">#</th>
         <th class="px-4 py-3 font-medium">Title</th>
         <th class="px-4 py-3 font-medium">Expiry Date</th>
@@ -228,6 +156,9 @@
     <tbody>
       {% for doc in documents %}
       <tr class="border-b border-line last:border-0">
+        <td class="px-4 py-3">
+          <input type="checkbox" class="doc-checkbox w-4 h-4 rounded border-line text-fritt focus:ring-fritt" value="{{ doc.id }}">
+        </td>
         <td class="px-4 py-3 text-muted text-center">{{ loop.index }}</td>
         <td class="px-4 py-3">{{ doc.title }}</td>
         <td class="px-4 py-3 text-muted">{{ doc.expiry_date }}</td>
@@ -240,7 +171,6 @@
         <td class="px-4 py-3 text-right whitespace-nowrap">
           <a href="/edit/{{ doc.id }}" class="px-2 py-1 rounded-md border border-line text-xs hover:bg-paper transition-colors">Edit</a>
 
-          <!-- Renew button - show for documents that are Warning, Urgent, or Expired -->
           {% if doc.status in ['Warning', 'Urgent', 'Expired'] %}
           <a href="/renewed/{{ doc.id }}" class="px-2 py-1 rounded-md border border-green-200 text-green-600 text-xs hover:bg-green-50 transition-colors">
             🔄 Renew
@@ -274,6 +204,220 @@
 {% else %}
 <div class="bg-white border border-line rounded-xl py-16 text-center text-muted">
   No documents found.
+</div>
+{% endif %}
+
+<!-- Bulk Delete Form (hidden, submitted via JS) -->
+<form id="bulk-delete-form" method="POST" action="{{ url_for('bulk_delete_documents') }}" class="hidden">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div id="bulk-delete-doc-ids"></div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const checkboxes = document.querySelectorAll('.doc-checkbox');
+  const selectAllTable = document.getElementById('select-all-table');
+  const selectAll = document.getElementById('select-all');
+  const selectedCount = document.getElementById('selected-count');
+  const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+  const bulkDeleteForm = document.getElementById('bulk-delete-form');
+  const bulkDeleteDocIds = document.getElementById('bulk-delete-doc-ids');
+  
+  // Modal elements
+  const modal = document.getElementById('bulk-delete-modal');
+  const deleteCount = document.getElementById('bulk-delete-count');
+  const deleteList = document.getElementById('bulk-delete-list');
+  const confirmInput = document.getElementById('bulk-delete-confirm');
+  const confirmBtn = document.getElementById('bulk-delete-confirm-btn');
+  
+  function updateSelectionUI() {
+    const checked = document.querySelectorAll('.doc-checkbox:checked');
+    const count = checked.length;
+    
+    selectedCount.textContent = count + ' selected';
+    bulkDeleteBtn.disabled = count === 0;
+    
+    // Update Select All checkbox states
+    const total = checkboxes.length;
+    const checkedCount = document.querySelectorAll('.doc-checkbox:checked').length;
+    
+    if (checkedCount === total && total > 0) {
+      selectAllTable.checked = true;
+      selectAll.checked = true;
+    } else {
+      selectAllTable.checked = false;
+      selectAll.checked = false;
+    }
+  }
+  
+  // Individual checkbox change
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', updateSelectionUI);
+  });
+  
+  // Select All (table header)
+  selectAllTable.addEventListener('change', function() {
+    checkboxes.forEach(cb => cb.checked = this.checked);
+    updateSelectionUI();
+  });
+  
+  // Select All (bulk bar)
+  selectAll.addEventListener('change', function() {
+    checkboxes.forEach(cb => cb.checked = this.checked);
+    updateSelectionUI();
+  });
+  
+  // Bulk Delete button - show modal
+  bulkDeleteBtn.addEventListener('click', function() {
+    const checked = document.querySelectorAll('.doc-checkbox:checked');
+    if (checked.length === 0) return;
+    
+    // Get selected document titles
+    const selectedDocs = [];
+    checked.forEach(cb => {
+      const row = cb.closest('tr');
+      const title = row.querySelector('td:nth-child(3)').textContent.trim();
+      selectedDocs.push({ id: cb.value, title: title });
+    });
+    
+    // Populate modal
+    deleteCount.textContent = selectedDocs.length;
+    deleteList.innerHTML = selectedDocs.map(d => `<li>${d.title}</li>`).join('');
+    
+    // Reset confirmation
+    confirmInput.value = '';
+    confirmBtn.disabled = true;
+    confirmBtn.classList.add('disabled');
+    
+    // Show modal
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    
+    // Focus on input
+    setTimeout(() => confirmInput.focus(), 100);
+  });
+  
+  // Confirm input validation
+  confirmInput.addEventListener('input', function() {
+    const isValid = this.value === 'DELETE';
+    confirmBtn.disabled = !isValid;
+    if (isValid) {
+      confirmBtn.classList.remove('disabled');
+    } else {
+      confirmBtn.classList.add('disabled');
+    }
+  });
+  
+  // Confirm button - submit the form
+  confirmBtn.addEventListener('click', function() {
+    if (this.disabled) return;
+    
+    // Collect selected IDs
+    const checked = document.querySelectorAll('.doc-checkbox:checked');
+    const ids = Array.from(checked).map(cb => cb.value);
+    
+    // Clear previous hidden inputs
+    bulkDeleteDocIds.innerHTML = '';
+    
+    // Add hidden inputs for each ID
+    ids.forEach(id => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'document_ids';
+      input.value = id;
+      bulkDeleteDocIds.appendChild(input);
+    });
+    
+    // Submit the form
+    bulkDeleteForm.submit();
+    
+    // Close modal
+    closeBulkDelete();
+  });
+  
+  // Enter key on confirm input
+  confirmInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !confirmBtn.disabled) {
+      confirmBtn.click();
+    }
+    if (e.key === 'Escape') {
+      closeBulkDelete();
+    }
+  });
+  
+  // Close modal function
+  window.closeBulkDelete = function() {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+    confirmInput.value = '';
+    confirmBtn.disabled = true;
+  };
+  
+  // Close modal on overlay click
+  modal.addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeBulkDelete();
+    }
+  });
+  
+  // Close modal on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+      closeBulkDelete();
+    }
+  });
+  
+  // Initial update
+  updateSelectionUI();
+});
+</script>
+
+<!-- Bulk Delete Modal (defined in base.html, but we'll keep it here too for safety) -->
+{% if not request.endpoint or not request.endpoint.startswith('admin_') %}
+<div id="bulk-delete-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-xl max-w-md w-full shadow-2xl" role="dialog" aria-labelledby="bulk-delete-title">
+    <div class="p-6">
+      <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h3 id="bulk-delete-title" class="text-lg font-display font-bold text-gray-900">Delete Documents</h3>
+          <p class="text-sm text-gray-600 mt-1">
+            You are about to delete <strong id="bulk-delete-count">0</strong> document(s).
+            <span class="block mt-2 text-red-600 font-medium">This action cannot be undone!</span>
+          </p>
+          <div class="mt-4">
+            <label for="bulk-delete-confirm" class="block text-xs font-medium text-gray-700 mb-1">
+              Type <strong class="text-red-600">DELETE</strong> to confirm:
+            </label>
+            <input type="text" id="bulk-delete-confirm" 
+                   class="w-full px-3 py-2 border border-line rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                   placeholder="Type DELETE here"
+                   autocomplete="off">
+          </div>
+          <div class="mt-2 text-xs text-gray-500">
+            <p>Documents to be deleted:</p>
+            <ul id="bulk-delete-list" class="mt-1 max-h-32 overflow-y-auto text-gray-600 list-disc list-inside">
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3 mt-6">
+        <button onclick="closeBulkDelete()" 
+                class="flex-1 px-4 py-2 border border-line rounded-md text-sm font-medium text-gray-700 hover:bg-paper transition-colors">
+          Cancel
+        </button>
+        <button id="bulk-delete-confirm-btn" 
+                class="flex-1 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled>
+          Delete Documents
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 {% endif %}
 
