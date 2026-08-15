@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fritt Tracker · Flier</title>
+  <!-- Fonts: Space Grotesk + Inter, same as base.html -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* theme colors from base.html */
+    :root {
+      --ink: #14181F;
+      --paper: #F7F7F5;
+      --fritt: #2C5FEF;
+      --fritt-dark: #1E46C4;
+      --muted: #6B7280;
+      --line: #E4E4E1;
+      --white: #FFFFFF;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: var(--paper);
+      font-family: 'Inter', sans-serif;
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      margin: 0;
+    }
+    /* flier card – clean, spacious, brand-first */
+    .flier {
+      max-width: 800px;
+      width: 100%;
+      background: var(--white);
+      border-radius: 32px;
+      box-shadow: 0 20px 40px -12px rgba(20, 24, 31, 0.15);
+      padding: 48px 44px;
+      border: 1px solid var(--line);
+      transition: box-shadow 0.2s;
+    }
+    @media (max-width: 520px) {
+      .flier { padding: 32px 20px; }
+    }
+    /* header / tagline */
+    .flier-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 20px;
+    }
+    .logo-symbol {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background: var(--fritt);
+      border-radius: 14px;
+      color: white;
+      font-weight: 700;
+      font-size: 20px;
+      font-family: 'Space Grotesk', sans-serif;
+      flex-shrink: 0;
+    }
+    .flier-header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: -0.02em;
+      color: var(--fritt);
+      margin: 0;
+      line-height: 1.2;
+    }
+    .flier-header .tag {
+      margin-left: auto;
+      background: var(--paper);
+      padding: 8px 16px;
+      border-radius: 60px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      letter-spacing: 0.3px;
+    }
+    /* headline block */
+    .headline {
+      margin-bottom: 32px;
+    }
+    .headline .badge {
+      display: inline-block;
+      background: #fee2e2;
+      color: #b91c1c;
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 6px 18px;
+      border-radius: 60px;
+      letter-spacing: 0.2px;
+      margin-bottom: 14px;
+      border: 1px solid #fecaca;
+    }
+    .headline h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 2.6rem;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin: 0 0 8px 0;
+    }
+    .headline h2 span {
+      color: var(--fritt);
+      background: linear-gradient(145deg, var(--fritt), #22D3C9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .headline .sub {
+      font-size: 1.1rem;
+      color: var(--muted);
+      font-weight: 400;
+      margin-top: 6px;
+      border-left: 4px solid var(--fritt);
+      padding-left: 18px;
+    }
+    /* pain points grid */
+    .pain-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 24px;
+      background: var(--paper);
+      padding: 24px 28px;
+      border-radius: 24px;
+      margin: 28px 0 32px 0;
+      border: 1px solid var(--line);
+    }
+    @media (max-width: 480px) {
+      .pain-grid { grid-template-columns: 1fr; padding: 20px; }
+    }
+    .pain-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    .pain-item .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: white;
+      border-radius: 40px;
+      color: var(--fritt);
+      font-size: 1.2rem;
+      border: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    /* what it does - feature cards */
+    .feature-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 30px 0 34px 0;
+    }
+    .feature-card {
+      flex: 1 1 180px;
+      background: var(--paper);
+      padding: 18px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      transition: 0.15s;
+    }
+    .feature-card:hover {
+      border-color: var(--fritt);
+      background: #f0f4ff;
+    }
+    .feature-card .emoji-big {
+      font-size: 1.8rem;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .feature-card p {
+      font-weight: 500;
+      font-size: 0.95rem;
+      margin: 0;
+      line-height: 1.3;
+    }
+    .feature-card small {
+      color: var(--muted);
+      font-weight: 400;
+      font-size: 0.8rem;
+      display: block;
+      margin-top: 4px;
+    }
+    /* CTA / free trial */
+    .cta-block {
+      background: var(--ink);
+      border-radius: 28px;
+      padding: 28px 32px;
+      color: white;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin: 32px 0 16px 0;
+      border: 1px solid #2d3748;
+    }
+    .cta-block .offer {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .cta-block .offer .highlight {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, #ffffff, #b3d0ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+    }
+    .cta-block .offer .subline {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      font-weight: 400;
+    }
+    .cta-button {
+      background: var(--fritt);
+      padding: 14px 32px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1rem;
+      color: white;
+      text-decoration: none;
+      border: none;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 18px rgba(44, 95, 239, 0.3);
+      font-family: 'Inter', sans-serif;
+    }
+    .cta-button:hover {
+      background: var(--fritt-dark);
+      transform: scale(1.02);
+      box-shadow: 0 12px 24px rgba(44, 95, 239, 0.4);
+    }
+    .cta-button span {
+      font-size: 1.2rem;
+    }
+    .footer-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .footer-meta .url {
+      font-weight: 500;
+      color: var(--fritt);
+      letter-spacing: 0.2px;
+    }
+    .footer-meta .url:hover {
+      text-decoration: underline;
+    }
+    .footer-meta small {
+      display: flex;
+      gap: 12px;
+    }
+    /* tiny tweaks */
+    .inline-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--fritt);
+      border-radius: 20px;
+      margin: 0 10px 0 6px;
+    }
+    @media (max-width: 600px) {
+      .cta-block { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .headline h2 { font-size: 2.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="flier">
+
+    <!-- header: logo + fritt tracker -->
+    <div class="flier-header">
+      <div class="logo-symbol">FT</div>
+      <h1>Fritt Tracker</h1>
+      <span class="tag">🚨 never miss</span>
+    </div>
+
+    <!-- HEADLINE from gemini -->
+    <div class="headline">
+      <div class="badge">🚨 Never Miss a Renewal Again.</div>
+      <h2>
+        Automated <span>Document Expiry</span> Reminders
+      </h2>
+      <div class="sub">
+        Stop tracking critical deadlines in spreadsheets or notebooks.
+      </div>
+    </div>
+
+    <!-- Business pain points -->
+    <div class="pain-grid">
+      <div class="pain-item"><span class="icon">🚗</span> Vehicle &amp; Driver Licenses</div>
+      <div class="pain-item"><span class="icon">📄</span> Client Contracts &amp; Service Agreements</div>
+      <div class="pain-item"><span class="icon">🛂</span> Passports, Visas &amp; Certifications</div>
+      <div class="pain-item"><span class="icon">🏢</span> Business Licenses &amp; Inspections</div>
+    </div>
+
+    <!-- WHAT IT DOES (3 features) -->
+    <div class="feature-grid">
+      <div class="feature-card">
+        <span class="emoji-big">✉️</span>
+        <p>Email &amp; Automated Renewal Notifications</p>
+        <small>smart reminders</small>
+      </div>
+      <div class="feature-card">
+        <span class="emoji-big">📁</span>
+        <p>Keeps all expiry dates organized in one place</p>
+        <small>centralized dashboard</small>
+      </div>
+      <div class="feature-card">
+        <span class="emoji-big">🛡️</span>
+        <p>Protects your business from costly fines &amp; downtime</p>
+        <small>peace of mind</small>
+      </div>
+    </div>
+
+    <!-- FREE TRIAL OFFER + CTA -->
+    <div class="cta-block">
+      <div class="offer">
+        <span class="highlight">👉 Track up to 20 documents</span>
+        <span class="subline">for FREE — no credit card needed.</span>
+      </div>
+      <a href="#" class="cta-button">
+        <span>🌐</span> Visit tracker.fritt.org
+      </a>
+    </div>
+
+    <!-- footer / extra link -->
+    <div class="footer-meta">
+      <span class="url">https://tracker.fritt.org</span>
+      <small>
+        <span>🔒 free trial</span>
+        <span class="inline-dot"></span>
+        <span>⚡ pro features</span>
+      </small>
+    </div>
+
+    <!-- tiny extra: “© 2026 Fritt Tracker” but minimal -->
+    <div style="margin-top: 16px; font-size: 0.7rem; color: #9CA3AF; text-align: center; border-top: 1px solid var(--line); padding-top: 16px;">
+      © 2026 Fritt Tracker · document expiry made simple
+    </div>
+  </div>
+</body>
+</html>

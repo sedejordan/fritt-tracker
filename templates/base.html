@@ -31,6 +31,26 @@
         }
       }
     </script>
+    
+    <style>
+      /* Flash message fade-out animation */
+      .flash-message {
+        transition: opacity 0.5s ease-in-out, transform 0.3s ease-in-out;
+      }
+      .flash-message.fade-out {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      
+      /* Banner close button style */
+      .banner-dismiss {
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .banner-dismiss:hover {
+        opacity: 0.7;
+      }
+    </style>
   </head>
   <body class="bg-paper text-ink font-body min-h-screen">
     <!-- Loading overlay -->
@@ -74,7 +94,17 @@
             
             <a href="/" class="flex items-center gap-2 shrink-0">
               <img src="/static/fritt-tracker-logo.svg" alt="" class="w-8 h-8 rounded-md">
-              <span class="font-display font-bold text-xl text-fritt">Fritt Tracker</span>
+              <span class="font-display font-bold text-xl text-fritt">
+                Fritt Tracker
+                {% if session.get("user_id") and subscription_tier and subscription_tier not in ['free', 'suspended'] %}
+                  <span class="text-xs font-bold 
+                    {% if subscription_tier == 'vip' %}text-purple-600{% else %}text-green-600{% endif %}
+                    bg-{% if subscription_tier == 'vip' %}purple{% else %}green{% endif %}-50 
+                    px-2 py-0.5 rounded-full ml-1 align-middle">
+                    {{ subscription_tier|upper }}
+                  </span>
+                {% endif %}
+              </span>
             </a>
           </div>
           
@@ -106,6 +136,20 @@
                     <p class="text-sm font-medium truncate">{{ session.get("email", "") }}</p>
                     <p class="text-xs text-muted mt-1">
                       Plan: <span class="font-medium">{{ subscription_tier|capitalize }}</span>
+                      {% if subscription_tier in ['pro', 'vip'] %}
+                        {% if subscription_status == 'active' %}
+                          {% if subscription_expiry and subscription_expiry > now %}
+                            <br><span class="text-xs text-muted">Expires: {{ subscription_expiry.strftime('%b %d, %Y') }}</span>
+                          {% elif subscription_expiry is none %}
+                            <br><span class="text-xs text-green-600">✅ Indefinite</span>
+                          {% endif %}
+                        {% elif subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
+                          <br><span class="text-xs text-orange-600">⏳ Cancelled (expires {{ subscription_expiry.strftime('%b %d, %Y') }})</span>
+                        {% endif %}
+                      {% endif %}
+                      {% if on_trial and trial_ends_at and trial_ends_at > now %}
+                        <br><span class="text-xs text-blue-600">⭐ Trial ends {{ trial_ends_at.strftime('%b %d, %Y') }}</span>
+                      {% endif %}
                     </p>
                   </div>
                   
@@ -258,6 +302,20 @@
             <div class="mt-6 pt-4 border-t border-line">
               <p class="text-xs text-muted text-center">
                 Current plan: <strong>{{ subscription_tier|capitalize }}</strong>
+                {% if subscription_tier in ['pro', 'vip'] %}
+                  {% if subscription_status == 'active' %}
+                    {% if subscription_expiry and subscription_expiry > now %}
+                      <br><span class="text-xs">Expires: {{ subscription_expiry.strftime('%b %d, %Y') }}</span>
+                    {% elif subscription_expiry is none %}
+                      <br><span class="text-xs text-green-600">✅ Indefinite</span>
+                    {% endif %}
+                  {% elif subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
+                    <br><span class="text-xs text-orange-600">⏳ Cancelled (expires {{ subscription_expiry.strftime('%b %d, %Y') }})</span>
+                  {% endif %}
+                {% endif %}
+                {% if on_trial and trial_ends_at and trial_ends_at > now %}
+                  <br><span class="text-xs text-blue-600">⭐ Trial ends {{ trial_ends_at.strftime('%b %d, %Y') }}</span>
+                {% endif %}
                 {% if subscription_tier == 'free' %}
                   <br><a href="{{ url_for('pricing') }}" class="text-fritt hover:underline">Upgrade for more features →</a>
                 {% endif %}
@@ -268,13 +326,21 @@
       </div>
     </div>
 
-    <!-- Flash Messages -->
+    <!-- Flash Messages - Auto-dismiss after 5 seconds -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="max-w-4xl mx-auto px-4 pt-4">
+        <div class="max-w-4xl mx-auto px-4 pt-4 space-y-2" id="flash-messages">
           {% for category, message in messages %}
-            <div class="px-4 py-3 rounded-md border {% if category == 'success' %}bg-green-50 border-green-200 text-green-700{% else %}bg-red-50 border-red-200 text-red-700{% endif %} text-sm">
-              {{ message }}
+            <div class="flash-message px-4 py-3 rounded-md border text-sm {% if category == 'success' %}bg-green-50 border-green-200 text-green-700{% elif category == 'warning' %}bg-yellow-50 border-yellow-200 text-yellow-700{% else %}bg-red-50 border-red-200 text-red-700{% endif %}"
+                 data-dismiss="5000">
+              <div class="flex items-start justify-between">
+                <span>{{ message }}</span>
+                <button class="flash-dismiss ml-4 text-gray-400 hover:text-gray-600 transition-colors" aria-label="Dismiss message">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
             </div>
           {% endfor %}
         </div>
@@ -298,6 +364,50 @@
 
     <script src="/static/loading.js"></script>
     <script>
+      // --- Flash message auto-dismiss ---
+      document.addEventListener('DOMContentLoaded', function() {
+        const flashMessages = document.querySelectorAll('.flash-message');
+        
+        flashMessages.forEach(function(msg) {
+          // Auto-dismiss after 5 seconds
+          const dismissAfter = parseInt(msg.dataset.dismiss) || 5000;
+          
+          setTimeout(function() {
+            msg.classList.add('fade-out');
+            setTimeout(function() {
+              msg.remove();
+            }, 500);
+          }, dismissAfter);
+          
+          // Manual dismiss on X button click
+          const dismissBtn = msg.querySelector('.flash-dismiss');
+          if (dismissBtn) {
+            dismissBtn.addEventListener('click', function() {
+              msg.classList.add('fade-out');
+              setTimeout(function() {
+                msg.remove();
+              }, 500);
+            });
+          }
+        });
+      });
+
+      // --- Banner dismissal (for any remaining banners in index.html) ---
+      document.addEventListener('click', function(e) {
+        const bannerDismiss = e.target.closest('.banner-dismiss');
+        if (bannerDismiss) {
+          const banner = bannerDismiss.closest('.banner-container');
+          if (banner) {
+            banner.style.transition = 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out';
+            banner.style.opacity = '0';
+            banner.style.transform = 'translateY(-10px)';
+            setTimeout(function() {
+              banner.style.display = 'none';
+            }, 300);
+          }
+        }
+      });
+
       // Menu toggle functions
       function openMenu() {
         document.getElementById('menu-overlay').classList.remove('hidden');
