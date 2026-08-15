@@ -2738,6 +2738,114 @@ def admin_renew_user_document(user_id, doc_id):
         doc=doc
     )
 
+# Get test email from environment (optional - for security)
+ALLOWED_TEST_EMAIL = os.environ.get("TEST_EMAIL")  # Single email as string, or None
+
+@app.route("/admin/reset-test-account", methods=["POST"])
+@limiter.limit("5 per hour", error_message="Too many reset attempts. Please wait.")
+def admin_reset_test_account():
+    """Admin-only endpoint to reset a test account."""
+    auth = require_admin()
+    if auth:
+        return auth
+    
+    email = request.form.get("email", "").strip().lower()
+    
+    if not email:
+        flash("Please provide an email address.", "error")
+        return redirect(url_for("admin_users"))
+    
+    # Security: Only allow resetting the configured test account
+    if ALLOWED_TEST_EMAIL:
+        # If TEST_EMAIL is set, only allow that specific email
+        if email != ALLOWED_TEST_EMAIL.lower():
+            flash(f"Only the configured test account can be reset.", "error")
+            return redirect(url_for("admin_users"))
+    else:
+        # If TEST_EMAIL is not set, only allow test@fritt.org as fallback
+        if email != 'test@fritt.org':
+            flash("Only test accounts can be reset. Set TEST_EMAIL env variable to configure.", "error")
+            return redirect(url_for("admin_users"))
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        
+        # Check if user exists
+        cursor.execute(
+            "SELECT id, email FROM users WHERE email = %s",
+            (email,)
+        )
+        user = cursor.fetchone()
+        
+        if not user:
+            flash(f"User with email '{email}' not found.", "error")
+            return redirect(url_for("admin_users"))
+        
+        user_id = user[0]
+        
+        # Get document count for logging
+        cursor.execute(
+            "SELECT COUNT(*) FROM documents WHERE user_id = %s",
+            (user_id,)
+        )
+        doc_count = cursor.fetchone()[0]
+        
+        # Delete all documents
+        cursor.execute("DELETE FROM documents WHERE user_id = %s", (user_id,))
+        deleted_docs = cursor.rowcount
+        
+        # Delete logs
+        cursor.execute("DELETE FROM user_activity_logs WHERE user_id = %s", (user_id,))
+        cursor.execute("DELETE FROM flagged_users WHERE user_id = %s", (user_id,))
+        
+        # Reset user to brand new status
+        cursor.execute("""
+            UPDATE users 
+            SET 
+                email_verified = FALSE,
+                reset_token = NULL,
+                reset_token_expiry = NULL,
+                verification_token = NULL,
+                verification_token_expiry = NULL,
+                email_verification_sent_at = NULL,
+                subscription_tier = 'free',
+                subscription_status = 'active',
+                subscription_expiry = NULL,
+                flw_subscription_id = NULL,
+                grace_period_end = NULL,
+                documents_trimmed = FALSE,
+                trial_used = FALSE,
+                trial_ends_at = NULL,
+                suspended = FALSE
+            WHERE id = %s
+            RETURNING email
+        """, (user_id,))
+        
+        updated_user = cursor.fetchone()
+        conn.commit()
+        
+        log_admin_action("reset_test_account", "user", user_id, {
+            "email": email,
+            "documents_deleted": deleted_docs,
+            "previous_doc_count": doc_count
+        })
+        
+        flash(
+            f"✅ Account {email} reset successfully! Deleted {deleted_docs} documents. "
+            "Account is now unverified, on free tier, with no documents.",
+            "success"
+        )
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"❌ Error resetting account: {e}")
+        flash(f"Error resetting account: {str(e)}", "error")
+    finally:
+        put_db(conn)
+    
+    return redirect(url_for("admin_user_detail", user_id=user_id))
+
 @app.route("/pricing")
 @limiter.exempt
 def pricing():

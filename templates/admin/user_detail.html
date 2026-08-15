@@ -168,6 +168,15 @@
                             🔧 Force Fix Subscription
                         </button>
                     </form>
+
+                    <form method="POST" action="{{ url_for('admin_reset_test_account') }}" 
+                        onsubmit="return confirm('⚠️ This will DELETE ALL DOCUMENTS and reset this account to brand new status.\n\nThis action cannot be undone.\n\nContinue?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="email" value="{{ user[1] }}">
+                    <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition text-sm font-medium">
+                        🔄 Reset Test Account
+                    </button>
+                    </form>
                 </div>
             </div>
         </div>
