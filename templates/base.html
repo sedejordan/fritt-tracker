@@ -98,10 +98,12 @@
                 Fritt Tracker
                 {% if session.get("user_id") and subscription_tier and subscription_tier not in ['free', 'suspended'] %}
                   <span class="text-xs font-bold 
-                    {% if subscription_tier == 'vip' %}text-purple-600{% else %}text-green-600{% endif %}
-                    bg-{% if subscription_tier == 'vip' %}purple{% else %}green{% endif %}-50 
+                    {% if subscription_tier == 'vip' %}text-purple-600 bg-purple-50{% else %}text-green-600 bg-green-50{% endif %}
                     px-2 py-0.5 rounded-full ml-1 align-middle">
                     {{ subscription_tier|upper }}
+                    {% if on_trial and trial_ends_at and trial_ends_at > now %}
+                      <span class="text-[10px] font-normal ml-0.5">(Trial)</span>
+                    {% endif %}
                   </span>
                 {% endif %}
               </span>
@@ -136,7 +138,9 @@
                     <p class="text-sm font-medium truncate">{{ session.get("email", "") }}</p>
                     <p class="text-xs text-muted mt-1">
                       Plan: <span class="font-medium">{{ subscription_tier|capitalize }}</span>
-                      {% if subscription_tier in ['pro', 'vip'] %}
+                      {% if on_trial and trial_ends_at and trial_ends_at > now %}
+                        <br><span class="text-xs text-blue-600 font-medium">⭐ Free Trial (ends {{ trial_ends_at.strftime('%b %d, %Y') }})</span>
+                      {% elif subscription_tier in ['pro', 'vip'] %}
                         {% if subscription_status == 'active' %}
                           {% if subscription_expiry and subscription_expiry > now %}
                             <br><span class="text-xs text-muted">Expires: {{ subscription_expiry.strftime('%b %d, %Y') }}</span>
@@ -146,9 +150,6 @@
                         {% elif subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
                           <br><span class="text-xs text-orange-600">⏳ Cancelled (expires {{ subscription_expiry.strftime('%b %d, %Y') }})</span>
                         {% endif %}
-                      {% endif %}
-                      {% if on_trial and trial_ends_at and trial_ends_at > now %}
-                        <br><span class="text-xs text-blue-600">⭐ Trial ends {{ trial_ends_at.strftime('%b %d, %Y') }}</span>
                       {% endif %}
                     </p>
                   </div>
@@ -302,7 +303,9 @@
             <div class="mt-6 pt-4 border-t border-line">
               <p class="text-xs text-muted text-center">
                 Current plan: <strong>{{ subscription_tier|capitalize }}</strong>
-                {% if subscription_tier in ['pro', 'vip'] %}
+                {% if on_trial and trial_ends_at and trial_ends_at > now %}
+                  <br><span class="text-xs text-blue-600 font-medium">⭐ Free Trial (ends {{ trial_ends_at.strftime('%b %d, %Y') }})</span>
+                {% elif subscription_tier in ['pro', 'vip'] %}
                   {% if subscription_status == 'active' %}
                     {% if subscription_expiry and subscription_expiry > now %}
                       <br><span class="text-xs">Expires: {{ subscription_expiry.strftime('%b %d, %Y') }}</span>
@@ -312,9 +315,6 @@
                   {% elif subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
                     <br><span class="text-xs text-orange-600">⏳ Cancelled (expires {{ subscription_expiry.strftime('%b %d, %Y') }})</span>
                   {% endif %}
-                {% endif %}
-                {% if on_trial and trial_ends_at and trial_ends_at > now %}
-                  <br><span class="text-xs text-blue-600">⭐ Trial ends {{ trial_ends_at.strftime('%b %d, %Y') }}</span>
                 {% endif %}
                 {% if subscription_tier == 'free' %}
                   <br><a href="{{ url_for('pricing') }}" class="text-fritt hover:underline">Upgrade for more features →</a>

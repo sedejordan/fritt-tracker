@@ -3102,7 +3102,7 @@ def delete_document(doc_id):
     return redirect("/")
 
 @app.route("/bulk-delete", methods=["POST"])
-@limiter.limit("10 per hour", error_message="Too many bulk delete attempts. Please slow down.")
+@limiter.limit(lambda: "3 per day" if session.get('user_id') and get_user_tier(session.get('user_id')) in ['free'] else "10 per day")
 def bulk_delete_documents():
     """Delete multiple documents at once with safety confirmations."""
     auth = require_verified()
@@ -3111,11 +3111,28 @@ def bulk_delete_documents():
     
     user_id = session["user_id"]
     
+    # Get subscription tier for limits
+    sub_status = get_subscription_status(user_id)
+    tier = sub_status['tier']
+    
     # Get document IDs from form
     doc_ids = request.form.getlist("document_ids")
     
     if not doc_ids:
         flash("No documents selected for deletion.", "error")
+        return redirect("/")
+    
+    # Limit check based on tier
+    MAX_BULK_DELETE = {
+        'free': 5,
+        'pro': 50,
+        'vip': 999,  # Essentially unlimited
+        'business': 999
+    }
+    
+    max_allowed = MAX_BULK_DELETE.get(tier, 5)
+    if len(doc_ids) > max_allowed:
+        flash(f"⚠️ You can only delete {max_allowed} documents at a time on the {tier.capitalize()} plan. Upgrade to delete more at once.", "warning")
         return redirect("/")
     
     # Verify all documents belong to the user
@@ -3154,7 +3171,8 @@ def bulk_delete_documents():
             log_user_action(user_id, "bulk_delete_documents", {
                 "count": deleted_count,
                 "titles": titles[:5],  # Only store first 5 to avoid huge logs
-                "total": len(titles)
+                "total": len(titles),
+                "tier": tier
             })
             
             if deleted_count == 1:
