@@ -856,8 +856,9 @@ def require_verified():
         return redirect(url_for("login"))
     
     if not is_email_verified(user_id):
+        # User is logged in but not verified - redirect to verification page
         flash("⚠️ Please verify your email address to access all features.", "warning")
-        return redirect(url_for("request_verification"))  # Changed from resend_verification
+        return redirect(url_for("request_verification"))
     
     return None
 
@@ -2886,17 +2887,22 @@ def register():
                     new_user_id = cursor.fetchone()[0]
                     conn.commit()
 
+                    # Send verification email
                     send_verification_email(email, new_user_id)
+                    
+                    # ⭐ LOG THE USER IN IMMEDIATELY (but they're not verified yet)
+                    session["user_id"] = new_user_id
+                    session["email"] = email
+                    
                     cursor.close()
             finally:
                 put_db(conn)
 
             if not error:
                 flash("✅ Account created! Please check your email to verify your address.", "success")
-                return redirect(url_for("login"))
+                return redirect(url_for("request_verification"))  # Redirect to verification page
 
     return render_template("register.html", error=error)
-
 
 @app.route("/verify-email/<token>")
 def verify_email(token):
@@ -2918,8 +2924,12 @@ def verify_email(token):
             )
             conn.commit()
             
+            # ⭐ LOG THE USER IN AUTOMATICALLY
             session["user_id"] = user_id
             session["email"] = email
+            
+            # Send welcome email (optional - do this in background or don't block)
+            # send_welcome_email(email, user_id)
             
             flash("✅ Email verified successfully! Welcome to Fritt Tracker.", "success")
             return redirect("/")
@@ -2954,6 +2964,20 @@ def request_verification():
     error = None
     success = None
     
+    # If user is logged in, pre-fill their email
+    email = ""
+    if session.get("user_id"):
+        conn = get_db()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT email FROM users WHERE id = %s", (session["user_id"],))
+            result = cursor.fetchone()
+            if result:
+                email = result[0]
+            cursor.close()
+        finally:
+            put_db(conn)
+    
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         
@@ -2976,7 +3000,7 @@ def request_verification():
             else:
                 error = "No unverified account found with that email address."
     
-    return render_template("request_verification.html", error=error, success=success)
+    return render_template("request_verification.html", error=error, success=success, email=email)
 
 @app.route("/login", methods=["GET", "POST"])
 @limiter.limit("10 per minute", error_message="Too many login attempts. Please wait a moment.")
