@@ -26,40 +26,6 @@
   </form>
 </div>
 
-<!-- GRACE PERIOD BANNER -->
-{% if subscription_tier != 'free' and subscription_status == 'expired' and grace_period_end and grace_period_end > now %}
-<div class="banner-container bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
-  <div class="flex items-start gap-3">
-    <span class="text-orange-600 text-xl">⏳</span>
-    <div class="flex-1">
-      <p class="text-sm text-orange-800">
-        <strong>Your {{ subscription_tier|upper }} plan has expired.</strong>
-        {% set days_left = ((grace_period_end - now).days) %}
-        {% if days_left > 0 %}
-          Grace period: {{ days_left }} days remaining to reactivate without losing documents.
-        {% endif %}
-      </p>
-      <div class="flex items-center gap-3 mt-1">
-        <p class="text-xs text-orange-700">
-          Reactivate by {{ grace_period_end.strftime('%B %d, %Y') }} to keep all your documents.
-        </p>
-        <form method="POST" action="{{ url_for('reactivate_subscription') }}" class="inline">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition font-medium">
-            🔄 Reactivate Now
-          </button>
-        </form>
-      </div>
-    </div>
-    <button class="banner-dismiss text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0" aria-label="Dismiss banner">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-    </button>
-  </div>
-</div>
-{% endif %}
-
 <!-- FREE PLAN BANNER -->
 {% if subscription_tier == 'free' %}
 <div class="banner-container bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">

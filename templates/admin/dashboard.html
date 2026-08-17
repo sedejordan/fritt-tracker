@@ -39,13 +39,26 @@
 <!-- Subscription Stats -->
 <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
     <h2 class="font-bold text-lg mb-4">Subscriptions</h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
         {% for tier, count in subscription_stats %}
         <div class="text-center p-3 bg-gray-50 rounded-lg">
-            <div class="text-sm text-gray-500">{{ tier|capitalize }}</div>
+            <div class="text-sm text-gray-500">
+                {% if tier == 'pro' and count > 0 %}
+                    Pro
+                {% elif tier == 'vip' and count > 0 %}
+                    VIP
+                {% else %}
+                    {{ tier|capitalize }}
+                {% endif %}
+            </div>
             <div class="text-xl font-bold">{{ count }}</div>
         </div>
         {% endfor %}
+        <!-- Add trial count -->
+        <div class="text-center p-3 bg-blue-50 rounded-lg border-2 border-blue-200">
+            <div class="text-sm text-blue-600">⭐ On Trial</div>
+            <div class="text-xl font-bold text-blue-700">{{ trial_count or 0 }}</div>
+        </div>
     </div>
 </div>
 

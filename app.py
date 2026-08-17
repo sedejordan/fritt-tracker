@@ -194,19 +194,17 @@ def get_subscription_status(user_id):
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT subscription_tier, subscription_status, subscription_expiry, flw_subscription_id, grace_period_end, documents_trimmed, trial_used, trial_ends_at FROM users WHERE id = %s",
+            "SELECT subscription_tier, subscription_status, subscription_expiry, flw_subscription_id, documents_trimmed, trial_used, trial_ends_at FROM users WHERE id = %s",
             (user_id,)
         )
         result = cursor.fetchone()
         cursor.close()
         
         if result:
-            tier, status, expiry, flw_subscription_id, grace_period_end, documents_trimmed, trial_used, trial_ends_at = result
+            tier, status, expiry, flw_subscription_id, documents_trimmed, trial_used, trial_ends_at = result
             
             if expiry and expiry.tzinfo is None:
                 expiry = expiry.replace(tzinfo=timezone.utc)
-            if grace_period_end and grace_period_end.tzinfo is None:
-                grace_period_end = grace_period_end.replace(tzinfo=timezone.utc)
             if trial_ends_at and trial_ends_at.tzinfo is None:
                 trial_ends_at = trial_ends_at.replace(tzinfo=timezone.utc)
 
@@ -219,30 +217,27 @@ def get_subscription_status(user_id):
             else:
                 is_active = status == 'active' or (status == 'cancelled' and expiry and expiry > datetime.now(timezone.utc))
             
-            # Check if in grace period (only for expired subscriptions)
-            in_grace_period = False
-            if tier != 'free' and status == 'expired' and grace_period_end and grace_period_end > datetime.now(timezone.utc):
-                in_grace_period = True
-            
             # Check if on trial
             on_trial = False
-            if trial_used and tier == 'pro' and status == 'active' and trial_ends_at and trial_ends_at > datetime.now(timezone.utc):
+            is_trial = False
+            if trial_used and tier in ['pro', 'vip'] and status == 'active' and trial_ends_at and trial_ends_at > datetime.now(timezone.utc):
                 on_trial = True
+                is_trial = True
             
             return {
                 'tier': tier,
                 'status': status,
                 'expiry': expiry,
                 'flw_subscription_id': flw_subscription_id,
-                'grace_period_end': grace_period_end,
                 'documents_trimmed': documents_trimmed,
                 'trial_used': trial_used,
                 'trial_ends_at': trial_ends_at,
                 'is_active': is_active,
-                'in_grace_period': in_grace_period,
-                'on_trial': on_trial
+                'on_trial': on_trial,
+                'is_trial': is_trial,
+                'display_tier': f"{tier.upper()} (Trial)" if is_trial else tier.upper()
             }
-        return {'tier': 'free', 'status': 'active', 'expiry': None, 'flw_subscription_id': None, 'grace_period_end': None, 'documents_trimmed': False, 'trial_used': False, 'trial_ends_at': None, 'is_active': True, 'in_grace_period': False, 'on_trial': False}
+        return {'tier': 'free', 'status': 'active', 'expiry': None, 'flw_subscription_id': None, 'documents_trimmed': False, 'trial_used': False, 'trial_ends_at': None, 'is_active': True, 'on_trial': False, 'is_trial': False, 'display_tier': 'Free'}
     finally:
         put_db(conn)
 
@@ -1270,7 +1265,6 @@ def home():
     tier = sub_status['tier']
     status = sub_status['status']
     is_active = sub_status['is_active']
-    in_grace_period = sub_status.get('in_grace_period', False)
     documents_trimmed = sub_status.get('documents_trimmed', False)
 
     # Check if trial has expired (for both Pro and VIP)
@@ -1294,79 +1288,50 @@ def home():
                 conn.commit()
                 cursor.close()
                 flash("⚠️ Your free trial has ended. Upgrade to continue using Pro features.", "warning")
-                # CRITICAL: Redirect after downgrade
-                return redirect(url_for("home"))  # <-- ADD THIS
+                return redirect(url_for("home"))
             except Exception as e:
                 print(f"❌ Error ending trial: {e}")
                 flash("An error occurred. Please contact support.", "error")
-                return redirect(url_for("home"))  # <-- ADD THIS
+                return redirect(url_for("home"))
             finally:
                 put_db(conn)
     
-    # If subscription expired, start grace period
-    if tier != 'free' and tier != 'suspended' and not is_active and not in_grace_period and not documents_trimmed:
-        # Start 7-day grace period
-        grace_period_end = datetime.now(timezone.utc) + timedelta(days=7)
+    # REMOVE GRACE PERIOD CODE - Just handle expired subscriptions directly
+    if tier != 'free' and tier != 'suspended' and not is_active:
+        # Subscription expired - downgrade immediately
+        deleted_count = trim_documents_to_free_limit(user_id)
         
         conn = get_db()
         try:
             cursor = conn.cursor()
             cursor.execute("""
                 UPDATE users 
-                SET grace_period_end = %s
+                SET subscription_tier = 'free',
+                    subscription_status = 'expired',
+                    subscription_expiry = NULL,
+                    documents_trimmed = TRUE
                 WHERE id = %s
-            """, (grace_period_end, user_id))
+            """, (user_id,))
             conn.commit()
             cursor.close()
         finally:
             put_db(conn)
         
-        flash(
-            f"⚠️ Your {tier} subscription has expired. You have until {grace_period_end.strftime('%B %d, %Y')} to reactivate without losing your documents. "
-            "After that, we'll keep your 20 most important documents and remove the rest.",
-            "warning"
-        )
-        # Continue to render the page (don't return yet)
-    
-    # If grace period ended and documents haven't been trimmed yet
-    if tier != 'free' and tier != 'suspended' and not is_active and not documents_trimmed:
-        grace_period_end = sub_status.get('grace_period_end')
-        if grace_period_end and grace_period_end <= datetime.now(timezone.utc):
-            # Grace period ended - trim documents
-            deleted_count = trim_documents_to_free_limit(user_id)
-            
-            conn = get_db()
-            try:
-                cursor = conn.cursor()
-                cursor.execute("""
-                    UPDATE users 
-                    SET subscription_tier = 'free',
-                        subscription_status = 'expired',
-                        subscription_expiry = NULL,
-                        grace_period_end = NULL,
-                        documents_trimmed = TRUE
-                    WHERE id = %s
-                """, (user_id,))
-                conn.commit()
-                cursor.close()
-            finally:
-                put_db(conn)
-            
-            if deleted_count > 0:
-                flash(
-                    f"⚠️ Your grace period has ended. We've kept your 20 most important documents "
-                    f"(farthest from expiry) and removed {deleted_count} documents. "
-                    f"Upgrade to Pro or VIP to track more than 20 documents.",
-                    "warning"
-                )
-            else:
-                flash("⚠️ Your grace period has ended. You're now on the Free plan.", "warning")
-            
-            # Refresh subscription status
-            sub_status = get_subscription_status(user_id)
-            tier = sub_status['tier']
-            status = sub_status['status']
-            documents_trimmed = True
+        if deleted_count > 0:
+            flash(
+                f"⚠️ Your subscription has expired. We've kept your 20 most important documents "
+                f"(farthest from expiry) and removed {deleted_count} documents. "
+                f"Upgrade to Pro or VIP to track more than 20 documents.",
+                "warning"
+            )
+        else:
+            flash("⚠️ Your subscription has expired. You're now on the Free plan.", "warning")
+        
+        # Refresh subscription status
+        sub_status = get_subscription_status(user_id)
+        tier = sub_status['tier']
+        status = sub_status['status']
+        documents_trimmed = True
     
     # Get document count
     doc_count = get_document_count(user_id)
@@ -1419,7 +1384,6 @@ def home():
         subscription_tier=tier,
         subscription_status=status,
         subscription_expiry=sub_status.get('expiry'),
-        grace_period_end=sub_status.get('grace_period_end'),
         on_trial=sub_status.get('on_trial', False),
         trial_ends_at=sub_status.get('trial_ends_at'),
         now=datetime.now(timezone.utc)
@@ -2164,10 +2128,8 @@ def admin_user_action(user_id):
                 # Check if they have a valid subscription
                 has_valid_subscription = False
                 if current_tier in ['pro', 'vip', 'business']:
-                    # Check if they have an active or cancelled subscription that's still valid
                     if current_status in ['active', 'cancelled'] and current_expiry and current_expiry > datetime.now(timezone.utc):
                         has_valid_subscription = True
-                    # Or if they have an indefinite subscription (no expiry)
                     elif current_status in ['active', 'cancelled'] and current_expiry is None:
                         has_valid_subscription = True
                 
@@ -2177,7 +2139,6 @@ def admin_user_action(user_id):
                         UPDATE users 
                         SET suspended = FALSE,
                             subscription_status = 'active',
-                            grace_period_end = NULL,
                             documents_trimmed = FALSE
                         WHERE id = %s
                     """, (user_id,))
@@ -2757,12 +2718,10 @@ def admin_reset_test_account():
     
     # Security: Only allow resetting the configured test account
     if ALLOWED_TEST_EMAIL:
-        # If TEST_EMAIL is set, only allow that specific email
         if email != ALLOWED_TEST_EMAIL.lower():
             flash(f"Only the configured test account can be reset.", "error")
             return redirect(url_for("admin_users"))
     else:
-        # If TEST_EMAIL is not set, only allow test@fritt.org as fallback
         if email != 'test@fritt.org':
             flash("Only test accounts can be reset. Set TEST_EMAIL env variable to configure.", "error")
             return redirect(url_for("admin_users"))
@@ -2771,7 +2730,6 @@ def admin_reset_test_account():
     try:
         cursor = conn.cursor()
         
-        # Check if user exists
         cursor.execute(
             "SELECT id, email FROM users WHERE email = %s",
             (email,)
@@ -2784,22 +2742,18 @@ def admin_reset_test_account():
         
         user_id = user[0]
         
-        # Get document count for logging
         cursor.execute(
             "SELECT COUNT(*) FROM documents WHERE user_id = %s",
             (user_id,)
         )
         doc_count = cursor.fetchone()[0]
         
-        # Delete all documents
         cursor.execute("DELETE FROM documents WHERE user_id = %s", (user_id,))
         deleted_docs = cursor.rowcount
         
-        # Delete logs
         cursor.execute("DELETE FROM user_activity_logs WHERE user_id = %s", (user_id,))
         cursor.execute("DELETE FROM flagged_users WHERE user_id = %s", (user_id,))
         
-        # Reset user to brand new status
         cursor.execute("""
             UPDATE users 
             SET 
@@ -2813,7 +2767,6 @@ def admin_reset_test_account():
                 subscription_status = 'active',
                 subscription_expiry = NULL,
                 flw_subscription_id = NULL,
-                grace_period_end = NULL,
                 documents_trimmed = FALSE,
                 trial_used = FALSE,
                 trial_ends_at = NULL,
@@ -3839,7 +3792,6 @@ def reactivate_subscription():
     tier = sub_status['tier']
     status = sub_status['status']
     current_expiry = sub_status.get('expiry')
-    in_grace_period = sub_status.get('in_grace_period', False)
     documents_trimmed = sub_status.get('documents_trimmed', False)
     
     # CASE 1: Already active → Just inform user
@@ -3859,8 +3811,7 @@ def reactivate_subscription():
             cursor = conn.cursor()
             cursor.execute("""
                 UPDATE users 
-                SET subscription_status = 'active',
-                    grace_period_end = NULL
+                SET subscription_status = 'active'
                 WHERE id = %s
             """, (user_id,))
             conn.commit()
@@ -3873,45 +3824,14 @@ def reactivate_subscription():
             flash("Something went wrong. Please try again.", "error")
             return redirect(url_for("home"))
     
-    # CASE 4: Has expiry but expired → Check grace period
-    if current_expiry <= datetime.now(timezone.utc):
-        # Check if in grace period
-        if in_grace_period:
-            # Reactivate during grace period!
-            conn = get_db()
-            try:
-                cursor = conn.cursor()
-                cursor.execute("""
-                    UPDATE users 
-                    SET subscription_status = 'active',
-                        grace_period_end = NULL
-                    WHERE id = %s
-                """, (user_id,))
-                conn.commit()
-                cursor.close()
-                
-                days_left = (current_expiry - datetime.now(timezone.utc)).days
-                flash(f"✅ Your {tier.upper()} subscription has been reactivated! Access until {current_expiry.strftime('%B %d, %Y')} ({days_left} days remaining). All your documents are safe.", "success")
-                return redirect(url_for("home"))
-            except Exception as e:
-                print(f"❌ Error reactivating: {e}")
-                conn.rollback()
-                flash("Something went wrong. Please try again.", "error")
-                return redirect(url_for("home"))
-        else:
-            # Grace period expired → Can't reactivate
-            flash("Your grace period has expired. Please purchase a new subscription.", "warning")
-            return redirect(url_for("pricing"))
-    
-    # CASE 5: Has expiry and is still valid → Reactivate!
+    # CASE 4: Has expiry and is still valid → Reactivate!
     if current_expiry > datetime.now(timezone.utc):
         conn = get_db()
         try:
             cursor = conn.cursor()
             cursor.execute("""
                 UPDATE users 
-                SET subscription_status = 'active',
-                    grace_period_end = NULL
+                SET subscription_status = 'active'
                 WHERE id = %s
             """, (user_id,))
             conn.commit()
@@ -3926,8 +3846,8 @@ def reactivate_subscription():
             flash("Something went wrong. Please try again.", "error")
             return redirect(url_for("home"))
     
-    # Fallback
-    flash("Unable to reactivate subscription. Please contact support.", "error")
+    # CASE 5: Expired - Can't reactivate
+    flash("Your subscription has expired. Please purchase a new subscription.", "warning")
     return redirect(url_for("pricing"))
 
 @app.route("/payment/initiate", methods=["POST"])

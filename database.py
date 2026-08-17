@@ -406,13 +406,6 @@ def init_db():
             except Exception as e:
                 print(f"ℹ️ Could not add flw_subscription_id: {e}")
 
-            # Add grace period columns
-            try:
-                cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS grace_period_end TIMESTAMP;")
-                print("✅ Added grace_period_end column to users")
-            except Exception as e:
-                print(f"ℹ️ Could not add grace_period_end: {e}")
-
             try:
                 cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS documents_trimmed BOOLEAN DEFAULT FALSE;")
                 print("✅ Added documents_trimmed column to users")
@@ -443,6 +436,12 @@ def init_db():
                 print("✅ Updated suspended column")
             except Exception as e:
                 print(f"ℹ️ Could not update suspended: {e}")
+
+            try:
+                cursor.execute("ALTER TABLE users DROP COLUMN IF EXISTS grace_period_end;")
+                print("✅ Dropped grace_period_end column")
+            except Exception as e:
+                print(f"ℹ️ Could not update grace_period_end: {e}")
 
             # ---------------------------------------------------------------------
             # DOCUMENTS TABLE
