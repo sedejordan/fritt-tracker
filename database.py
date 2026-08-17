@@ -652,7 +652,7 @@ def init_db():
             # """)
             # print("✅ Added someone to admin_users")
             
-            # print("✅ Created/verified flagged_users table")
+            print("✅ Created/verified flagged_users table")
 
             # ---------------------------------------------------------------------
             # USER ACTIVITY LOGS
