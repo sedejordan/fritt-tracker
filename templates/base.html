@@ -285,13 +285,6 @@
               <a href="/" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">
                 📊 Dashboard
               </a>
-              
-              <!-- Show trial info if on trial -->
-              {% if on_trial and trial_ends_at %}
-                <div class="px-4 py-2 text-center text-xs text-muted">
-                  ⭐ Trial ends: {{ trial_ends_at.strftime('%B %d, %Y') }}
-                </div>
-              {% endif %}
             {% else %}
               <a href="/login" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center font-medium">Log In</a>
               <a href="/register" class="block px-4 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-center">Sign Up Free</a>
