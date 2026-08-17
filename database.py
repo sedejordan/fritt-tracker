@@ -647,12 +647,12 @@ def init_db():
                 );
             """)
 
-            cursor.execute("""
-                INSERT INTO admin_users (user_id) VALUES (1);
-            """)
-            print("✅ Added someone to admin_users")
+            # cursor.execute("""
+            #     INSERT INTO admin_users (user_id) VALUES (1);
+            # """)
+            # print("✅ Added someone to admin_users")
             
-            print("✅ Created/verified flagged_users table")
+            # print("✅ Created/verified flagged_users table")
 
             # ---------------------------------------------------------------------
             # USER ACTIVITY LOGS
