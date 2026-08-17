@@ -541,8 +541,6 @@ def init_db():
             """)
             print("✅ Created/verified newsletter_subscribers table")
 
-            # Add to init_db() function, after newsletter_subscribers table:
-
             # ---------------------------------------------------------------------
             # CONTACT INQUIRIES TABLE
             # ---------------------------------------------------------------------
@@ -649,10 +647,10 @@ def init_db():
                 );
             """)
 
-            # cursor.execute("""
-            #     INSERT INTO admin_users (user_id) VALUES (1);
-            # """)
-            # print("✅ Added someone to admin_users")
+            cursor.execute("""
+                INSERT INTO admin_users (user_id) VALUES (1);
+            """)
+            print("✅ Added someone to admin_users")
             
             print("✅ Created/verified flagged_users table")
 
