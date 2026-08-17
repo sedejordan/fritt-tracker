@@ -541,8 +541,6 @@ def init_db():
             """)
             print("✅ Created/verified newsletter_subscribers table")
 
-            # Add to init_db() function, after newsletter_subscribers table:
-
             # ---------------------------------------------------------------------
             # CONTACT INQUIRIES TABLE
             # ---------------------------------------------------------------------

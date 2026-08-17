@@ -13,6 +13,7 @@
     {% endif %}
   </div>
   {% endif %}
+  
   <form method="POST" class="space-y-4">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div>
@@ -23,7 +24,7 @@
     <div>
       <label for="password" class="block text-sm font-medium mb-1">Password</label>
       <div class="relative">
-        <input type="password" id="password" name="password" placeholder="At least 8 characters" required
+        <input type="password" id="password" name="password" placeholder="Create a strong password" required
                class="w-full px-3 py-2 border border-line rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-fritt focus:border-transparent pr-10">
         <button type="button" onclick="togglePassword('password', this)"
                 title="Show/hide password"
@@ -35,6 +36,17 @@
           </svg>
         </button>
       </div>
+      <!-- Password requirements -->
+      <div class="mt-2 text-xs text-muted space-y-1" id="password-requirements">
+        <p class="font-medium text-gray-700">Password must contain:</p>
+        <ul class="list-disc list-inside space-y-0.5 ml-1">
+          <li id="req-length" class="text-gray-400">✓ At least 8 characters</li>
+          <li id="req-uppercase" class="text-gray-400">✓ An uppercase letter</li>
+          <li id="req-lowercase" class="text-gray-400">✓ A lowercase letter</li>
+          <li id="req-number" class="text-gray-400">✓ A number</li>
+          <li id="req-symbol" class="text-gray-400">✓ A symbol (!@#$%^&*()_+-=[]{}|;:',.&lt;&gt;?/~`)</li>
+        </ul>
+      </div>
     </div>
     <button type="submit" class="w-full py-2 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">Sign Up</button>
   </form>
@@ -43,4 +55,55 @@
     Already have an account? <a href="/login" class="text-fritt hover:underline">Log in</a>
   </p>
 </div>
+
+<script>
+// Real-time password validation
+document.addEventListener('DOMContentLoaded', function() {
+  const passwordInput = document.getElementById('password');
+  
+  // Show requirements when user starts typing
+  passwordInput.addEventListener('focus', function() {
+    document.getElementById('password-requirements').style.display = 'block';
+  });
+  
+  // Validate as user types
+  passwordInput.addEventListener('input', function() {
+    const password = this.value;
+    
+    // Check each requirement
+    const hasLength = password.length >= 8;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSymbol = /[!@#$%^&*()_+\-=\[\]{}|;:',.<>?\/~`]/.test(password);
+    
+    // Update UI
+    updateRequirement('req-length', hasLength);
+    updateRequirement('req-uppercase', hasUppercase);
+    updateRequirement('req-lowercase', hasLowercase);
+    updateRequirement('req-number', hasNumber);
+    updateRequirement('req-symbol', hasSymbol);
+  });
+  
+  function updateRequirement(id, isValid) {
+    const element = document.getElementById(id);
+    if (isValid) {
+      element.className = 'text-green-600';
+      element.textContent = element.textContent.replace('✓', '✅');
+    } else {
+      element.className = 'text-gray-400';
+      element.textContent = element.textContent.replace('✅', '✓');
+    }
+  }
+});
+</script>
+
+<style>
+  #password-requirements {
+    display: none;
+  }
+  #password-requirements ul li {
+    transition: color 0.2s ease;
+  }
+</style>
 {% endblock %}
