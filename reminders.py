@@ -313,7 +313,6 @@ def check_subscription_reminders():
     try:
         cursor = conn.cursor()
         
-        # Get all users with active paid subscriptions or trials
         cursor.execute("""
             SELECT id, email, subscription_tier, subscription_expiry, trial_ends_at, trial_used
             FROM users 
@@ -328,7 +327,12 @@ def check_subscription_reminders():
         for user in users:
             user_id, email, tier, expiry, trial_ends_at, trial_used = user
             
-            # Check if on trial
+            # Make all datetimes timezone-aware
+            if expiry and expiry.tzinfo is None:
+                expiry = expiry.replace(tzinfo=timezone.utc)
+            if trial_ends_at and trial_ends_at.tzinfo is None:
+                trial_ends_at = trial_ends_at.replace(tzinfo=timezone.utc)
+            
             is_trial = trial_used and trial_ends_at and trial_ends_at > now
             
             if is_trial:
