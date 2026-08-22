@@ -247,11 +247,27 @@ def check_subscription_status():
         user_id = session['user_id']
         sub_status = get_subscription_status(user_id)
         if sub_status['tier'] not in ['free', 'suspended'] and not sub_status['is_active']:
+            # Trim documents
             trim_documents_to_free_limit(user_id)
-            # Update user to free tier...
-            # Optionally flash a message
+            
+            # Downgrade the user
+            conn = get_db()
+            try:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    UPDATE users 
+                    SET subscription_tier = 'free',
+                        subscription_status = 'expired',
+                        subscription_expiry = NULL
+                    WHERE id = %s
+                """, (user_id,))
+                conn.commit()
+                cursor.close()
+            finally:
+                put_db(conn)
+            
             flash("Your subscription has expired. You've been downgraded to the Free plan.", "warning")
-
+                      
 def get_cached_subscription_status(user_id):
     """Get subscription status with simple caching."""
     cache_key = f"sub_{user_id}"
@@ -864,7 +880,10 @@ def require_verified():
 
 def verify_flutterwave_webhook(data, signature):
     """Verify webhook signature."""
-    if not FLW_WEBHOOK_SECRET:
+    # Read secret from environment each time (so tests can set it)
+    webhook_secret = os.environ.get("FLW_WEBHOOK_SECRET", "")
+    
+    if not webhook_secret:
         print("⚠️ FLW_WEBHOOK_SECRET not set - webhook verification disabled")
         return True
     
@@ -874,7 +893,7 @@ def verify_flutterwave_webhook(data, signature):
     
     try:
         expected_signature = hmac.new(
-            FLW_WEBHOOK_SECRET.encode('utf-8'),
+            webhook_secret.encode('utf-8'),
             json.dumps(data).encode('utf-8'),
             hashlib.sha256
         ).hexdigest()
@@ -883,7 +902,7 @@ def verify_flutterwave_webhook(data, signature):
     except Exception as e:
         print(f"❌ Signature verification error: {e}")
         return False
-
+    
 # =============================================================================
 # EMAIL FUNCTIONS
 # =============================================================================
@@ -1962,7 +1981,8 @@ def admin_user_detail(user_id):
     try:
         cursor = conn.cursor()
         
-        # Get user info
+        # Make sure user[5] (subscription_expiry) is timezone-aware
+        # When fetching user data, ensure expiry is timezone-aware
         cursor.execute("""
             SELECT u.id, u.email, u.email_verified, u.subscription_tier,
                 u.subscription_status, u.subscription_expiry, u.created_at,
@@ -1972,6 +1992,12 @@ def admin_user_detail(user_id):
             WHERE u.id = %s
         """, (user_id,))
         user = cursor.fetchone()
+
+        # Convert expiry to timezone-aware if needed
+        if user and user[5] and user[5].tzinfo is None:
+            user = list(user)
+            user[5] = user[5].replace(tzinfo=timezone.utc)
+            user = tuple(user)
         
         if not user:
             abort(404)
@@ -2024,12 +2050,15 @@ def admin_user_detail(user_id):
     finally:
         put_db(conn)
     
+    now = datetime.now(timezone.utc)
+    
     return render_template(
         "admin/user_detail.html",
         user=user,
         documents=documents,
         activity_logs=activity_logs,
-        audit_logs=audit_logs
+        audit_logs=audit_logs,
+        now=now
     )
 
 @app.route("/admin/user/<int:user_id>/action", methods=["POST"])

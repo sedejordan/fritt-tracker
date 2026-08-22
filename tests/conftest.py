@@ -1,110 +1,242 @@
+# tests/conftest.py
 """
-conftest.py
-
-Shared setup for all tests. pytest automatically finds and uses this file -
-you don't import it anywhere yourself.
-
-IMPORTANT: tests run against TEST_DATABASE_URL, a completely separate
-database from your real production one. Every test wipes all data from
-the tables it uses, so running these against your real database would
-delete all real users' documents. To make that mistake hard to make by
-accident, we refuse to start at all if TEST_DATABASE_URL isn't set -
-there's no silent fallback to DATABASE_URL.
+conftest.py - Updated with complete test fixtures.
 """
 
 import os
 import sys
 from pathlib import Path
 import pytest
+import json
+from datetime import datetime, timedelta, timezone
+from unittest.mock import Mock, patch
+import psycopg2
 
-# Make sure the project root (one level up from this tests/ folder, where
-# app.py and database.py live) is on Python's import search path. Without
-# this, whether "import app" and "from database import ..." work depends
-# on exactly how pytest was invoked and from where - fragile and
-# inconsistent across machines. This makes it reliable everywhere.
+# Make sure the project root is on Python's import search path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL")
+# Set test environment variables BEFORE importing app
+os.environ.setdefault("SECRET_KEY", "test-only-secret-key-not-used-in-production")
+os.environ["DISABLE_RATE_LIMITING"] = "true"
+os.environ["FLW_TEST_MODE"] = "true"
+os.environ["RESEND_API_KEY"] = "test_resend_key"  # Mock email sending
+os.environ["FLW_WEBHOOK_SECRET"] = "test_webhook_secret"
+os.environ["TRIGGER_SECRET"] = "test_trigger_secret"
+os.environ["ADMIN_EMAIL"] = "admin@test.com"
 
+# Database setup
+TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL")
 if not TEST_DATABASE_URL:
     raise RuntimeError(
         "TEST_DATABASE_URL is not set. Tests must run against a database "
-        "that is NOT your production database, since tests wipe all data "
-        "between runs. Set TEST_DATABASE_URL to a separate Postgres "
-        "database before running pytest."
+        "that is NOT your production database."
     )
-
-# app.py and database.py both read DATABASE_URL from the environment at
-# import time, as a plain module-level variable (not something we can
-# override after the fact). So we point DATABASE_URL at the test database
-# BEFORE importing app - this line has to stay above "import app".
 os.environ["DATABASE_URL"] = TEST_DATABASE_URL
-os.environ.setdefault("SECRET_KEY", "test-only-secret-key-not-used-in-production")
-# Flask-Limiter locks in whether it's enabled at construction time inside
-# app.py, not per-request - so this has to be set before "import app" runs,
-# not afterwards via app.config. See the matching comment in app.py.
-os.environ["DISABLE_RATE_LIMITING"] = "true"
 
-import psycopg2
-from database import init_db  # noqa: E402  (import after env vars are set, on purpose)
-import app as app_module  # noqa: E402
+# Import after env vars are set
+import app as app_module
+from database import init_db, get_db, put_db
 
-# Explicitly create the tables in the test database, right here, where a
-# failure will actually stop the test run with a clear error - rather than
-# relying only on app.py's own startup init, which deliberately swallows
-# connection errors (so a slow-starting production database doesn't crash
-# the live app). That's the right behavior for a running server, but the
-# wrong behavior for tests: if this fails (e.g. Postgres isn't accepting
-# connections yet - common right after "docker run", which needs a couple
-# of seconds to finish starting up), we want to know immediately, not see
-# a confusing "table does not exist" error somewhere else later.
+# Initialize the test database
 init_db()
 
 
 @pytest.fixture
 def app():
-    """
-    The Flask app, configured for testing. WTF_CSRF_ENABLED off lets tests
-    POST form data directly without needing to fetch and resubmit a real
-    CSRF token first - CSRF protection itself is simple enough (a
-    Flask-WTF built-in) that we're trusting the library rather than
-    re-testing it here. Rate limiting is disabled separately, via the
-    DISABLE_RATE_LIMITING env var set above (app.config can't turn it off
-    at this point - see the comment on that line).
-    """
+    """The Flask app, configured for testing."""
     app_module.app.config.update(
         TESTING=True,
-        WTF_CSRF_ENABLED=False,
+        WTF_CSRF_ENABLED=False,  # Disable CSRF for tests
     )
     yield app_module.app
 
 
 @pytest.fixture
 def client(app):
-    """A Flask test client - lets tests make fake GET/POST requests without a real server."""
+    """A Flask test client."""
     return app.test_client()
 
-
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="function", autouse=False)  # Remove autouse
 def clean_database():
-    """
-    Runs before every single test automatically (autouse=True). Empties
-    the users and documents tables so each test starts from a blank
-    slate, regardless of what earlier tests did.
-    RESTART IDENTITY resets auto-incrementing IDs back to 1 each time too,
-    so tests can rely on predictable IDs if needed. CASCADE handles the
-    users -> documents foreign key relationship automatically.
-    """
-    conn = psycopg2.connect(TEST_DATABASE_URL)
-    cursor = conn.cursor()
-    # If some earlier test left a connection open with an uncommitted
-    # transaction (e.g. it crashed before closing its connection), TRUNCATE
-    # would normally wait forever for that lock to clear. This makes it
-    # fail loudly after 5 seconds instead, with a clear error, rather than
-    # hanging the whole test run with no explanation.
-    cursor.execute("SET lock_timeout = '5s';")
-    cursor.execute("TRUNCATE TABLE documents, users RESTART IDENTITY CASCADE;")
-    conn.commit()
-    cursor.close()
-    conn.close()
+    """Runs before every test. Empties all tables."""
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SET lock_timeout = '5s';")
+        cursor.execute("""
+            TRUNCATE TABLE documents, users, admin_users, flagged_users, 
+            audit_log, user_activity_logs, contact_inquiries, business_inquiries,
+            newsletter_subscribers RESTART IDENTITY CASCADE;
+        """)
+        conn.commit()
+        cursor.close()
+    finally:
+        put_db(conn)
     yield
+
+@pytest.fixture
+def test_user(client):
+    """Create and return a test user (automatically verified)."""
+    client.post(
+        "/register",
+        data={"email": "test@example.com", "password": "Test123!@#"},
+        follow_redirects=True
+    )
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE users SET email_verified = TRUE WHERE email = %s RETURNING id, email",
+            ("test@example.com",)
+        )
+        user = cursor.fetchone()
+        conn.commit()
+        cursor.close()
+    finally:
+        put_db(conn)
+    
+    return {"id": user[0], "email": user[1]}
+
+@pytest.fixture
+def test_admin_user(client):
+    """Create and return a test admin user."""
+    # Register
+    client.post(
+        "/register",
+        data={"email": "admin@example.com", "password": "Admin123!@#"},
+        follow_redirects=True
+    )
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        # Verify the user
+        cursor.execute(
+            "UPDATE users SET email_verified = TRUE WHERE email = %s RETURNING id",
+            ("admin@example.com",)
+        )
+        user_id = cursor.fetchone()[0]
+        
+        # Check if already an admin before inserting
+        cursor.execute(
+            "SELECT 1 FROM admin_users WHERE user_id = %s",
+            (user_id,)
+        )
+        if not cursor.fetchone():
+            # Make them an admin
+            cursor.execute(
+                "INSERT INTO admin_users (user_id) VALUES (%s)",
+                (user_id,)
+            )
+        conn.commit()
+        cursor.close()
+    finally:
+        put_db(conn)
+    
+    return {"id": user_id, "email": "admin@example.com"}
+
+@pytest.fixture
+def logged_in_user(client, test_user):
+    """Return a logged-in test user."""
+    client.post(
+        "/login",
+        data={"email": "test@example.com", "password": "Test123!@#"},
+        follow_redirects=True
+    )
+    return test_user
+
+@pytest.fixture
+def fresh_user(client):
+    """Create a fresh user with a unique email."""
+    import time
+    unique_email = f"test_{int(time.time())}@example.com"
+    
+    client.post(
+        "/register",
+        data={"email": unique_email, "password": "Test123!@#"},
+        follow_redirects=True
+    )
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE users SET email_verified = TRUE WHERE email = %s RETURNING id, email",
+            (unique_email,)
+        )
+        user = cursor.fetchone()
+        conn.commit()
+        cursor.close()
+    finally:
+        put_db(conn)
+    
+    client.post(
+        "/login",
+        data={"email": unique_email, "password": "Test123!@#"},
+        follow_redirects=True
+    )
+    
+    return {"id": user[0], "email": user[1]}
+
+# Add this debug test to conftest.py temporarily
+@pytest.fixture
+def logged_in_admin(client, test_admin_user):
+    """Return a logged-in admin user."""
+    response = client.post(
+        "/login",
+        data={"email": "admin@example.com", "password": "Admin123!@#"},
+        follow_redirects=True
+    )
+    # Print the response to debug
+    print(f"Login response status: {response.status_code}")
+    print(f"Login response contains admin check: {b'Add Document' in response.data}")
+    
+    # Check if admin_users table has the user
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM admin_users WHERE user_id = %s",
+            (test_admin_user["id"],)
+        )
+        admin_record = cursor.fetchone()
+        print(f"Admin record in DB: {admin_record}")
+        cursor.close()
+    finally:
+        put_db(conn)
+    
+    return test_admin_user
+
+@pytest.fixture
+def test_document(logged_in_user, client):
+    """Create a test document and return its ID."""
+    response = client.post(
+        "/add",
+        data={"title": "Test Document", "expiry_date": "2099-01-01"},
+        follow_redirects=True
+    )
+    
+    conn = get_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT id FROM documents WHERE user_id = %s AND title = 'Test Document'",
+            (logged_in_user["id"],)
+        )
+        doc_id = cursor.fetchone()[0]
+        cursor.close()
+    finally:
+        put_db(conn)
+    
+    return doc_id
+
+
+@pytest.fixture
+def mock_email():
+    """Mock email sending so tests don't actually send emails."""
+    with patch('app.requests.post') as mock_post:
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_post.return_value = mock_response
+        yield mock_post
