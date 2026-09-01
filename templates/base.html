@@ -75,31 +75,31 @@
       <p class="mt-4 font-display text-sm tracking-wide text-muted">FRITT TRACKER</p>
     </div>
 
-    <!-- HEADER -->
+    <!-- HEADER (modified for better small-screen fit) -->
     <header class="bg-white border-b border-line sticky top-0 z-40">
-      <div class="px-4 py-4">
-        <div class="flex items-center justify-between">
-          <!-- LEFT: Menu toggle + Logo -->
-          <div class="flex items-center gap-3">
+      <div class="px-3 sm:px-4 py-3 sm:py-4">
+        <div class="flex items-center justify-between gap-2">
+          <!-- LEFT: Menu toggle + Logo (more compact) -->
+          <div class="flex items-center gap-2 sm:gap-3 min-w-0">
             <button 
               id="menu-toggle"
-              class="p-2 rounded-md hover:bg-paper transition-colors focus:outline-none focus:ring-2 focus:ring-fritt"
+              class="p-1.5 sm:p-2 rounded-md hover:bg-paper transition-colors focus:outline-none focus:ring-2 focus:ring-fritt shrink-0"
               aria-label="Toggle menu"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path id="menu-icon-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 <path id="menu-icon-close" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" class="hidden"/>
               </svg>
             </button>
             
-            <a href="/" class="flex items-center gap-2 shrink-0">
-              <img src="/static/fritt-tracker-logo.svg" alt="" class="w-8 h-8 rounded-md">
-              <span class="font-display font-bold text-xl text-fritt">
+            <a href="/" class="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
+              <img src="/static/fritt-tracker-logo.svg" alt="" class="w-6 h-6 sm:w-8 sm:h-8 rounded-md shrink-0">
+              <span class="font-display font-bold text-base sm:text-xl text-fritt truncate">
                 Fritt Tracker
                 {% if session.get("user_id") and subscription_tier and subscription_tier not in ['free', 'suspended'] %}
                   <span class="text-xs font-bold 
                     {% if subscription_tier == 'vip' %}text-purple-600 bg-purple-50{% else %}text-green-600 bg-green-50{% endif %}
-                    px-2 py-0.5 rounded-full ml-1 align-middle">
+                    px-1.5 py-0.5 rounded-full ml-0.5 sm:ml-1 align-middle inline-block">
                     {{ subscription_tier|upper }}
                     {% if on_trial and trial_ends_at and trial_ends_at > now %}
                       <span class="text-[10px] font-normal ml-0.5">(Trial)</span>
@@ -110,21 +110,21 @@
             </a>
           </div>
           
-          <!-- RIGHT: Account section -->
-          <div class="flex items-center gap-3">
+          <!-- RIGHT: Account section (optimized for small screens) -->
+          <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {% if session.get("user_id") %}
-              <!-- Logged in - show user avatar/email -->
+              <!-- Logged in - show user avatar/email (compact) -->
               <div class="relative" id="account-dropdown-container">
                 <button 
                   id="account-dropdown-btn"
-                  class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-paper transition-colors focus:outline-none focus:ring-2 focus:ring-fritt"
+                  class="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-md hover:bg-paper transition-colors focus:outline-none focus:ring-2 focus:ring-fritt"
                   aria-label="Account menu"
                 >
                   <!-- Avatar (first letter of email) -->
-                  <div class="w-8 h-8 rounded-full bg-fritt text-white flex items-center justify-center text-sm font-medium">
+                  <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-fritt text-white flex items-center justify-center text-xs sm:text-sm font-medium shrink-0">
                     {{ session.get("email", "U")[0].upper() }}
                   </div>
-                  <svg class="w-4 h-4 text-muted hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-3 h-3 sm:w-4 sm:h-4 text-muted hidden xs:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                   </svg>
                 </button>
@@ -156,7 +156,6 @@
                       🔑 Change Password
                     </a>
                     
-                    <!-- Cancel Subscription - Only show for Pro, VIP, Business users -->
                     {% if subscription_tier in ['pro', 'vip', 'business'] %}
                       <form method="POST" action="{{ url_for('cancel_subscription') }}" class="no-loading"
                             onsubmit="return confirm('⚠️ Are you sure you want to cancel your subscription?\n\nYou will lose Pro features at the end of your billing period.\n\nThis action cannot be undone.');">
@@ -180,11 +179,11 @@
                 </div>
               </div>
             {% else %}
-              <!-- Not logged in - show Login/Signup buttons -->
-              <a href="/login" class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-paper rounded-md transition-colors">
+              <!-- Not logged in - compact login/signup buttons for small screens -->
+              <a href="/login" class="px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 hover:bg-paper rounded-md transition-colors whitespace-nowrap">
                 Log In
               </a>
-              <a href="/register" class="px-4 py-2 text-sm font-medium bg-fritt text-white rounded-md hover:bg-fritt-dark transition-colors">
+              <a href="/register" class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium bg-fritt text-white rounded-md hover:bg-fritt-dark transition-colors whitespace-nowrap">
                 Sign Up
               </a>
             {% endif %}
