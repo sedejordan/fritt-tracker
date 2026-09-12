@@ -879,30 +879,24 @@ def require_verified():
     return None
 
 def verify_flutterwave_webhook(data, signature):
-    """Verify webhook signature."""
-    # Read secret from environment each time (so tests can set it)
+    """Verify webhook signature.
+
+    Flutterwave's verif-hash header is NOT an HMAC of the payload —
+    it's the secret hash you configured in the dashboard, echoed back
+    verbatim. Verification is a plain constant-time string comparison.
+    """
     webhook_secret = os.environ.get("FLW_WEBHOOK_SECRET", "")
-    
+
     if not webhook_secret:
-        print("⚠️ FLW_WEBHOOK_SECRET not set - webhook verification disabled")
-        return True
-    
+        print("❌ FLW_WEBHOOK_SECRET not set - rejecting webhook (fail closed)")
+        return False
+
     if not signature:
         print("❌ No signature provided")
         return False
-    
-    try:
-        expected_signature = hmac.new(
-            webhook_secret.encode('utf-8'),
-            json.dumps(data).encode('utf-8'),
-            hashlib.sha256
-        ).hexdigest()
-        
-        return hmac.compare_digest(expected_signature, signature)
-    except Exception as e:
-        print(f"❌ Signature verification error: {e}")
-        return False
-    
+
+    return hmac.compare_digest(webhook_secret, signature)
+
 # =============================================================================
 # EMAIL FUNCTIONS
 # =============================================================================
@@ -4161,6 +4155,12 @@ def flutterwave_webhook():
                 print("✅ Payment completed webhook received")
                 
                 webhook_data = data.get('data', {})
+
+                # --- Reject test/mock transactions when not running in test mode ---
+                if webhook_data.get('test_mode', False) and not is_test_mode():
+                    print("⚠️ Ignoring test-mode webhook transaction in production")
+                    return "OK", 200
+                # -------------------------------------------------------------------
                 
                 user_id = None
                 meta = webhook_data.get('meta', {})
