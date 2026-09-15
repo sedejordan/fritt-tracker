@@ -4163,6 +4163,7 @@ def flutterwave_webhook():
                 # -------------------------------------------------------------------
                 
                 user_id = None
+                plan_type = None
                 meta = webhook_data.get('meta', {})
                 if meta:
                     user_id = meta.get('user_id')
