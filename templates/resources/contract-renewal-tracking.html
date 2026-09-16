@@ -2,6 +2,78 @@
 {% block title %}Contract Renewal Tracking: How to Escape the Auto-Renewal Trap{% endblock %}
 {% block meta_description %}Auto-renewals are great until they're not. Learn how to track contract renewal and cancellation windows so you're never surprised by a charge or stuck in a contract you forgot about.{% endblock %}
 {% block canonical %}https://tracker.fritt.org/resources/contract-renewal-tracking{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Contract Renewal Tracking: How to Escape the Auto-Renewal Trap",
+  "description": "Auto-renewals are great until they're not. Learn how to track contract renewal and cancellation windows so you're never surprised by a charge.",
+  "image": "https://tracker.fritt.org/static/resources/contract-renewal-diagram.svg",
+  "author": { "@type": "Organization", "name": "Fritt Tracker", "url": "https://tracker.fritt.org/" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Fritt Tracker",
+    "logo": { "@type": "ImageObject", "url": "https://tracker.fritt.org/static/fritt-tracker-logo.svg" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://tracker.fritt.org/resources/contract-renewal-tracking" },
+  "datePublished": "2026-08-01",
+  "dateModified": "2026-09-16"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Resources", "item": "https://tracker.fritt.org/resources" },
+    { "@type": "ListItem", "position": 2, "name": "Contract Renewal Tracking", "item": "https://tracker.fritt.org/resources/contract-renewal-tracking" }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is an auto-renewal clause?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An auto-renewal clause is a contract term stating the agreement automatically renews for another term unless either party cancels within a set notice window, often 30 to 90 days before the end date."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What date should I actually track for a contract renewal?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Track the cancellation deadline, not the contract end date. The cancellation deadline is the end date minus the notice period, and it's the date your reminder should fire."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many reminders should I set before a contract renewal?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Set at least three: 90 days, 30 days, and 7 days before the cancellation deadline. That gives you time to decide, renegotiate, or shop alternatives."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How often should I review my recurring contracts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Quarterly. Pull up every contract renewing in the next 12 months and ask whether you still need it and whether the price is still competitive."
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 
 <article class="max-w-3xl mx-auto">
@@ -13,6 +85,8 @@
     Auto-renewals are great until they're not. Here's how to track every renewal and cancellation
     window so you're never surprised by a charge — or stuck in a contract you forgot about.
   </p>
+
+  <img src="/static/resources/contract-renewal-diagram.svg" alt="Timeline diagram showing the cancellation deadline falls before the contract end date, separated by the notice period" class="w-full rounded-xl border border-line mb-8" width="700" height="260" loading="lazy">
 
   <h2 class="font-display font-bold text-2xl mt-8 mb-3">Why auto-renewals catch people out</h2>
   <p class="text-ink mb-4">
@@ -142,6 +216,44 @@
     Even if you don't cancel anything, knowing what's renewing and when is worth the audit.
     It's the difference between paying attention and paying for it.
   </p>
+
+  <!-- ======================= FAQ (matches FAQPage schema above) ======================= -->
+  <section class="mt-12">
+    <h2 class="font-display font-bold text-2xl mt-8 mb-4">Frequently asked questions</h2>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">What is an auto-renewal clause?</summary>
+      <p class="text-sm text-ink mt-3">
+        An auto-renewal clause is a contract term stating the agreement automatically renews
+        for another term unless either party cancels within a set notice window, often 30 to
+        90 days before the end date.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">What date should I actually track for a contract renewal?</summary>
+      <p class="text-sm text-ink mt-3">
+        Track the cancellation deadline, not the contract end date. The cancellation deadline
+        is the end date minus the notice period, and it's the date your reminder should fire.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">How many reminders should I set before a contract renewal?</summary>
+      <p class="text-sm text-ink mt-3">
+        Set at least three: 90 days, 30 days, and 7 days before the cancellation deadline.
+        That gives you time to decide, renegotiate, or shop alternatives.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">How often should I review my recurring contracts?</summary>
+      <p class="text-sm text-ink mt-3">
+        Quarterly. Pull up every contract renewing in the next 12 months and ask whether you
+        still need it and whether the price is still competitive.
+      </p>
+    </details>
+  </section>
 
   <div class="mt-12 pt-8 border-t border-line">
     <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>

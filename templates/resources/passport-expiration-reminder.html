@@ -2,6 +2,78 @@
 {% block title %}Passport Expiration Reminders: The 6-Month Rule Most Travelers Don't Know{% endblock %}
 {% block meta_description %}Most countries require 6 months of passport validity beyond your travel dates. Learn the 6-month rule, which countries enforce it, and how to never get caught out at the airport.{% endblock %}
 {% block canonical %}https://tracker.fritt.org/resources/passport-expiration-reminder{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Passport Expiration Reminders: The 6-Month Rule Most Travelers Don't Know",
+  "description": "Most countries require 6 months of passport validity beyond your travel dates. Learn the 6-month rule and how to never get caught out at the airport.",
+  "image": "https://tracker.fritt.org/static/resources/passport-6month-rule.svg",
+  "author": { "@type": "Organization", "name": "Fritt Tracker", "url": "https://tracker.fritt.org/" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Fritt Tracker",
+    "logo": { "@type": "ImageObject", "url": "https://tracker.fritt.org/static/fritt-tracker-logo.svg" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://tracker.fritt.org/resources/passport-expiration-reminder" },
+  "datePublished": "2026-08-01",
+  "dateModified": "2026-09-16"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Resources", "item": "https://tracker.fritt.org/resources" },
+    { "@type": "ListItem", "position": 2, "name": "Passport Expiration Reminders", "item": "https://tracker.fritt.org/resources/passport-expiration-reminder" }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the 6-month passport rule?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most countries require your passport to remain valid for at least six months beyond your planned departure or return date. Airlines often enforce this at check-in, before you even reach immigration."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do the US, UK, and EU enforce the 6-month rule?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Generally no. The US, UK, Canada, Australia, and New Zealand typically only require validity for the duration of your stay. Schengen-area countries require at least 3 months beyond your planned departure."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How far in advance should I renew my passport?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Set a reminder for 9 months before expiry so you have time to renew without stress, then a second reminder at 6 months as a hard stop for booking international travel."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if my passport expires while I'm abroad?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You may be unable to fly home or re-enter your own country. Getting an emergency passport abroad means contacting your embassy, filling out forms, and waiting, sometimes for days."
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 
 <article class="max-w-3xl mx-auto">
@@ -13,6 +85,8 @@
     A passport that expires in five months is, for most international travel, an expired passport.
     Here's the rule, which countries enforce it, and how to never get turned away at the airport.
   </p>
+
+  <img src="/static/resources/passport-6month-rule.svg" alt="Timeline showing a passport needs at least 6 months of validity beyond the return date" class="w-full rounded-xl border border-line mb-8" width="700" height="260" loading="lazy">
 
   <h2 class="font-display font-bold text-2xl mt-8 mb-3">The 6-month rule, explained</h2>
   <p class="text-ink mb-4">
@@ -128,6 +202,46 @@
     <li>Check the destination country's specific rules — some require more.</li>
     <li>Set a recurring reminder so you don't rely on memory.</li>
   </ul>
+
+  <!-- ======================= FAQ (matches FAQPage schema above) ======================= -->
+  <section class="mt-12">
+    <h2 class="font-display font-bold text-2xl mt-8 mb-4">Frequently asked questions</h2>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">What is the 6-month passport rule?</summary>
+      <p class="text-sm text-ink mt-3">
+        Most countries require your passport to remain valid for at least six months beyond
+        your planned departure or return date. Airlines often enforce this at check-in,
+        before you even reach immigration.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">Do the US, UK, and EU enforce the 6-month rule?</summary>
+      <p class="text-sm text-ink mt-3">
+        Generally no. The US, UK, Canada, Australia, and New Zealand typically only require
+        validity for the duration of your stay. Schengen-area countries require at least
+        3 months beyond your planned departure.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">How far in advance should I renew my passport?</summary>
+      <p class="text-sm text-ink mt-3">
+        Set a reminder for 9 months before expiry so you have time to renew without stress,
+        then a second reminder at 6 months as a hard stop for booking international travel.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">What happens if my passport expires while I'm abroad?</summary>
+      <p class="text-sm text-ink mt-3">
+        You may be unable to fly home or re-enter your own country. Getting an emergency
+        passport abroad means contacting your embassy, filling out forms, and waiting,
+        sometimes for days.
+      </p>
+    </details>
+  </section>
 
   <div class="mt-12 pt-8 border-t border-line">
     <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>

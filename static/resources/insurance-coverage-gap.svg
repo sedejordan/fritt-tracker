@@ -1,0 +1,25 @@
+<svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="icTitle icDesc">
+  <title id="icTitle">How an insurance coverage gap happens</title>
+  <desc id="icDesc">A timeline comparing a policy tracked with reminders against a policy that lapses into an uncovered gap before the new policy starts.</desc>
+  <rect width="700" height="220" fill="#F7F7F5"/>
+
+  <!-- tracked row -->
+  <text x="60" y="45" font-family="Inter, sans-serif" font-size="13" fill="#14181F" font-weight="700">Tracked</text>
+  <rect x="150" y="30" width="420" height="20" rx="4" fill="#2C5FEF"/>
+  <rect x="570" y="30" width="90" height="20" rx="4" fill="#1E46C4"/>
+  <text x="360" y="44" font-family="Inter, sans-serif" font-size="11" fill="#FFFFFF" text-anchor="middle">Policy A active</text>
+  <text x="615" y="44" font-family="Inter, sans-serif" font-size="11" fill="#FFFFFF" text-anchor="middle">Policy B</text>
+
+  <!-- untracked row -->
+  <text x="60" y="130" font-family="Inter, sans-serif" font-size="13" fill="#14181F" font-weight="700">Untracked</text>
+  <rect x="150" y="115" width="380" height="20" rx="4" fill="#2C5FEF"/>
+  <rect x="530" y="115" width="40" height="20" rx="4" fill="#EF4444" opacity="0.75"/>
+  <rect x="570" y="115" width="90" height="20" rx="4" fill="#1E46C4"/>
+  <text x="340" y="129" font-family="Inter, sans-serif" font-size="11" fill="#FFFFFF" text-anchor="middle">Policy A active</text>
+  <text x="615" y="129" font-family="Inter, sans-serif" font-size="11" fill="#FFFFFF" text-anchor="middle">Policy B</text>
+
+  <text x="550" y="165" font-family="Inter, sans-serif" font-size="12" fill="#B91C1C" text-anchor="middle" font-weight="700">Coverage gap</text>
+  <line x1="550" y1="150" x2="550" y2="140" stroke="#B91C1C" stroke-width="1.5"/>
+
+  <text x="350" y="195" font-family="Inter, sans-serif" font-size="12" fill="#6B7280" text-anchor="middle">A 90-day reminder closes the gap before it opens.</text>
+</svg>

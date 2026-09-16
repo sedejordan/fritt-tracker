@@ -1,6 +1,76 @@
 {% extends "base.html" %}
 {% block title %}How to Track Business License Renewals (2026 Guide) | Fritt Tracker{% endblock %}
 {% block meta_description %}Learn how to track business license renewal dates, avoid fines, and never miss a compliance deadline. Step-by-step guide for small businesses and freelancers.{% endblock %}
+{% block canonical %}https://tracker.fritt.org/resources/how-to-track-business-license-renewal{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Track Business License Renewals",
+  "description": "A step-by-step guide to tracking license renewals without spreadsheets or missed deadlines.",
+  "image": "https://tracker.fritt.org/static/resources/license-renewal-steps.svg",
+  "step": [
+    { "@type": "HowToStep", "name": "Inventory every license and permit", "text": "List every document with an expiration date, including the issuing agency and renewal URL for each." },
+    { "@type": "HowToStep", "name": "Record the expiration date, not the renewal date", "text": "Track the expiration date and give yourself a buffer for agency processing time." },
+    { "@type": "HowToStep", "name": "Set reminders at multiple intervals", "text": "Send reminders at 120, 60, 30, and 7 days before expiration." },
+    { "@type": "HowToStep", "name": "Keep it in a shared, central place", "text": "Use a tool accessible to whoever handles compliance that shows the status of every document at a glance." }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Resources", "item": "https://tracker.fritt.org/resources" },
+    { "@type": "ListItem", "position": 2, "name": "How to Track Business License Renewals", "item": "https://tracker.fritt.org/resources/how-to-track-business-license-renewal" }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why do business license renewals get missed?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most small businesses rely on memory, a spreadsheet on one person's laptop, or a single calendar reminder — all of which fail eventually, especially when the person who 'just knows' leaves the company."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I track the expiration date or the renewal date?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Track the expiration date and build in a buffer. If your license expires June 30 and processing takes 4-6 weeks, your real deadline is mid-May."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many reminders should I set for a license renewal?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The most reliable systems send reminders at 120, 60, 30, and 7 days before expiration, giving time to gather documents, pay fees, and follow up with slow agencies."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the biggest mistake businesses make with license renewals?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Assuming a license auto-renews when it actually requires active renewal, or missing a payment window that's only open for a specific period."
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 
 <article class="max-w-3xl mx-auto">
@@ -10,6 +80,8 @@
     Every business license, permit, and registration has an expiration date. Miss one and you're
     looking at fines, forced closures, or lost contracts. Here's a simple system to never miss a renewal.
   </p>
+
+  <img src="/static/resources/license-renewal-steps.svg" alt="Four-step system for tracking license renewals: inventory, record expiry, set reminders, centralize" class="w-full rounded-xl border border-line mb-8" width="700" height="220" loading="lazy">
 
   <h2 class="font-display font-bold text-2xl mt-8 mb-3">Why license renewals slip through the cracks</h2>
   <p class="text-ink mb-4">
@@ -81,6 +153,44 @@
     <li><strong>Not updating your address:</strong> renewal notices get sent to old addresses.</li>
     <li><strong>Ignoring the buffer:</strong> processing times can double near fiscal year-end.</li>
   </ul>
+
+  <!-- ======================= FAQ (matches FAQPage schema above) ======================= -->
+  <section class="mt-12">
+    <h2 class="font-display font-bold text-2xl mt-8 mb-4">Frequently asked questions</h2>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">Why do business license renewals get missed?</summary>
+      <p class="text-sm text-ink mt-3">
+        Most small businesses rely on memory, a spreadsheet on one person's laptop, or a single
+        calendar reminder — all of which fail eventually, especially when the person who "just
+        knows" leaves the company.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">Should I track the expiration date or the renewal date?</summary>
+      <p class="text-sm text-ink mt-3">
+        Track the expiration date and build in a buffer. If your license expires June 30 and
+        processing takes 4-6 weeks, your real deadline is mid-May.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">How many reminders should I set for a license renewal?</summary>
+      <p class="text-sm text-ink mt-3">
+        The most reliable systems send reminders at 120, 60, 30, and 7 days before expiration,
+        giving time to gather documents, pay fees, and follow up with slow agencies.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">What's the biggest mistake businesses make with license renewals?</summary>
+      <p class="text-sm text-ink mt-3">
+        Assuming a license auto-renews when it actually requires active renewal, or missing a
+        payment window that's only open for a specific period.
+      </p>
+    </details>
+  </section>
 
   <div class="mt-12 pt-8 border-t border-line">
     <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>

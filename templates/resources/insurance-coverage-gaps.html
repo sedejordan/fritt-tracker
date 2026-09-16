@@ -2,6 +2,78 @@
 {% block title %}Insurance Coverage Gaps: How Expired Policies Cost You Contracts{% endblock %}
 {% block meta_description %}A lapsed insurance policy can kill a deal faster than a bad quote. Learn how to track policy expirations and certificates of insurance (COIs) so you never have a coverage gap.{% endblock %}
 {% block canonical %}https://tracker.fritt.org/resources/insurance-coverage-gaps{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Insurance Coverage Gaps: How Expired Policies Cost You Contracts",
+  "description": "A lapsed insurance policy can kill a deal faster than a bad quote. Learn how to track policy expirations and certificates of insurance.",
+  "image": "https://tracker.fritt.org/static/resources/insurance-coverage-gap.svg",
+  "author": { "@type": "Organization", "name": "Fritt Tracker", "url": "https://tracker.fritt.org/" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Fritt Tracker",
+    "logo": { "@type": "ImageObject", "url": "https://tracker.fritt.org/static/fritt-tracker-logo.svg" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://tracker.fritt.org/resources/insurance-coverage-gaps" },
+  "datePublished": "2026-08-01",
+  "dateModified": "2026-09-16"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Resources", "item": "https://tracker.fritt.org/resources" },
+    { "@type": "ListItem", "position": 2, "name": "Insurance Coverage Gaps", "item": "https://tracker.fritt.org/resources/insurance-coverage-gaps" }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is an insurance coverage gap?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A coverage gap is any period when you're running a business or holding a contract without active insurance coverage, whether that's a single day or several months."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What causes most insurance coverage gaps?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Process failures, not decisions to skip coverage: renewal notices going to an old address, the person who handled insurance leaving the company, a silently failed payment, or an assumption that a policy auto-renews when it doesn't."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a certificate of insurance (COI)?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A certificate of insurance is a one-page document from a vendor's insurer proving they carry coverage such as general liability or workers' compensation. COIs have their own expiration dates that need separate tracking."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How far in advance should I track insurance renewals?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Set reminders at 90, 60, and 30 days before expiry for your own policies, since broker turnaround for renewal quotes is often 2-6 weeks. For vendor COIs, a 60-day reminder is usually enough."
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 
 <article class="max-w-3xl mx-auto">
@@ -14,6 +86,8 @@
     coverage gaps, how certificates of insurance work, and how to track every policy
     expiration so it never happens to you.
   </p>
+
+  <img src="/static/resources/insurance-coverage-gap.svg" alt="Timeline comparing a tracked insurance policy against an untracked policy that lapses into a coverage gap" class="w-full rounded-xl border border-line mb-8" width="700" height="220" loading="lazy">
 
   <h2 class="font-display font-bold text-2xl mt-8 mb-3">What is a coverage gap?</h2>
   <p class="text-ink mb-4">
@@ -141,6 +215,46 @@
   <p class="text-ink mb-6">
     Tracking expiry dates is cheap. Not tracking them is not.
   </p>
+
+  <!-- ======================= FAQ (matches FAQPage schema above) ======================= -->
+  <section class="mt-12">
+    <h2 class="font-display font-bold text-2xl mt-8 mb-4">Frequently asked questions</h2>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">What is an insurance coverage gap?</summary>
+      <p class="text-sm text-ink mt-3">
+        A coverage gap is any period when you're running a business or holding a contract
+        without active insurance coverage, whether that's a single day or several months.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">What causes most insurance coverage gaps?</summary>
+      <p class="text-sm text-ink mt-3">
+        Process failures, not decisions to skip coverage: renewal notices going to an old
+        address, the person who handled insurance leaving the company, a silently failed
+        payment, or an assumption that a policy auto-renews when it doesn't.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">What is a certificate of insurance (COI)?</summary>
+      <p class="text-sm text-ink mt-3">
+        A certificate of insurance is a one-page document from a vendor's insurer proving
+        they carry coverage such as general liability or workers' compensation. COIs have
+        their own expiration dates that need separate tracking.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">How far in advance should I track insurance renewals?</summary>
+      <p class="text-sm text-ink mt-3">
+        Set reminders at 90, 60, and 30 days before expiry for your own policies, since
+        broker turnaround for renewal quotes is often 2-6 weeks. For vendor COIs, a
+        60-day reminder is usually enough.
+      </p>
+    </details>
+  </section>
 
   <div class="mt-12 pt-8 border-t border-line">
     <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>

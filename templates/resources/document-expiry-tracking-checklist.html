@@ -2,6 +2,86 @@
 {% block title %}The Document Expiry Tracking Checklist (Printable) | Fritt Tracker{% endblock %}
 {% block meta_description %}A printable checklist of every document most people forget to track until it's too late — passports, licenses, insurance, contracts, certifications, and more. Free PDF-ready format.{% endblock %}
 {% block canonical %}https://tracker.fritt.org/resources/document-expiry-tracking-checklist{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "The Document Expiry Tracking Checklist",
+  "description": "A printable checklist of the documents most people forget to track until it's too late.",
+  "image": "https://tracker.fritt.org/static/resources/document-checklist-categories.svg",
+  "author": { "@type": "Organization", "name": "Fritt Tracker", "url": "https://tracker.fritt.org/" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Fritt Tracker",
+    "logo": { "@type": "ImageObject", "url": "https://tracker.fritt.org/static/fritt-tracker-logo.svg" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://tracker.fritt.org/resources/document-expiry-tracking-checklist" },
+  "datePublished": "2026-08-01",
+  "dateModified": "2026-09-16"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Resources", "item": "https://tracker.fritt.org/resources" },
+    { "@type": "ListItem", "position": 2, "name": "Document Expiry Tracking Checklist", "item": "https://tracker.fritt.org/resources/document-expiry-tracking-checklist" }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How often should I review my expiry dates?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Quarterly. Anything more frequent is overkill for most people; anything less and you'll miss renewal windows that open 60-90 days before expiry."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the single most important document to track?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For individuals: your passport. For businesses: your business license and general liability insurance. Both have long renewal lead times and severe consequences for missing them."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I just use a spreadsheet?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can, but spreadsheets are passive, they don't remind you. They also live on one device, which fails as soon as more than one person is involved. A dedicated tracker is worth it once you're tracking more than a handful of items."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How far in advance should I set reminders?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "90 days for anything with a renewal process (passports, licenses, insurance, certifications). 30 days for anything that's just a payment. 7 days as a final failsafe for everything."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Fritt Tracker work for businesses with multiple people?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Currently each Fritt Tracker account is single-user. Multi-user team sharing is on the roadmap. For now, most small teams use a shared account on the Pro plan to track company-wide documents."
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 
 <article class="max-w-3xl mx-auto">
@@ -13,6 +93,8 @@
     Print this. Tick it off. Never get surprised by an expired document again.
     Every item below has an expiry date — the question is whether you know what it is.
   </p>
+
+  <img src="/static/resources/document-checklist-categories.svg" alt="Four categories of documents to track: personal, business, financial and insurance, and digital" class="w-full rounded-xl border border-line mb-8" width="700" height="200" loading="lazy">
 
   <div class="bg-paper border border-line rounded-xl p-6 mb-8">
     <p class="text-sm text-ink">
