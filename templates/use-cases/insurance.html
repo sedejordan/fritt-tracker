@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Insurance Policy &amp; COI Expiry Tracking | Fritt Tracker{% endblock %}
+{% block meta_description %}Track insurance policies, certificates of insurance (COIs), and coverage renewals in one place. Get email reminders before any policy or COI lapses.{% endblock %}
+{% block canonical %}https://tracker.fritt.org/use-cases/insurance{% endblock %}
+{% block content %}
+
+<div class="max-w-3xl mx-auto">
+  <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">Insurance Policy &amp; COI Expiry Tracking</h1>
+  <p class="text-lg text-muted mb-8">
+    A lapsed policy can cost you a contract, a claim, or your business. Fritt Tracker keeps every
+    insurance policy and certificate of insurance on one dashboard with reminders before anything
+    expires.
+  </p>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">What you can track</h2>
+  <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+    <li>General liability policies</li>
+    <li>Professional liability / E&amp;O</li>
+    <li>Workers' compensation</li>
+    <li>Commercial auto and property</li>
+    <li>Cyber liability and D&amp;O</li>
+    <li>Vendor certificates of insurance (COIs)</li>
+  </ul>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">How it works</h2>
+  <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+    <li>Add each policy or COI with its expiration date and renewal contact.</li>
+    <li>Fritt Tracker shows you what's expiring soon, at a glance.</li>
+    <li>You get email reminders at 90, 60, and 30 days before expiration.</li>
+    <li>Renew with time to shop the market if the renewal quote is bad.</li>
+  </ol>
+
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+    <h3 class="font-display font-bold text-lg mb-2">Track your policies free</h3>
+    <p class="text-sm text-ink mb-4">Free for up to 20 documents. No credit card required.</p>
+    <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+      Create free account →
+    </a>
+  </div>
+
+  <div class="mt-12 pt-8 border-t border-line">
+    <h2 class="font-display font-bold text-xl mb-4">Learn more</h2>
+    <a href="/resources/insurance-coverage-gaps" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+      <div class="text-xs text-muted mb-1">Business</div>
+      <div class="font-medium">Insurance Coverage Gaps: How Expired Policies Cost You Contracts →</div>
+    </a>
+  </div>
+</div>
+
+{% endblock %}

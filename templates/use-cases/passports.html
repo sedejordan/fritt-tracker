@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Passport &amp; Visa Expiration Tracker | Fritt Tracker{% endblock %}
+{% block meta_description %}Track passport and visa expiry dates with email reminders 9 months, 6 months, and 30 days before they lapse. Free for up to 20 documents.{% endblock %}
+{% block canonical %}https://tracker.fritt.org/use-cases/passports-visas{% endblock %}
+{% block content %}
+
+<div class="max-w-3xl mx-auto">
+  <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">Passport &amp; Visa Expiration Tracking</h1>
+  <p class="text-lg text-muted mb-8">
+    Most countries require 6 months of passport validity beyond your return date. Fritt Tracker
+    reminds you 9 months, 6 months, and 30 days before your passport — or any visa — expires,
+    so you never get turned away at the airport.
+  </p>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">What you can track</h2>
+  <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+    <li>Passports for every family member</li>
+    <li>Visas (tourist, work, student, residence)</li>
+    <li>Driver's licenses and international driving permits</li>
+    <li>Travel insurance policies</li>
+    <li>Loyalty programme tier expirations</li>
+    <li>Global Entry / TSA PreCheck / trusted traveller programmes</li>
+  </ul>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">How it works</h2>
+  <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+    <li>Add each passport, visa, or travel document with its expiration date.</li>
+    <li>Fritt Tracker shows the status at a glance: 🟦 Safe, 🟢 Good, 🟠 Warning, 🔴 Urgent, ⚫ Expired.</li>
+    <li>You get email reminders at 9 months, 6 months, and 30 days before expiration.</li>
+    <li>Once renewed, update the date with one click.</li>
+  </ol>
+
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+    <h3 class="font-display font-bold text-lg mb-2">Start tracking your passports free</h3>
+    <p class="text-sm text-ink mb-4">Free for up to 20 documents. No credit card required.</p>
+    <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+      Create free account →
+    </a>
+  </div>
+
+  <div class="mt-12 pt-8 border-t border-line">
+    <h2 class="font-display font-bold text-xl mb-4">Learn more</h2>
+    <a href="/resources/passport-expiration-reminder" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+      <div class="text-xs text-muted mb-1">Travel</div>
+      <div class="font-medium">Passport Expiration Reminders: The 6-Month Rule Most Travelers Don't Know →</div>
+    </a>
+  </div>
+</div>
+
+{% endblock %}

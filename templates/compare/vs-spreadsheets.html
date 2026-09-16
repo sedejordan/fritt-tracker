@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Fritt Tracker vs Spreadsheets: Which Is Better for Document Expiry?{% endblock %}
+{% block meta_description %}Comparing spreadsheets and Fritt Tracker for document expiry tracking. See why spreadsheets fail for renewals and what to use instead.{% endblock %}
+{% block content %}
+
+<div class="max-w-3xl mx-auto">
+  <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">Fritt Tracker vs Spreadsheets</h1>
+  <p class="text-lg text-muted mb-8">
+    Spreadsheets are free and flexible. They're also the most common reason people miss renewals.
+    Here's an honest comparison.
+  </p>
+
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full text-sm border border-line rounded-xl overflow-hidden">
+      <thead class="bg-paper">
+        <tr>
+          <th class="text-left px-4 py-3 font-medium"></th>
+          <th class="text-left px-4 py-3 font-medium">Spreadsheet</th>
+          <th class="text-left px-4 py-3 font-medium text-fritt">Fritt Tracker</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-t border-line">
+          <td class="px-4 py-3 font-medium">Automatic email reminders</td>
+          <td class="px-4 py-3 text-muted">❌ Manual only</td>
+          <td class="px-4 py-3 text-green-700">✅ At 120/60/30/7 days</td>
+        </tr>
+        <tr class="border-t border-line">
+          <td class="px-4 py-3 font-medium">Visual status at a glance</td>
+          <td class="px-4 py-3 text-muted">❌ Conditional formatting (if set up)</td>
+          <td class="px-4 py-3 text-green-700">✅ Auto color-coded</td>
+        </tr>
+        <tr class="border-t border-line">
+          <td class="px-4 py-3 font-medium">Accessible from any device</td>
+          <td class="px-4 py-3 text-muted">⚠️ Depends on file sync</td>
+          <td class="px-4 py-3 text-green-700">✅ Web-based, always in sync</td>
+        </tr>
+        <tr class="border-t border-line">
+          <td class="px-4 py-3 font-medium">Shared with team</td>
+          <td class="px-4 py-3 text-muted">⚠️ One person's laptop</td>
+          <td class="px-4 py-3 text-green-700">✅ Single source of truth</td>
+        </tr>
+        <tr class="border-t border-line">
+          <td class="px-4 py-3 font-medium">Bulk CSV import</td>
+          <td class="px-4 py-3 text-muted">✅ Native</td>
+          <td class="px-4 py-3 text-green-700">✅ Pro plan</td>
+        </tr>
+        <tr class="border-t border-line">
+          <td class="px-4 py-3 font-medium">Cost</td>
+          <td class="px-4 py-3 text-muted">Free (but you pay with missed renewals)</td>
+          <td class="px-4 py-3 text-green-700">Free for 20 docs, $8.99/mo for 100</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">When a spreadsheet is fine</h2>
+  <p class="text-ink mb-4">
+    If you have one or two documents and a memory like a steel trap, a spreadsheet works.
+    If you're tracking a handful of things that all expire around the same time, it's fine.
+  </p>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">When a spreadsheet fails</h2>
+  <p class="text-ink mb-4">
+    The moment you have more than ~5 documents, or more than one person involved, spreadsheets
+    start to fail. They're passive — they don't remind you. They live on one device. Conditional
+    formatting only works if someone set it up correctly. And when the person who owns the file
+    is on holiday, nobody knows what's expiring.
+  </p>
+  <p class="text-ink mb-6">
+    Fritt Tracker is built specifically for this problem: it's active (it emails you),
+    centralized (one dashboard), and automatic (status is calculated from the date).
+  </p>
+
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+    <h3 class="font-display font-bold text-lg mb-2">Try it free</h3>
+    <p class="text-sm text-ink mb-4">Move your spreadsheet over in under 5 minutes. Free for up to 20 documents.</p>
+    <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+      Start free →
+    </a>
+  </div>
+</div>
+
+{% endblock %}

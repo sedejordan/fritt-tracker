@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}How to Track Business License Renewals (2026 Guide) | Fritt Tracker{% endblock %}
+{% block meta_description %}Learn how to track business license renewal dates, avoid fines, and never miss a compliance deadline. Step-by-step guide for small businesses and freelancers.{% endblock %}
+{% block content %}
+
+<article class="max-w-3xl mx-auto">
+  <p class="text-xs text-muted mb-2">Compliance · 6 min read</p>
+  <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">How to Track Business License Renewals</h1>
+  <p class="text-lg text-muted mb-8">
+    Every business license, permit, and registration has an expiration date. Miss one and you're
+    looking at fines, forced closures, or lost contracts. Here's a simple system to never miss a renewal.
+  </p>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Why license renewals slip through the cracks</h2>
+  <p class="text-ink mb-4">
+    Most small businesses track licenses in one of three ways — and all three fail eventually:
+  </p>
+  <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+    <li><strong>Memory:</strong> works until the person who "just knows" leaves the company.</li>
+    <li><strong>Spreadsheets:</strong> works until someone forgets to update the file, or the file lives on one person's laptop.</li>
+    <li><strong>Calendar reminders:</strong> works until the reminder fires a week before renewal and the agency takes three weeks to process.</li>
+  </ul>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">The 4-step system for tracking renewals</h2>
+
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">1. Inventory every license and permit</h3>
+  <p class="text-ink mb-4">
+    Walk through your business and list every document with an expiration date: business license,
+    sales tax permit, health inspection, professional certifications, vehicle registrations, insurance
+    policies, and vendor contracts. Include the issuing agency and renewal URL for each.
+  </p>
+
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">2. Record the expiration date — not the renewal date</h3>
+  <p class="text-ink mb-4">
+    This is the mistake most people make. If your license expires June 30 and the agency takes
+    4–6 weeks to process a renewal, your real deadline is mid-May. Track the <em>expiration</em> date
+    and give yourself a buffer.
+  </p>
+
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">3. Set reminders at multiple intervals</h3>
+  <p class="text-ink mb-4">
+    One reminder isn't enough. The most reliable systems send reminders at 120 days, 60 days,
+    30 days, and 7 days before expiration. That gives you time to gather documents, pay fees,
+    and follow up if the agency is slow.
+  </p>
+
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">4. Keep it in a shared, central place</h3>
+  <p class="text-ink mb-4">
+    A spreadsheet on one person's laptop is a single point of failure. Use a tool that's accessible
+    to whoever handles compliance, sends automatic reminders, and shows the status of every document
+    at a glance.
+  </p>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">What to track (checklist)</h2>
+  <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+    <li>Business license / operating permit</li>
+    <li>Sales tax / VAT registration</li>
+    <li>Professional certifications (contractor, medical, legal, etc.)</li>
+    <li>Health &amp; safety inspections</li>
+    <li>Insurance policies (liability, workers' comp, property)</li>
+    <li>Vehicle registrations and inspections</li>
+    <li>Domain names, SSL certificates, and software licenses</li>
+    <li>Vendor and client contracts with auto-renewal clauses</li>
+  </ul>
+
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+    <h3 class="font-display font-bold text-lg mb-2">Want this done for you?</h3>
+    <p class="text-sm text-ink mb-4">
+      Fritt Tracker is a document expiry tracker that does exactly this — add your licenses,
+      set the expiry dates, and get email reminders before anything lapses. Free for up to 20 documents.
+    </p>
+    <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+      Track your licenses free →
+    </a>
+  </div>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Common renewal mistakes to avoid</h2>
+  <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+    <li><strong>Assuming auto-renewal:</strong> many licenses require active renewal, not passive.</li>
+    <li><strong>Missing the payment window:</strong> some agencies only accept renewals during a specific window.</li>
+    <li><strong>Not updating your address:</strong> renewal notices get sent to old addresses.</li>
+    <li><strong>Ignoring the buffer:</strong> processing times can double near fiscal year-end.</li>
+  </ul>
+
+  <div class="mt-12 pt-8 border-t border-line">
+    <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>
+    <div class="grid sm:grid-cols-2 gap-4">
+      {% for a in articles if a.slug != 'how-to-track-business-license-renewal' %}
+      <a href="/resources/{{ a.slug }}" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+        <div class="text-xs text-muted mb-1">{{ a.category }}</div>
+        <div class="font-medium text-sm">{{ a.title }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</article>
+
+{% endblock %}

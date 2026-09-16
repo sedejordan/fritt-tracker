@@ -4,18 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="tzlP73O_C9ElTvrpUUb592kJ9dDnIOpRANP7AeFbXB4" />
-    <title>{% block title %}Fritt Tracker{% endblock %}</title>
+    <title>{% block title %}Fritt Tracker — Document Expiry Tracker & Renewal Reminders{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Track document expiry dates and get email reminders before passports, licenses, contracts, and insurance expire. Free for up to 20 documents.{% endblock %}">
+    <link rel="canonical" href="{% block canonical %}{{ request.url.split('?')[0] }}{% endblock %}">
+    <meta name="robots" content="{% block robots %}index, follow{% endblock %}">
+
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Fritt Tracker">
     <meta property="og:title" content="{% block og_title %}Fritt Tracker — Never Miss a Document Renewal{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Track company document expiry dates and get reminded before they lapse.{% endblock %}">
     <meta property="og:image" content="{% block og_image %}https://tracker.fritt.org/static/og-image.png{% endblock %}">
-    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:url" content="{{ request.url.split('?')[0] }}">
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{% block twitter_title %}Fritt Tracker — Never Miss a Document Renewal{% endblock %}">
-<meta name="twitter:description" content="{% block twitter_description %}Track company document expiry dates and get reminded before they lapse.{% endblock %}">
-<meta name="twitter:image" content="{% block twitter_image %}https://tracker.fritt.org/static/og-image.png{% endblock %}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}Fritt Tracker — Document Expiry Tracker{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Track company document expiry dates and get reminded before they lapse.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}https://tracker.fritt.org/static/og-image.png{% endblock %}">
+
+    <!-- JSON-LD: SoftwareApplication (helps Google understand the product) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Fritt Tracker",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "description": "Document expiry tracker that sends email reminders before passports, licenses, contracts, and insurance policies expire.",
+      "url": "https://tracker.fritt.org/",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "description": "Free for up to 20 documents"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "0.0",
+        "reviewCount": "0"
+      }
+    }
+    </script>
+    {% block structured_data %}{% endblock %}
     <link rel="icon" type="image/svg+xml" href="/static/fritt-tracker-logo.svg">
 
     <!-- Font: Space Grotesk (display) + Inter (body) -->
@@ -399,11 +428,21 @@
     </div>
 
     <footer class="max-w-4xl mx-auto px-4 py-6 text-center text-xs text-muted border-t border-line mt-8">
+      <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-3">
+        <a href="/resources" class="hover:text-ink transition-colors">Resources</a>
+        <a href="/use-cases" class="hover:text-ink transition-colors">Use Cases</a>
+        <a href="/use-cases/passports-visas" class="hover:text-ink transition-colors">Passports</a>
+        <a href="/use-cases/business-licenses" class="hover:text-ink transition-colors">Business Licenses</a>
+        <a href="/use-cases/contracts" class="hover:text-ink transition-colors">Contracts</a>
+        <a href="/use-cases/insurance" class="hover:text-ink transition-colors">Insurance</a>
+        <a href="/pricing" class="hover:text-ink transition-colors">Pricing</a>
+        <a href="/business" class="hover:text-ink transition-colors">Business</a>
+      </div>
       <p>
-        <a href="/feedback" class="hover:text-ink transition-colors">Feedback</a> · 
-        <a href="/terms" class="hover:text-ink transition-colors">Terms</a> · 
-        <a href="/privacy" class="hover:text-ink transition-colors">Privacy</a> · 
-        <a href="mailto:support@fritt.org" class="hover:text-ink transition-colors">Support</a> · 
+        <a href="/feedback" class="hover:text-ink transition-colors">Feedback</a> ·
+        <a href="/terms" class="hover:text-ink transition-colors">Terms</a> ·
+        <a href="/privacy" class="hover:text-ink transition-colors">Privacy</a> ·
+        <a href="mailto:support@fritt.org" class="hover:text-ink transition-colors">Support</a> ·
         <a href="mailto:business@fritt.org" class="hover:text-ink transition-colors">Business</a>
       </p>
       <p class="mt-1">© 2026 Fritt Tracker</p>

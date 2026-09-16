@@ -4351,6 +4351,263 @@ def newsletter_admin():
 # reset_user_to_free('sedejordan88@gmail.com')
 
 # =============================================================================
+# ROUTES - SEO CONTENT & INFRASTRUCTURE
+# =============================================================================
+
+def _base_url():
+    """Return the canonical base URL (with scheme)."""
+    base = os.environ.get("APP_URL", "tracker.fritt.org")
+    if not base.startswith(("http://", "https://")):
+        base = f"https://{base}"
+    return base.rstrip("/")
+
+
+# All resource articles - single source of truth for index, sitemap, and internal links
+RESOURCE_ARTICLES = [
+    {
+        "slug": "how-to-track-business-license-renewal",
+        "title": "How to Track Business License Renewals",
+        "excerpt": "A step-by-step guide to tracking license renewals without spreadsheets or missed deadlines.",
+        "category": "Compliance",
+        "read_time": "6 min read",
+    },
+    {
+        "slug": "passport-expiration-reminder",
+        "title": "Passport Expiration Reminders: The 6-Month Rule Most Travelers Don't Know",
+        "excerpt": "Most countries require 6 months of passport validity. Here's why, which countries enforce it, and how to never get caught out.",
+        "category": "Travel",
+        "read_time": "7 min read",
+    },
+    {
+        "slug": "contract-renewal-tracking",
+        "title": "Contract Renewal Tracking: How to Escape the Auto-Renewal Trap",
+        "excerpt": "Auto-renewals are great until they're not. Here's how to track cancellation windows so you're never surprised by a charge.",
+        "category": "Business",
+        "read_time": "8 min read",
+    },
+    {
+        "slug": "insurance-coverage-gaps",
+        "title": "Insurance Coverage Gaps: How Expired Policies Cost You Contracts",
+        "excerpt": "A lapsed insurance policy can kill a deal faster than a bad quote. Here's how to track policy expirations and certificates of insurance.",
+        "category": "Business",
+        "read_time": "7 min read",
+    },
+    {
+        "slug": "document-expiry-tracking-checklist",
+        "title": "The Document Expiry Tracking Checklist",
+        "excerpt": "A printable checklist of the documents most people forget to track until it's too late.",
+        "category": "Guide",
+        "read_time": "4 min read",
+    },
+]
+
+USE_CASES = [
+    {
+        "slug": "passports-visas",
+        "title": "Passport & Visa Expiry Tracking",
+        "excerpt": "Never be turned away at the airport for a passport that expires in 5 months.",
+        "icon": "🛂",
+    },
+    {
+        "slug": "business-licenses",
+        "title": "Business License & Permit Tracking",
+        "excerpt": "Stay compliant and avoid fines. Track every license, permit, and inspection.",
+        "icon": "🏢",
+    },
+    {
+        "slug": "contracts",
+        "title": "Contract & Agreement Renewal Tracking",
+        "excerpt": "Know when every client contract, NDA, and vendor agreement renews.",
+        "icon": "📄",
+    },
+    {
+        "slug": "insurance",
+        "title": "Insurance Policy Expiry Tracking",
+        "excerpt": "Never have a coverage gap. Track every policy renewal in one place.",
+        "icon": "🛡️",
+    },
+]
+
+
+@app.route("/sitemap.xml")
+@limiter.exempt
+def sitemap():
+    """Generate sitemap.xml for search engines."""
+    from flask import Response
+
+    base = _base_url()
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    static_pages = [
+        ("/", "1.0", "weekly"),
+        ("/pricing", "0.9", "weekly"),
+        ("/business", "0.8", "monthly"),
+        ("/resources", "0.9", "weekly"),
+        ("/use-cases", "0.8", "weekly"),
+        ("/compare/spreadsheets-vs-fritt-tracker", "0.8", "monthly"),
+        ("/contact", "0.5", "monthly"),
+        ("/feedback", "0.4", "monthly"),
+        ("/terms", "0.2", "yearly"),
+        ("/privacy", "0.2", "yearly"),
+    ]
+
+    xml = ['<?xml version="1.0" encoding="UTF-8"?>']
+    xml.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+
+    for path, priority, freq in static_pages:
+        xml.append(
+            f"  <url>\n"
+            f"    <loc>{base}{path}</loc>\n"
+            f"    <lastmod>{today}</lastmod>\n"
+            f"    <changefreq>{freq}</changefreq>\n"
+            f"    <priority>{priority}</priority>\n"
+            f"  </url>"
+        )
+
+    for a in RESOURCE_ARTICLES:
+        xml.append(
+            f"  <url>\n"
+            f"    <loc>{base}/resources/{a['slug']}</loc>\n"
+            f"    <lastmod>{today}</lastmod>\n"
+            f"    <changefreq>monthly</changefreq>\n"
+            f"    <priority>0.7</priority>\n"
+            f"  </url>"
+        )
+
+    for u in USE_CASES:
+        xml.append(
+            f"  <url>\n"
+            f"    <loc>{base}/use-cases/{u['slug']}</loc>\n"
+            f"    <lastmod>{today}</lastmod>\n"
+            f"    <changefreq>monthly</changefreq>\n"
+            f"    <priority>0.7</priority>\n"
+            f"  </url>"
+        )
+
+    xml.append("</urlset>")
+    return Response("\n".join(xml), mimetype="application/xml")
+
+
+@app.route("/robots.txt")
+@limiter.exempt
+def robots_txt():
+    """Serve robots.txt with sitemap reference."""
+    from flask import Response
+
+    base = _base_url()
+    content = f"""User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password/
+Disallow: /verify-email/
+Disallow: /change-password
+Disallow: /delete-account
+Disallow: /webhook/
+Disallow: /cron/
+
+Sitemap: {base}/sitemap.xml
+"""
+    return Response(content, mimetype="text/plain")
+
+
+# ---------------------------------------------------------------------------
+# Resource hub (blog) - targets non-branded, intent-based queries
+# ---------------------------------------------------------------------------
+
+@app.route("/resources")
+@limiter.exempt
+def resources_index():
+    """Resource hub - articles targeting non-branded search queries."""
+    return render_template("resources/index.html", articles=RESOURCE_ARTICLES)
+
+
+@app.route("/resources/how-to-track-business-license-renewal")
+@limiter.exempt
+def resource_business_license_renewal():
+    return render_template(
+        "resources/how-to-track-business-license-renewal.html",
+        articles=RESOURCE_ARTICLES,
+    )
+
+
+@app.route("/resources/passport-expiration-reminder")
+@limiter.exempt
+def resource_passport_expiration():
+    return render_template(
+        "resources/passport-expiration-reminder.html", articles=RESOURCE_ARTICLES
+    )
+
+
+@app.route("/resources/contract-renewal-tracking")
+@limiter.exempt
+def resource_contract_renewal():
+    return render_template(
+        "resources/contract-renewal-tracking.html", articles=RESOURCE_ARTICLES
+    )
+
+@app.route("/resources/insurance-coverage-gaps")
+@limiter.exempt
+def resource_insurance_gaps():
+    return render_template(
+        "resources/insurance-coverage-gaps.html", articles=RESOURCE_ARTICLES
+    )
+
+
+@app.route("/resources/document-expiry-tracking-checklist")
+@limiter.exempt
+def resource_document_checklist():
+    return render_template(
+        "resources/document-expiry-tracking-checklist.html", articles=RESOURCE_ARTICLES
+    )
+
+
+# ---------------------------------------------------------------------------
+# Use-case landing pages (per ICP segment)
+# ---------------------------------------------------------------------------
+
+@app.route("/use-cases")
+@limiter.exempt
+def use_cases_index():
+    return render_template("use-cases/index.html", use_cases=USE_CASES)
+
+
+@app.route("/use-cases/passports-visas")
+@limiter.exempt
+def use_case_passports():
+    return render_template("use-cases/passports.html")
+
+
+@app.route("/use-cases/business-licenses")
+@limiter.exempt
+def use_case_business_licenses():
+    return render_template("use-cases/business-licenses.html")
+
+
+@app.route("/use-cases/contracts")
+@limiter.exempt
+def use_case_contracts():
+    return render_template("use-cases/contracts.html")
+
+
+@app.route("/use-cases/insurance")
+@limiter.exempt
+def use_case_insurance():
+    return render_template("use-cases/insurance.html")
+
+
+# ---------------------------------------------------------------------------
+# Comparison pages (high-intent "vs" searches)
+# ---------------------------------------------------------------------------
+
+@app.route("/compare/spreadsheets-vs-fritt-tracker")
+@limiter.exempt
+def compare_spreadsheets():
+    return render_template("compare/vs-spreadsheets.html")
+
+# =============================================================================
 # APPLICATION ENTRY POINT
 # =============================================================================
 

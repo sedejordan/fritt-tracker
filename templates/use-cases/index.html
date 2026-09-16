@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Document Tracking Use Cases | Fritt Tracker{% endblock %}
+{% block meta_description %}See how individuals, freelancers, and businesses use Fritt Tracker to track passports, business licenses, contracts, and insurance policies before they expire.{% endblock %}
+{% block content %}
+
+<div class="max-w-4xl mx-auto">
+  <h1 class="font-display font-bold text-3xl md:text-4xl mb-3">Document Tracking Use Cases</h1>
+  <p class="text-muted mb-10 max-w-2xl">
+    Fritt Tracker is a general-purpose document expiry tracker. These are the four use cases
+    people ask us about most.
+  </p>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    {% for u in use_cases %}
+    <a href="/use-cases/{{ u.slug }}" class="block bg-white border border-line rounded-xl p-6 hover:border-fritt transition-colors">
+      <div class="text-3xl mb-3">{{ u.icon }}</div>
+      <h2 class="font-display font-bold text-lg mb-2">{{ u.title }}</h2>
+      <p class="text-muted text-sm">{{ u.excerpt }}</p>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

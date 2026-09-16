@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Contract Renewal Tracking: How to Escape the Auto-Renewal Trap{% endblock %}
+{% block meta_description %}Auto-renewals are great until they're not. Learn how to track contract renewal and cancellation windows so you're never surprised by a charge or stuck in a contract you forgot about.{% endblock %}
+{% block canonical %}https://tracker.fritt.org/resources/contract-renewal-tracking{% endblock %}
+{% block content %}
+
+<article class="max-w-3xl mx-auto">
+  <p class="text-xs text-muted mb-2">Business · 8 min read</p>
+  <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">
+    Contract Renewal Tracking: How to Escape the Auto-Renewal Trap
+  </h1>
+  <p class="text-lg text-muted mb-8">
+    Auto-renewals are great until they're not. Here's how to track every renewal and cancellation
+    window so you're never surprised by a charge — or stuck in a contract you forgot about.
+  </p>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Why auto-renewals catch people out</h2>
+  <p class="text-ink mb-4">
+    An auto-renewal clause is a contract term that says: <em>if neither party cancels within a
+    certain window, the contract renews for another term.</em> It's designed to protect the
+    vendor from lapsed revenue — but it puts the burden on you to remember the cancellation
+    window, which is often 30, 60, or 90 days before the renewal date.
+  </p>
+  <p class="text-ink mb-4">
+    The trap works like this:
+  </p>
+  <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+    <li>You sign a 12-month contract on January 15.</li>
+    <li>The contract auto-renews unless cancelled 60 days before the end date.</li>
+    <li>Your real cancellation deadline is <strong>November 16</strong>.</li>
+    <li>You think about it in December, decide to cancel, and discover you're locked in for another 12 months.</li>
+  </ol>
+  <p class="text-ink mb-6">
+    Multiply that by every SaaS tool, vendor agreement, insurance policy, and client contract
+    you've signed, and the "I'll remember" system collapses fast.
+  </p>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">The three types of auto-renewal traps</h2>
+
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">1. Fixed-term auto-renewal</h3>
+  <p class="text-ink mb-4">
+    The contract runs for a set term (12 months, 24 months) and renews for an identical term
+    unless cancelled in the window. This is the most common in B2B SaaS, insurance, and
+    property leases. The cancellation window is usually 30–90 days before the end date.
+  </p>
+
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">2. Evergreen contracts</h3>
+  <p class="text-ink mb-4">
+    Month-to-month contracts that renew continuously unless cancelled. Common in software
+    subscriptions and managed services. These are easier to exit but harder to remember,
+    because there's no "end date" — you just keep paying.
+  </p>
+
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">3. Rollover with price escalation</h3>
+  <p class="text-ink mb-4">
+    The nastiest of the three. The contract renews automatically <em>and</em> includes a
+    built-in price increase (often 3–7% per year). By the time you notice, you've been
+    overpaying for two years. Common in enterprise software, managed hosting, and
+    professional services retainers.
+  </p>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">The cancellation window math</h2>
+  <p class="text-ink mb-4">
+    This is where most people get it wrong. The date you need to remember is <strong>not</strong>
+    the contract end date. It's:
+  </p>
+  <p class="text-ink mb-6 font-mono text-sm bg-paper border border-line rounded-md p-4">
+    Cancellation deadline = End date − Notice period
+  </p>
+  <p class="text-ink mb-4">
+    Examples:
+  </p>
+  <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+    <li>Contract ends December 31, 90-day notice → cancel by <strong>October 2</strong>.</li>
+    <li>Contract ends March 15, 60-day notice → cancel by <strong>January 14</strong>.</li>
+    <li>Contract ends June 30, 30-day notice → cancel by <strong>May 31</strong>.</li>
+  </ul>
+  <p class="text-ink mb-6">
+    If your contract also has a "notice of non-renewal" requirement (some do, on top of the
+    cancellation window), you need to be even earlier. Read the fine print carefully and
+    treat the earliest deadline as your real one.
+  </p>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">How to track contract renewals</h2>
+  <p class="text-ink mb-4">
+    The system that works has three parts:
+  </p>
+
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">1. Inventory every contract with an end date</h3>
+  <p class="text-ink mb-4">
+    Go through your contracts and list every one with:
+  </p>
+  <ul class="list-disc pl-6 space-y-2 mb-4 text-ink">
+    <li>Vendor / counterparty name</li>
+    <li>Contract end date</li>
+    <li>Cancellation notice period (in days)</li>
+    <li>Renewal term length (if it auto-renews)</li>
+    <li>Any price escalation clause</li>
+  </ul>
+  <p class="text-ink mb-6">
+    Don't skip this step. Half of the "missed renewal" problem is not knowing what you've
+    actually signed.
+  </p>
+
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">2. Track the cancellation deadline, not the end date</h3>
+  <p class="text-ink mb-4">
+    When you add a contract to your tracker, subtract the notice period from the end date
+    and track <em>that</em> date. This is the date the reminder should fire.
+  </p>
+  <p class="text-ink mb-6">
+    Better yet: set multiple reminders — 90 days, 30 days, and 7 days before the cancellation
+    deadline. That gives you time to decide, negotiate, or shop alternatives.
+  </p>
+
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">3. Review quarterly</h3>
+  <p class="text-ink mb-6">
+    Once a quarter, pull up your list of contracts renewing in the next 12 months. Ask:
+    do we still need this? Is the price still competitive? Would the vendor negotiate?
+    This turns contract tracking from a defensive exercise into a cost-saving one.
+  </p>
+
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+    <h3 class="font-display font-bold text-lg mb-2">Never miss a cancellation window again</h3>
+    <p class="text-sm text-ink mb-4">
+      Fritt Tracker sends you email reminders before every contract renewal and cancellation
+      deadline. Free for up to 20 documents. Pro is $8.99/month for 100.
+    </p>
+    <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+      Track my contracts free →
+    </a>
+  </div>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">A quick audit you can do today</h2>
+  <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+    <li>Open your last 3 months of bank or card statements.</li>
+    <li>Circle every recurring charge you don't immediately recognise.</li>
+    <li>For each one, find the contract or terms and note the cancellation window.</li>
+    <li>Add the cancellation deadline to your calendar — or better, to a tracker.</li>
+    <li>Cancel anything you're not actively using. Most people find 2–4 subscriptions they'd forgotten about.</li>
+  </ol>
+  <p class="text-ink mb-6">
+    Even if you don't cancel anything, knowing what's renewing and when is worth the audit.
+    It's the difference between paying attention and paying for it.
+  </p>
+
+  <div class="mt-12 pt-8 border-t border-line">
+    <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>
+    <div class="grid sm:grid-cols-2 gap-4">
+      {% for a in articles if a.slug != 'contract-renewal-tracking' %}
+      <a href="/resources/{{ a.slug }}" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+        <div class="text-xs text-muted mb-1">{{ a.category }}</div>
+        <div class="font-medium text-sm">{{ a.title }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</article>
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Business License Renewal Tracker | Fritt Tracker{% endblock %}
+{% block meta_description %}Track business licenses, permits, and inspections in one place. Get email reminders before they expire. Free for up to 20 documents.{% endblock %}
+{% block content %}
+
+<div class="max-w-3xl mx-auto">
+  <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">Business License &amp; Permit Renewal Tracking</h1>
+  <p class="text-lg text-muted mb-8">
+    Every license, permit, and inspection has an expiration date. Miss one and you're looking at
+    fines, forced closures, or lost contracts. Fritt Tracker keeps them all in one place and
+    reminds you before it's too late.
+  </p>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">What you can track</h2>
+  <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+    <li>Business operating licenses</li>
+    <li>Sales tax / VAT registrations</li>
+    <li>Health &amp; safety inspections</li>
+    <li>Professional certifications</li>
+    <li>Insurance policies</li>
+    <li>Vehicle registrations and inspections</li>
+  </ul>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">How it works</h2>
+  <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+    <li>Add each license with its expiration date.</li>
+    <li>Fritt Tracker color-codes it: 🟦 Safe, 🟢 Good, 🟠 Warning, 🔴 Urgent, ⚫ Expired.</li>
+    <li>You get email reminders at 120, 60, 30, and 7 days before expiration.</li>
+    <li>Renew the license, then update the date in one click.</li>
+  </ol>
+
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+    <h3 class="font-display font-bold text-lg mb-2">Start tracking your licenses free</h3>
+    <p class="text-sm text-ink mb-4">Free for up to 20 documents. Pro is $8.99/month for 100 documents.</p>
+    <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+      Create free account →
+    </a>
+  </div>
+
+  <div class="mt-12 pt-8 border-t border-line">
+    <h2 class="font-display font-bold text-xl mb-4">Related reading</h2>
+    <a href="/resources/how-to-track-business-license-renewal" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+      <div class="text-xs text-muted mb-1">Compliance</div>
+      <div class="font-medium">How to Track Business License Renewals →</div>
+    </a>
+  </div>
+</div>
+
+{% endblock %}
