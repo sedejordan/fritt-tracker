@@ -4397,7 +4397,7 @@ RESOURCE_ARTICLES = [
         "title": "The Document Expiry Tracking Checklist",
         "excerpt": "A printable checklist of the documents most people forget to track until it's too late.",
         "category": "Guide",
-        "read_time": "4 min read",
+        "read_time": "6 min read",
     },
 ]
 

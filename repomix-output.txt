@@ -72,6 +72,8 @@ templates/
     user_detail.html
     user_documents.html
     users.html
+  compare/
+    vs-spreadsheets.html
   errors/
     401.html
     403.html
@@ -82,6 +84,19 @@ templates/
   legal/
     privacy.html
     terms.html
+  resources/
+    contract-renewal-tracking.html
+    document-expiry-tracking-checklist.html
+    how-to-track-business-license-renewal.html
+    index.html
+    insurance-coverage-gaps.html
+    passport-expiration-reminder.html
+  use-cases/
+    business-licenses.html
+    contracts.html
+    index.html
+    insurance.html
+    passports.html
   add.html
   base.html
   business.html
@@ -1288,6 +1303,94 @@ File: templates/admin/renew_documents.html
 36: {% endblock %}
 
 ================
+File: templates/compare/vs-spreadsheets.html
+================
+ 1: {% extends "base.html" %}
+ 2: {% block title %}Fritt Tracker vs Spreadsheets: Which Is Better for Document Expiry?{% endblock %}
+ 3: {% block meta_description %}Comparing spreadsheets and Fritt Tracker for document expiry tracking. See why spreadsheets fail for renewals and what to use instead.{% endblock %}
+ 4: {% block content %}
+ 5: 
+ 6: <div class="max-w-3xl mx-auto">
+ 7:   <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">Fritt Tracker vs Spreadsheets</h1>
+ 8:   <p class="text-lg text-muted mb-8">
+ 9:     Spreadsheets are free and flexible. They're also the most common reason people miss renewals.
+10:     Here's an honest comparison.
+11:   </p>
+12: 
+13:   <div class="overflow-x-auto mb-8">
+14:     <table class="w-full text-sm border border-line rounded-xl overflow-hidden">
+15:       <thead class="bg-paper">
+16:         <tr>
+17:           <th class="text-left px-4 py-3 font-medium"></th>
+18:           <th class="text-left px-4 py-3 font-medium">Spreadsheet</th>
+19:           <th class="text-left px-4 py-3 font-medium text-fritt">Fritt Tracker</th>
+20:         </tr>
+21:       </thead>
+22:       <tbody>
+23:         <tr class="border-t border-line">
+24:           <td class="px-4 py-3 font-medium">Automatic email reminders</td>
+25:           <td class="px-4 py-3 text-muted">❌ Manual only</td>
+26:           <td class="px-4 py-3 text-green-700">✅ At 120/60/30/7 days</td>
+27:         </tr>
+28:         <tr class="border-t border-line">
+29:           <td class="px-4 py-3 font-medium">Visual status at a glance</td>
+30:           <td class="px-4 py-3 text-muted">❌ Conditional formatting (if set up)</td>
+31:           <td class="px-4 py-3 text-green-700">✅ Auto color-coded</td>
+32:         </tr>
+33:         <tr class="border-t border-line">
+34:           <td class="px-4 py-3 font-medium">Accessible from any device</td>
+35:           <td class="px-4 py-3 text-muted">⚠️ Depends on file sync</td>
+36:           <td class="px-4 py-3 text-green-700">✅ Web-based, always in sync</td>
+37:         </tr>
+38:         <tr class="border-t border-line">
+39:           <td class="px-4 py-3 font-medium">Shared with team</td>
+40:           <td class="px-4 py-3 text-muted">⚠️ One person's laptop</td>
+41:           <td class="px-4 py-3 text-green-700">✅ Single source of truth</td>
+42:         </tr>
+43:         <tr class="border-t border-line">
+44:           <td class="px-4 py-3 font-medium">Bulk CSV import</td>
+45:           <td class="px-4 py-3 text-muted">✅ Native</td>
+46:           <td class="px-4 py-3 text-green-700">✅ Pro plan</td>
+47:         </tr>
+48:         <tr class="border-t border-line">
+49:           <td class="px-4 py-3 font-medium">Cost</td>
+50:           <td class="px-4 py-3 text-muted">Free (but you pay with missed renewals)</td>
+51:           <td class="px-4 py-3 text-green-700">Free for 20 docs, $8.99/mo for 100</td>
+52:         </tr>
+53:       </tbody>
+54:     </table>
+55:   </div>
+56: 
+57:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">When a spreadsheet is fine</h2>
+58:   <p class="text-ink mb-4">
+59:     If you have one or two documents and a memory like a steel trap, a spreadsheet works.
+60:     If you're tracking a handful of things that all expire around the same time, it's fine.
+61:   </p>
+62: 
+63:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">When a spreadsheet fails</h2>
+64:   <p class="text-ink mb-4">
+65:     The moment you have more than ~5 documents, or more than one person involved, spreadsheets
+66:     start to fail. They're passive — they don't remind you. They live on one device. Conditional
+67:     formatting only works if someone set it up correctly. And when the person who owns the file
+68:     is on holiday, nobody knows what's expiring.
+69:   </p>
+70:   <p class="text-ink mb-6">
+71:     Fritt Tracker is built specifically for this problem: it's active (it emails you),
+72:     centralized (one dashboard), and automatic (status is calculated from the date).
+73:   </p>
+74: 
+75:   <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+76:     <h3 class="font-display font-bold text-lg mb-2">Try it free</h3>
+77:     <p class="text-sm text-ink mb-4">Move your spreadsheet over in under 5 minutes. Free for up to 20 documents.</p>
+78:     <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+79:       Start free →
+80:     </a>
+81:   </div>
+82: </div>
+83: 
+84: {% endblock %}
+
+================
 File: templates/errors/401.html
 ================
  1: {% extends "base.html" %}
@@ -1433,6 +1536,1298 @@ File: templates/legal/privacy.html
 101: </div>
 102: 
 103: {% endblock %}
+
+================
+File: templates/resources/contract-renewal-tracking.html
+================
+  1: {% extends "base.html" %}
+  2: {% block title %}Contract Renewal Tracking: How to Escape the Auto-Renewal Trap{% endblock %}
+  3: {% block meta_description %}Auto-renewals are great until they're not. Learn how to track contract renewal and cancellation windows so you're never surprised by a charge or stuck in a contract you forgot about.{% endblock %}
+  4: {% block canonical %}https://tracker.fritt.org/resources/contract-renewal-tracking{% endblock %}
+  5: {% block content %}
+  6: 
+  7: <article class="max-w-3xl mx-auto">
+  8:   <p class="text-xs text-muted mb-2">Business · 8 min read</p>
+  9:   <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">
+ 10:     Contract Renewal Tracking: How to Escape the Auto-Renewal Trap
+ 11:   </h1>
+ 12:   <p class="text-lg text-muted mb-8">
+ 13:     Auto-renewals are great until they're not. Here's how to track every renewal and cancellation
+ 14:     window so you're never surprised by a charge — or stuck in a contract you forgot about.
+ 15:   </p>
+ 16: 
+ 17:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">Why auto-renewals catch people out</h2>
+ 18:   <p class="text-ink mb-4">
+ 19:     An auto-renewal clause is a contract term that says: <em>if neither party cancels within a
+ 20:     certain window, the contract renews for another term.</em> It's designed to protect the
+ 21:     vendor from lapsed revenue — but it puts the burden on you to remember the cancellation
+ 22:     window, which is often 30, 60, or 90 days before the renewal date.
+ 23:   </p>
+ 24:   <p class="text-ink mb-4">
+ 25:     The trap works like this:
+ 26:   </p>
+ 27:   <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+ 28:     <li>You sign a 12-month contract on January 15.</li>
+ 29:     <li>The contract auto-renews unless cancelled 60 days before the end date.</li>
+ 30:     <li>Your real cancellation deadline is <strong>November 16</strong>.</li>
+ 31:     <li>You think about it in December, decide to cancel, and discover you're locked in for another 12 months.</li>
+ 32:   </ol>
+ 33:   <p class="text-ink mb-6">
+ 34:     Multiply that by every SaaS tool, vendor agreement, insurance policy, and client contract
+ 35:     you've signed, and the "I'll remember" system collapses fast.
+ 36:   </p>
+ 37: 
+ 38:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">The three types of auto-renewal traps</h2>
+ 39: 
+ 40:   <h3 class="font-display font-bold text-lg mt-6 mb-2">1. Fixed-term auto-renewal</h3>
+ 41:   <p class="text-ink mb-4">
+ 42:     The contract runs for a set term (12 months, 24 months) and renews for an identical term
+ 43:     unless cancelled in the window. This is the most common in B2B SaaS, insurance, and
+ 44:     property leases. The cancellation window is usually 30–90 days before the end date.
+ 45:   </p>
+ 46: 
+ 47:   <h3 class="font-display font-bold text-lg mt-6 mb-2">2. Evergreen contracts</h3>
+ 48:   <p class="text-ink mb-4">
+ 49:     Month-to-month contracts that renew continuously unless cancelled. Common in software
+ 50:     subscriptions and managed services. These are easier to exit but harder to remember,
+ 51:     because there's no "end date" — you just keep paying.
+ 52:   </p>
+ 53: 
+ 54:   <h3 class="font-display font-bold text-lg mt-6 mb-2">3. Rollover with price escalation</h3>
+ 55:   <p class="text-ink mb-4">
+ 56:     The nastiest of the three. The contract renews automatically <em>and</em> includes a
+ 57:     built-in price increase (often 3–7% per year). By the time you notice, you've been
+ 58:     overpaying for two years. Common in enterprise software, managed hosting, and
+ 59:     professional services retainers.
+ 60:   </p>
+ 61: 
+ 62:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">The cancellation window math</h2>
+ 63:   <p class="text-ink mb-4">
+ 64:     This is where most people get it wrong. The date you need to remember is <strong>not</strong>
+ 65:     the contract end date. It's:
+ 66:   </p>
+ 67:   <p class="text-ink mb-6 font-mono text-sm bg-paper border border-line rounded-md p-4">
+ 68:     Cancellation deadline = End date − Notice period
+ 69:   </p>
+ 70:   <p class="text-ink mb-4">
+ 71:     Examples:
+ 72:   </p>
+ 73:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+ 74:     <li>Contract ends December 31, 90-day notice → cancel by <strong>October 2</strong>.</li>
+ 75:     <li>Contract ends March 15, 60-day notice → cancel by <strong>January 14</strong>.</li>
+ 76:     <li>Contract ends June 30, 30-day notice → cancel by <strong>May 31</strong>.</li>
+ 77:   </ul>
+ 78:   <p class="text-ink mb-6">
+ 79:     If your contract also has a "notice of non-renewal" requirement (some do, on top of the
+ 80:     cancellation window), you need to be even earlier. Read the fine print carefully and
+ 81:     treat the earliest deadline as your real one.
+ 82:   </p>
+ 83: 
+ 84:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">How to track contract renewals</h2>
+ 85:   <p class="text-ink mb-4">
+ 86:     The system that works has three parts:
+ 87:   </p>
+ 88: 
+ 89:   <h3 class="font-display font-bold text-lg mt-6 mb-2">1. Inventory every contract with an end date</h3>
+ 90:   <p class="text-ink mb-4">
+ 91:     Go through your contracts and list every one with:
+ 92:   </p>
+ 93:   <ul class="list-disc pl-6 space-y-2 mb-4 text-ink">
+ 94:     <li>Vendor / counterparty name</li>
+ 95:     <li>Contract end date</li>
+ 96:     <li>Cancellation notice period (in days)</li>
+ 97:     <li>Renewal term length (if it auto-renews)</li>
+ 98:     <li>Any price escalation clause</li>
+ 99:   </ul>
+100:   <p class="text-ink mb-6">
+101:     Don't skip this step. Half of the "missed renewal" problem is not knowing what you've
+102:     actually signed.
+103:   </p>
+104: 
+105:   <h3 class="font-display font-bold text-lg mt-6 mb-2">2. Track the cancellation deadline, not the end date</h3>
+106:   <p class="text-ink mb-4">
+107:     When you add a contract to your tracker, subtract the notice period from the end date
+108:     and track <em>that</em> date. This is the date the reminder should fire.
+109:   </p>
+110:   <p class="text-ink mb-6">
+111:     Better yet: set multiple reminders — 90 days, 30 days, and 7 days before the cancellation
+112:     deadline. That gives you time to decide, negotiate, or shop alternatives.
+113:   </p>
+114: 
+115:   <h3 class="font-display font-bold text-lg mt-6 mb-2">3. Review quarterly</h3>
+116:   <p class="text-ink mb-6">
+117:     Once a quarter, pull up your list of contracts renewing in the next 12 months. Ask:
+118:     do we still need this? Is the price still competitive? Would the vendor negotiate?
+119:     This turns contract tracking from a defensive exercise into a cost-saving one.
+120:   </p>
+121: 
+122:   <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+123:     <h3 class="font-display font-bold text-lg mb-2">Never miss a cancellation window again</h3>
+124:     <p class="text-sm text-ink mb-4">
+125:       Fritt Tracker sends you email reminders before every contract renewal and cancellation
+126:       deadline. Free for up to 20 documents. Pro is $8.99/month for 100.
+127:     </p>
+128:     <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+129:       Track my contracts free →
+130:     </a>
+131:   </div>
+132: 
+133:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">A quick audit you can do today</h2>
+134:   <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+135:     <li>Open your last 3 months of bank or card statements.</li>
+136:     <li>Circle every recurring charge you don't immediately recognise.</li>
+137:     <li>For each one, find the contract or terms and note the cancellation window.</li>
+138:     <li>Add the cancellation deadline to your calendar — or better, to a tracker.</li>
+139:     <li>Cancel anything you're not actively using. Most people find 2–4 subscriptions they'd forgotten about.</li>
+140:   </ol>
+141:   <p class="text-ink mb-6">
+142:     Even if you don't cancel anything, knowing what's renewing and when is worth the audit.
+143:     It's the difference between paying attention and paying for it.
+144:   </p>
+145: 
+146:   <div class="mt-12 pt-8 border-t border-line">
+147:     <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>
+148:     <div class="grid sm:grid-cols-2 gap-4">
+149:       {% for a in articles if a.slug != 'contract-renewal-tracking' %}
+150:       <a href="/resources/{{ a.slug }}" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+151:         <div class="text-xs text-muted mb-1">{{ a.category }}</div>
+152:         <div class="font-medium text-sm">{{ a.title }}</div>
+153:       </a>
+154:       {% endfor %}
+155:     </div>
+156:   </div>
+157: </article>
+158: 
+159: {% endblock %}
+
+================
+File: templates/resources/document-expiry-tracking-checklist.html
+================
+  1: {% extends "base.html" %}
+  2: {% block title %}The Document Expiry Tracking Checklist (Printable) | Fritt Tracker{% endblock %}
+  3: {% block meta_description %}A printable checklist of every document most people forget to track until it's too late — passports, licenses, insurance, contracts, certifications, and more. Free PDF-ready format.{% endblock %}
+  4: {% block canonical %}https://tracker.fritt.org/resources/document-expiry-tracking-checklist{% endblock %}
+  5: {% block content %}
+  6: 
+  7: <article class="max-w-3xl mx-auto">
+  8:   <p class="text-xs text-muted mb-2">Guide · 6 min read</p>
+  9:   <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">
+ 10:     The Document Expiry Tracking Checklist
+ 11:   </h1>
+ 12:   <p class="text-lg text-muted mb-8">
+ 13:     Print this. Tick it off. Never get surprised by an expired document again.
+ 14:     Every item below has an expiry date — the question is whether you know what it is.
+ 15:   </p>
+ 16: 
+ 17:   <div class="bg-paper border border-line rounded-xl p-6 mb-8">
+ 18:     <p class="text-sm text-ink">
+ 19:       <strong>How to use this checklist:</strong> Go through each category, note the expiry
+ 20:       date for anything you own or hold, and add it to a tracker (or a calendar — but ideally
+ 21:       a tracker, so you get reminders automatically). Documents you don't track are the ones
+ 22:       that expire on you.
+ 23:     </p>
+ 24:   </div>
+ 25: 
+ 26:   <!-- ======================= PERSONAL ======================= -->
+ 27:   <section class="mb-10">
+ 28:     <h2 class="font-display font-bold text-2xl mt-8 mb-4 pb-2 border-b border-line">
+ 29:       👤 Personal Documents
+ 30:     </h2>
+ 31:     <p class="text-ink mb-4">
+ 32:       The documents tied to your identity and ability to travel. These are the ones with the
+ 33:       longest renewal times — and the harshest consequences for missing.
+ 34:     </p>
+ 35:     <ul class="space-y-3 mb-6">
+ 36:       <li class="flex items-start gap-3">
+ 37:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+ 38:         <div>
+ 39:           <p class="font-medium text-ink">Passport</p>
+ 40:           <p class="text-sm text-muted">Renew 9–12 months before expiry. Most countries require 6 months of validity beyond your return date. <a href="/resources/passport-expiration-reminder" class="text-fritt hover:underline">Full guide →</a></p>
+ 41:         </div>
+ 42:       </li>
+ 43:       <li class="flex items-start gap-3">
+ 44:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+ 45:         <div>
+ 46:           <p class="font-medium text-ink">Visas (tourist, work, student, residence)</p>
+ 47:           <p class="text-sm text-muted">Each has its own expiry and renewal process. Track them separately from your passport.</p>
+ 48:         </div>
+ 49:       </li>
+ 50:       <li class="flex items-start gap-3">
+ 51:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+ 52:         <div>
+ 53:           <p class="font-medium text-ink">Driver's license</p>
+ 54:           <p class="text-sm text-muted">Check whether your jurisdiction allows online renewal or requires an in-person visit — in-person can mean weeks of lead time.</p>
+ 55:         </div>
+ 56:       </li>
+ 57:       <li class="flex items-start gap-3">
+ 58:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+ 59:         <div>
+ 60:           <p class="font-medium text-ink">International driving permit (IDP)</p>
+ 61:           <p class="text-sm text-muted">Valid for 1 year from issue. Easy to forget if you only travel occasionally.</p>
+ 62:         </div>
+ 63:       </li>
+ 64:       <li class="flex items-start gap-3">
+ 65:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+ 66:         <div>
+ 67:           <p class="font-medium text-ink">National ID card</p>
+ 68:           <p class="text-sm text-muted">Required for domestic travel, banking, and government services in most countries.</p>
+ 69:         </div>
+ 70:       </li>
+ 71:       <li class="flex items-start gap-3">
+ 72:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+ 73:         <div>
+ 74:           <p class="font-medium text-ink">Vehicle registration &amp; inspection</p>
+ 75:           <p class="text-sm text-muted">Registration renews annually or biannually; inspections are often required before registration can be renewed.</p>
+ 76:         </div>
+ 77:       </li>
+ 78:       <li class="flex items-start gap-3">
+ 79:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+ 80:         <div>
+ 81:           <p class="font-medium text-ink">Professional certifications</p>
+ 82:           <p class="text-sm text-muted">Medical, legal, contractor, teaching, real estate — most require continuing education credits before renewal.</p>
+ 83:         </div>
+ 84:       </li>
+ 85:       <li class="flex items-start gap-3">
+ 86:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+ 87:         <div>
+ 88:           <p class="font-medium text-ink">Trusted traveller programmes (Global Entry, TSA PreCheck, NEXUS)</p>
+ 89:           <p class="text-sm text-muted">Memberships expire every 5 years. Renewal can take months to process.</p>
+ 90:         </div>
+ 91:       </li>
+ 92:     </ul>
+ 93:   </section>
+ 94: 
+ 95:   <!-- ======================= BUSINESS ======================= -->
+ 96:   <section class="mb-10">
+ 97:     <h2 class="font-display font-bold text-2xl mt-8 mb-4 pb-2 border-b border-line">
+ 98:       🏢 Business &amp; Compliance Documents
+ 99:     </h2>
+100:     <p class="text-ink mb-4">
+101:       If you run a business, these are the ones with the highest penalty for a missed renewal —
+102:       fines, forced closures, or lost contracts. See our
+103:       <a href="/use-cases/business-licenses" class="text-fritt hover:underline">business license tracking page</a>
+104:       for a deeper look.
+105:     </p>
+106:     <ul class="space-y-3 mb-6">
+107:       <li class="flex items-start gap-3">
+108:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+109:         <div>
+110:           <p class="font-medium text-ink">Business operating license</p>
+111:           <p class="text-sm text-muted">Issued by your local or national authority. Renewal windows are often strict. <a href="/resources/how-to-track-business-license-renewal" class="text-fritt hover:underline">Full guide →</a></p>
+112:         </div>
+113:       </li>
+114:       <li class="flex items-start gap-3">
+115:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+116:         <div>
+117:           <p class="font-medium text-ink">Sales tax / VAT registration</p>
+118:           <p class="text-sm text-muted">Re-registration is required in some jurisdictions, even if the number itself doesn't change.</p>
+119:         </div>
+120:       </li>
+121:       <li class="flex items-start gap-3">
+122:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+123:         <div>
+124:           <p class="font-medium text-ink">Health &amp; safety inspections</p>
+125:           <p class="text-sm text-muted">Restaurants, salons, gyms, and any physical location — inspection certificates usually expire annually.</p>
+126:         </div>
+127:       </li>
+128:       <li class="flex items-start gap-3">
+129:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+130:         <div>
+131:           <p class="font-medium text-ink">Professional / industry certifications</p>
+132:           <p class="text-sm text-muted">Required to legally operate in some industries — legal, medical, financial, construction.</p>
+133:         </div>
+134:       </li>
+135:       <li class="flex items-start gap-3">
+136:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+137:         <div>
+138:           <p class="font-medium text-ink">Building permits &amp; occupancy certificates</p>
+139:           <p class="text-sm text-muted">Often overlooked after the initial build. Some require periodic renewal.</p>
+140:         </div>
+141:       </li>
+142:       <li class="flex items-start gap-3">
+143:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+144:         <div>
+145:           <p class="font-medium text-ink">Import / export licenses</p>
+146:           <p class="text-sm text-muted">Customs and trade authorisations, especially for regulated goods.</p>
+147:         </div>
+148:       </li>
+149:       <li class="flex items-start gap-3">
+150:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+151:         <div>
+152:           <p class="font-medium text-ink">Environmental or waste permits</p>
+153:           <p class="text-sm text-muted">Required for many industrial and agricultural operations.</p>
+154:         </div>
+155:       </li>
+156:       <li class="flex items-start gap-3">
+157:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+158:         <div>
+159:           <p class="font-medium text-ink">Fire safety certificates</p>
+160:           <p class="text-sm text-muted">Usually annual. Your landlord may hold it, but you're still required to comply.</p>
+161:         </div>
+162:       </li>
+163:     </ul>
+164:   </section>
+165: 
+166:   <!-- ======================= FINANCIAL & INSURANCE ======================= -->
+167:   <section class="mb-10">
+168:     <h2 class="font-display font-bold text-2xl mt-8 mb-4 pb-2 border-b border-line">
+169:       💰 Financial, Insurance &amp; Legal
+170:     </h2>
+171:     <p class="text-ink mb-4">
+172:       A lapsed policy or a missed renewal window here can cost you a claim, a contract, or
+173:       serious money. See our <a href="/use-cases/insurance" class="text-fritt hover:underline">insurance tracking page</a>
+174:       for the full picture on coverage gaps.
+175:     </p>
+176:     <ul class="space-y-3 mb-6">
+177:       <li class="flex items-start gap-3">
+178:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+179:         <div>
+180:           <p class="font-medium text-ink">General liability insurance</p>
+181:           <p class="text-sm text-muted">Required by most B2B contracts and commercial leases. Renewal notices often go to old addresses.</p>
+182:         </div>
+183:       </li>
+184:       <li class="flex items-start gap-3">
+185:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+186:         <div>
+187:           <p class="font-medium text-ink">Professional liability / E&amp;O</p>
+188:           <p class="text-sm text-muted">Required for consultants, agencies, and most service providers.</p>
+189:         </div>
+190:       </li>
+191:       <li class="flex items-start gap-3">
+192:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+193:         <div>
+194:           <p class="font-medium text-ink">Workers' compensation</p>
+195:           <p class="text-sm text-muted">Legally required in most jurisdictions if you have employees. Non-negotiable.</p>
+196:         </div>
+197:       </li>
+198:       <li class="flex items-start gap-3">
+199:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+200:         <div>
+201:           <p class="font-medium text-ink">Commercial auto &amp; property insurance</p>
+202:           <p class="text-sm text-muted">Both renew annually. Premiums change — check the renewal quote before auto-renewing.</p>
+203:         </div>
+204:       </li>
+205:       <li class="flex items-start gap-3">
+206:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+207:         <div>
+208:           <p class="font-medium text-ink">Cyber liability &amp; D&amp;O insurance</p>
+209:           <p class="text-sm text-muted">Increasingly required by enterprise clients, boards, and investors.</p>
+210:         </div>
+211:       </li>
+212:       <li class="flex items-start gap-3">
+213:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+214:         <div>
+215:           <p class="font-medium text-ink">Vendor certificates of insurance (COIs)</p>
+216:           <p class="text-sm text-muted">You need to track <em>their</em> expiry dates too. <a href="/resources/insurance-coverage-gaps" class="text-fritt hover:underline">Full guide →</a></p>
+217:         </div>
+218:       </li>
+219:       <li class="flex items-start gap-3">
+220:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+221:         <div>
+222:           <p class="font-medium text-ink">Home / renters insurance</p>
+223:           <p class="text-sm text-muted">Personal policies expire annually. Check that contents coverage still matches what you own.</p>
+224:         </div>
+225:       </li>
+226:       <li class="flex items-start gap-3">
+227:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+228:         <div>
+229:           <p class="font-medium text-ink">Contract renewals &amp; cancellation windows</p>
+230:           <p class="text-sm text-muted">Track the cancellation deadline, not the end date. <a href="/resources/contract-renewal-tracking" class="text-fritt hover:underline">Full guide →</a></p>
+231:         </div>
+232:       </li>
+233:       <li class="flex items-start gap-3">
+234:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+235:         <div>
+236:           <p class="font-medium text-ink">Commercial lease &amp; property agreements</p>
+237:           <p class="text-sm text-muted">Renewal windows are typically 90–180 days before the end date.</p>
+238:         </div>
+239:       </li>
+240:       <li class="flex items-start gap-3">
+241:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+242:         <div>
+243:           <p class="font-medium text-ink">Credit card expirations</p>
+244:           <p class="text-sm text-muted">Easy to miss, and a failure point for auto-payments (see Digital below).</p>
+245:         </div>
+246:       </li>
+247:     </ul>
+248:   </section>
+249: 
+250:   <!-- ======================= DIGITAL ======================= -->
+251:   <section class="mb-10">
+252:     <h2 class="font-display font-bold text-2xl mt-8 mb-4 pb-2 border-b border-line">
+253:       💻 Digital Assets &amp; Infrastructure
+254:     </h2>
+255:     <p class="text-ink mb-4">
+256:       These are the silent killers. Nothing makes your website, email, or app stop working
+257:       faster than an expired certificate or domain — and they always expire on a Friday.
+258:     </p>
+259:     <ul class="space-y-3 mb-6">
+260:       <li class="flex items-start gap-3">
+261:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+262:         <div>
+263:           <p class="font-medium text-ink">Domain names</p>
+264:           <p class="text-sm text-muted">Set to auto-renew, but also track the expiry — auto-renew fails silently if the card on file expired.</p>
+265:         </div>
+266:       </li>
+267:       <li class="flex items-start gap-3">
+268:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+269:         <div>
+270:           <p class="font-medium text-ink">SSL / TLS certificates</p>
+271:           <p class="text-sm text-muted">Now often auto-renewed (Let's Encrypt, etc.) but worth tracking. Manual certs expire on a 1-year cycle.</p>
+272:         </div>
+273:       </li>
+274:       <li class="flex items-start gap-3">
+275:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+276:         <div>
+277:           <p class="font-medium text-ink">Software licenses</p>
+278:           <p class="text-sm text-muted">Desktop software, design tools, and industry-specific programs often use annual licenses.</p>
+279:         </div>
+280:       </li>
+281:       <li class="flex items-start gap-3">
+282:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+283:         <div>
+284:           <p class="font-medium text-ink">SaaS subscriptions</p>
+285:           <p class="text-sm text-muted">Every tool has a renewal date. Track the ones with annual terms — those are the ones where you have leverage to negotiate.</p>
+286:         </div>
+287:       </li>
+288:       <li class="flex items-start gap-3">
+289:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+290:         <div>
+291:           <p class="font-medium text-ink">API keys &amp; access tokens</p>
+292:           <p class="text-sm text-muted">Many have expiration policies (30, 90, or 365 days). Track them if they don't auto-rotate.</p>
+293:         </div>
+294:       </li>
+295:       <li class="flex items-start gap-3">
+296:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+297:         <div>
+298:           <p class="font-medium text-ink">Cloud hosting &amp; CDN contracts</p>
+299:           <p class="text-sm text-muted">Annual reserved instances and committed-use discounts renew on a fixed date.</p>
+300:         </div>
+301:       </li>
+302:       <li class="flex items-start gap-3">
+303:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+304:         <div>
+305:           <p class="font-medium text-ink">Trademarks &amp; patents</p>
+306:           <p class="text-sm text-muted">Renewal cycles vary by jurisdiction (often 10 years for trademarks), but missing a renewal can mean losing the mark entirely.</p>
+307:         </div>
+308:       </li>
+309:       <li class="flex items-start gap-3">
+310:         <span class="mt-1 w-4 h-4 border-2 border-muted rounded flex-shrink-0"></span>
+311:         <div>
+312:           <p class="font-medium text-ink">Business bank account verifications</p>
+313:           <p class="text-sm text-muted">Some jurisdictions require periodic re-verification. Missing it can freeze the account.</p>
+314:         </div>
+315:       </li>
+316:     </ul>
+317:   </section>
+318: 
+319:   <!-- ======================= SETUP ======================= -->
+320:   <section class="mb-10">
+321:     <h2 class="font-display font-bold text-2xl mt-8 mb-4 pb-2 border-b border-line">
+322:       ✅ How to set this up in 10 minutes
+323:     </h2>
+324:     <p class="text-ink mb-4">
+325:       A checklist is only useful if the dates end up somewhere that will remind you.
+326:       Here's the process:
+327:     </p>
+328:     <ol class="list-decimal pl-6 space-y-3 mb-6 text-ink">
+329:       <li>
+330:         <strong>Gather the documents.</strong> Physically or digitally — pull out everything
+331:         on the list above. A folder, a filing cabinet, a password manager, wherever they live.
+332:       </li>
+333:       <li>
+334:         <strong>Note every expiry date.</strong> Write them on a piece of paper as you go.
+335:         Don't try to organise them yet — just get the dates.
+336:       </li>
+337:       <li>
+338:         <strong>Add them to a tracker.</strong> A calendar works, but only if you set multiple
+339:         reminders per item — which is tedious. A dedicated tracker does this automatically and
+340:         shows everything on one dashboard.
+341:       </li>
+342:       <li>
+343:         <strong>Set your reminder rules.</strong> For anything with a renewal process (passport,
+344:         license), 90 days is a good minimum. For anything that just needs a payment, 30 days is fine.
+345:         For anything critical (insurance, business license), 90 days minimum.
+346:       </li>
+347:       <li>
+348:         <strong>Review quarterly.</strong> Once every 3 months, open the dashboard and check
+349:         what's expiring in the next 90 days. This is where you catch problems before they
+350:         become emergencies.
+351:       </li>
+352:     </ol>
+353:   </section>
+354: 
+355:   <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+356:     <h3 class="font-display font-bold text-lg mb-2">Don't want to build this from scratch?</h3>
+357:     <p class="text-sm text-ink mb-4">
+358:       Fritt Tracker is a document expiry tracker built for exactly this. Add each item from
+359:       the checklist, and it colour-codes them by urgency and emails you before anything expires.
+360:       Free for up to 20 documents. Pro is $8.99/month for 100.
+361:     </p>
+362:     <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+363:       Start my checklist free →
+364:     </a>
+365:   </div>
+366: 
+367:   <!-- ======================= FAQ (good for SEO) ======================= -->
+368:   <section class="mt-12">
+369:     <h2 class="font-display font-bold text-2xl mt-8 mb-4">Frequently asked questions</h2>
+370: 
+371:     <details class="border-b border-line py-4">
+372:       <summary class="font-medium cursor-pointer">How often should I review my expiry dates?</summary>
+373:       <p class="text-sm text-ink mt-3">
+374:         Quarterly. Anything more frequent is overkill for most people; anything less and you'll
+375:         miss renewal windows that open 60–90 days before expiry.
+376:       </p>
+377:     </details>
+378: 
+379:     <details class="border-b border-line py-4">
+380:       <summary class="font-medium cursor-pointer">What's the single most important document to track?</summary>
+381:       <p class="text-sm text-ink mt-3">
+382:         For individuals: your passport. For businesses: your business license and general
+383:         liability insurance. Both have long renewal lead times and severe consequences for
+384:         missing them.
+385:       </p>
+386:     </details>
+387: 
+388:     <details class="border-b border-line py-4">
+389:       <summary class="font-medium cursor-pointer">Can I just use a spreadsheet?</summary>
+390:       <p class="text-sm text-ink mt-3">
+391:         You can, but spreadsheets are passive — they don't remind you. They also live on one
+392:         device, which fails as soon as more than one person is involved. A dedicated tracker
+393:         is worth it once you're tracking more than a handful of items.
+394:       </p>
+395:     </details>
+396: 
+397:     <details class="border-b border-line py-4">
+398:       <summary class="font-medium cursor-pointer">How far in advance should I set reminders?</summary>
+399:       <p class="text-sm text-ink mt-3">
+400:         90 days for anything with a renewal process (passports, licenses, insurance,
+401:         certifications). 30 days for anything that's just a payment. 7 days as a final
+402:         failsafe for everything.
+403:       </p>
+404:     </details>
+405: 
+406:     <details class="border-b border-line py-4">
+407:       <summary class="font-medium cursor-pointer">Does Fritt Tracker work for businesses with multiple people?</summary>
+408:       <p class="text-sm text-ink mt-3">
+409:         Currently each Fritt Tracker account is single-user. Multi-user team sharing is on
+410:         the roadmap. For now, most small teams use a shared account on the Pro plan to track
+411:         company-wide documents.
+412:       </p>
+413:     </details>
+414:   </section>
+415: 
+416:   <!-- ======================= RELATED ======================= -->
+417:   <div class="mt-12 pt-8 border-t border-line">
+418:     <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>
+419:     <div class="grid sm:grid-cols-2 gap-4">
+420:       {% for a in articles if a.slug != 'document-expiry-tracking-checklist' %}
+421:       <a href="/resources/{{ a.slug }}" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+422:         <div class="text-xs text-muted mb-1">{{ a.category }}</div>
+423:         <div class="font-medium text-sm">{{ a.title }}</div>
+424:       </a>
+425:       {% endfor %}
+426:     </div>
+427:   </div>
+428: </article>
+429: 
+430: {% endblock %}
+
+================
+File: templates/resources/how-to-track-business-license-renewal.html
+================
+ 1: {% extends "base.html" %}
+ 2: {% block title %}How to Track Business License Renewals (2026 Guide) | Fritt Tracker{% endblock %}
+ 3: {% block meta_description %}Learn how to track business license renewal dates, avoid fines, and never miss a compliance deadline. Step-by-step guide for small businesses and freelancers.{% endblock %}
+ 4: {% block content %}
+ 5: 
+ 6: <article class="max-w-3xl mx-auto">
+ 7:   <p class="text-xs text-muted mb-2">Compliance · 6 min read</p>
+ 8:   <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">How to Track Business License Renewals</h1>
+ 9:   <p class="text-lg text-muted mb-8">
+10:     Every business license, permit, and registration has an expiration date. Miss one and you're
+11:     looking at fines, forced closures, or lost contracts. Here's a simple system to never miss a renewal.
+12:   </p>
+13: 
+14:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">Why license renewals slip through the cracks</h2>
+15:   <p class="text-ink mb-4">
+16:     Most small businesses track licenses in one of three ways — and all three fail eventually:
+17:   </p>
+18:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+19:     <li><strong>Memory:</strong> works until the person who "just knows" leaves the company.</li>
+20:     <li><strong>Spreadsheets:</strong> works until someone forgets to update the file, or the file lives on one person's laptop.</li>
+21:     <li><strong>Calendar reminders:</strong> works until the reminder fires a week before renewal and the agency takes three weeks to process.</li>
+22:   </ul>
+23: 
+24:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">The 4-step system for tracking renewals</h2>
+25: 
+26:   <h3 class="font-display font-bold text-lg mt-6 mb-2">1. Inventory every license and permit</h3>
+27:   <p class="text-ink mb-4">
+28:     Walk through your business and list every document with an expiration date: business license,
+29:     sales tax permit, health inspection, professional certifications, vehicle registrations, insurance
+30:     policies, and vendor contracts. Include the issuing agency and renewal URL for each.
+31:   </p>
+32: 
+33:   <h3 class="font-display font-bold text-lg mt-6 mb-2">2. Record the expiration date — not the renewal date</h3>
+34:   <p class="text-ink mb-4">
+35:     This is the mistake most people make. If your license expires June 30 and the agency takes
+36:     4–6 weeks to process a renewal, your real deadline is mid-May. Track the <em>expiration</em> date
+37:     and give yourself a buffer.
+38:   </p>
+39: 
+40:   <h3 class="font-display font-bold text-lg mt-6 mb-2">3. Set reminders at multiple intervals</h3>
+41:   <p class="text-ink mb-4">
+42:     One reminder isn't enough. The most reliable systems send reminders at 120 days, 60 days,
+43:     30 days, and 7 days before expiration. That gives you time to gather documents, pay fees,
+44:     and follow up if the agency is slow.
+45:   </p>
+46: 
+47:   <h3 class="font-display font-bold text-lg mt-6 mb-2">4. Keep it in a shared, central place</h3>
+48:   <p class="text-ink mb-4">
+49:     A spreadsheet on one person's laptop is a single point of failure. Use a tool that's accessible
+50:     to whoever handles compliance, sends automatic reminders, and shows the status of every document
+51:     at a glance.
+52:   </p>
+53: 
+54:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">What to track (checklist)</h2>
+55:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+56:     <li>Business license / operating permit</li>
+57:     <li>Sales tax / VAT registration</li>
+58:     <li>Professional certifications (contractor, medical, legal, etc.)</li>
+59:     <li>Health &amp; safety inspections</li>
+60:     <li>Insurance policies (liability, workers' comp, property)</li>
+61:     <li>Vehicle registrations and inspections</li>
+62:     <li>Domain names, SSL certificates, and software licenses</li>
+63:     <li>Vendor and client contracts with auto-renewal clauses</li>
+64:   </ul>
+65: 
+66:   <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+67:     <h3 class="font-display font-bold text-lg mb-2">Want this done for you?</h3>
+68:     <p class="text-sm text-ink mb-4">
+69:       Fritt Tracker is a document expiry tracker that does exactly this — add your licenses,
+70:       set the expiry dates, and get email reminders before anything lapses. Free for up to 20 documents.
+71:     </p>
+72:     <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+73:       Track your licenses free →
+74:     </a>
+75:   </div>
+76: 
+77:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">Common renewal mistakes to avoid</h2>
+78:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+79:     <li><strong>Assuming auto-renewal:</strong> many licenses require active renewal, not passive.</li>
+80:     <li><strong>Missing the payment window:</strong> some agencies only accept renewals during a specific window.</li>
+81:     <li><strong>Not updating your address:</strong> renewal notices get sent to old addresses.</li>
+82:     <li><strong>Ignoring the buffer:</strong> processing times can double near fiscal year-end.</li>
+83:   </ul>
+84: 
+85:   <div class="mt-12 pt-8 border-t border-line">
+86:     <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>
+87:     <div class="grid sm:grid-cols-2 gap-4">
+88:       {% for a in articles if a.slug != 'how-to-track-business-license-renewal' %}
+89:       <a href="/resources/{{ a.slug }}" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+90:         <div class="text-xs text-muted mb-1">{{ a.category }}</div>
+91:         <div class="font-medium text-sm">{{ a.title }}</div>
+92:       </a>
+93:       {% endfor %}
+94:     </div>
+95:   </div>
+96: </article>
+97: 
+98: {% endblock %}
+
+================
+File: templates/resources/index.html
+================
+ 1: {% extends "base.html" %}
+ 2: {% block title %}Document Expiry & Renewal Resources | Fritt Tracker{% endblock %}
+ 3: {% block meta_description %}Guides on tracking business license renewals, passport expiry, contract renewals, and document compliance — from the makers of Fritt Tracker.{% endblock %}
+ 4: {% block content %}
+ 5: 
+ 6: <div class="max-w-4xl mx-auto">
+ 7:   <h1 class="font-display font-bold text-3xl md:text-4xl mb-3">Document Expiry &amp; Renewal Resources</h1>
+ 8:   <p class="text-muted mb-10 max-w-2xl">
+ 9:     Practical guides on tracking renewals, staying compliant, and never missing a deadline.
+10:     Whether you're a freelancer tracking contracts or a small business tracking licenses, start here.
+11:   </p>
+12: 
+13:   <div class="grid md:grid-cols-2 gap-6">
+14:     {% for a in articles %}
+15:     <a href="/resources/{{ a.slug }}" class="block bg-white border border-line rounded-xl p-6 hover:border-fritt transition-colors">
+16:       <div class="flex items-center gap-2 mb-2">
+17:         <span class="text-xs font-medium bg-paper border border-line rounded-full px-2.5 py-0.5 text-muted">{{ a.category }}</span>
+18:         <span class="text-xs text-muted">{{ a.read_time }}</span>
+19:       </div>
+20:       <h2 class="font-display font-bold text-lg mb-2 text-ink">{{ a.title }}</h2>
+21:       <p class="text-muted text-sm">{{ a.excerpt }}</p>
+22:       <span class="text-fritt text-sm font-medium mt-3 inline-block">Read guide →</span>
+23:     </a>
+24:     {% endfor %}
+25:   </div>
+26: 
+27:   <div class="mt-12 bg-paper border border-line rounded-xl p-8 text-center">
+28:     <h2 class="font-display font-bold text-xl mb-2">Ready to stop tracking in spreadsheets?</h2>
+29:     <p class="text-muted mb-5">Fritt Tracker is free for up to 20 documents. No credit card required.</p>
+30:     <a href="/register" class="inline-block px-6 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors">
+31:       Start Free →
+32:     </a>
+33:   </div>
+34: </div>
+35: 
+36: {% endblock %}
+
+================
+File: templates/resources/insurance-coverage-gaps.html
+================
+  1: {% extends "base.html" %}
+  2: {% block title %}Insurance Coverage Gaps: How Expired Policies Cost You Contracts{% endblock %}
+  3: {% block meta_description %}A lapsed insurance policy can kill a deal faster than a bad quote. Learn how to track policy expirations and certificates of insurance (COIs) so you never have a coverage gap.{% endblock %}
+  4: {% block canonical %}https://tracker.fritt.org/resources/insurance-coverage-gaps{% endblock %}
+  5: {% block content %}
+  6: 
+  7: <article class="max-w-3xl mx-auto">
+  8:   <p class="text-xs text-muted mb-2">Business · 7 min read</p>
+  9:   <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">
+ 10:     Insurance Coverage Gaps: How Expired Policies Cost You Contracts
+ 11:   </h1>
+ 12:   <p class="text-lg text-muted mb-8">
+ 13:     A lapsed insurance policy can kill a deal faster than a bad quote. Here's what causes
+ 14:     coverage gaps, how certificates of insurance work, and how to track every policy
+ 15:     expiration so it never happens to you.
+ 16:   </p>
+ 17: 
+ 18:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">What is a coverage gap?</h2>
+ 19:   <p class="text-ink mb-4">
+ 20:     A coverage gap is any period when you're running a business or holding a contract
+ 21:     <em>without active insurance coverage</em>. It can be as short as a day — a policy
+ 22:     that expired yesterday and renews tomorrow — or as long as months, if you forgot
+ 23:     to renew entirely.
+ 24:   </p>
+ 25:   <p class="text-ink mb-6">
+ 26:     Coverage gaps matter for two reasons:
+ 27:   </p>
+ 28:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+ 29:     <li><strong>You're exposed.</strong> If something happens during the gap — a liability claim, a property loss, a workers' comp incident — you pay out of pocket.</li>
+ 30:     <li><strong>You're contractually non-compliant.</strong> Most B2B contracts, commercial leases, and client agreements require you to maintain specific insurance coverage. A gap is a breach, and the other party can terminate or withhold payment.</li>
+ 31:   </ul>
+ 32: 
+ 33:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">What causes coverage gaps</h2>
+ 34:   <p class="text-ink mb-4">
+ 35:     In practice, coverage gaps rarely happen because someone decided to skip insurance.
+ 36:     They happen because of process failures:
+ 37:   </p>
+ 38:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+ 39:     <li><strong>Renewal notices went to an old address</strong> or an old email that no one monitors.</li>
+ 40:     <li><strong>The person who handled insurance left the company</strong> and the renewal calendar went with them.</li>
+ 41:     <li><strong>Payment failed silently</strong> — a card expired, a bank detail changed, the direct debit bounced.</li>
+ 42:     <li><strong>Someone assumed auto-renewal</strong> when the policy actually required active renewal.</li>
+ 43:     <li><strong>The broker changed carriers</strong> and issued a new policy with a start date that didn't match the old one's end date.</li>
+ 44:     <li><strong>You switched brokers</strong> and there was a handover gap.</li>
+ 45:   </ul>
+ 46:   <p class="text-ink mb-6">
+ 47:     Every one of these is a tracking failure, not an insurance failure. Which means every one
+ 48:     is fixable with the right system.
+ 49:   </p>
+ 50: 
+ 51:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">Certificates of insurance (COIs) and why they matter</h2>
+ 52:   <p class="text-ink mb-4">
+ 53:     If you work with vendors, contractors, or subtenants, you've probably been asked for a
+ 54:     <strong>certificate of insurance</strong> — a one-page document from the vendor's insurer
+ 55:     proving they carry general liability, workers' comp, auto liability, or other coverage.
+ 56:   </p>
+ 57:   <p class="text-ink mb-4">
+ 58:     COIs have <strong>expiration dates</strong>. When a vendor's COI expires, you may be:
+ 59:   </p>
+ 60:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+ 61:     <li>Contractually required to stop them from working on your site.</li>
+ 62:     <li>Liable if they cause damage while uninsured on your property.</li>
+ 63:     <li>In violation of your own insurance policy's terms.</li>
+ 64:   </ul>
+ 65:   <p class="text-ink mb-6">
+ 66:     Most companies collect COIs once at onboarding and never check them again. That's a
+ 67:     compliance gap waiting to happen. The right approach is to track every COI's expiry
+ 68:     date and request a renewed certificate 30–60 days before it lapses.
+ 69:   </p>
+ 70: 
+ 71:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">The types of policies to track</h2>
+ 72:   <p class="text-ink mb-4">
+ 73:     Depending on your business, this list may be short or long. Track them all:
+ 74:   </p>
+ 75:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+ 76:     <li><strong>General liability</strong> — required by almost every B2B contract and lease.</li>
+ 77:     <li><strong>Professional liability / E&amp;O</strong> — required for consultants, agencies, and service providers.</li>
+ 78:     <li><strong>Workers' compensation</strong> — required by law in most jurisdictions if you have employees.</li>
+ 79:     <li><strong>Commercial auto</strong> — required if any vehicle is used for business purposes.</li>
+ 80:     <li><strong>Commercial property</strong> — covers premises, equipment, and inventory.</li>
+ 81:     <li><strong>Cyber liability</strong> — increasingly required for any company handling client data.</li>
+ 82:     <li><strong>Directors &amp; officers (D&amp;O)</strong> — required for many corporate boards and investors.</li>
+ 83:     <li><strong>Umbrella / excess liability</strong> — required for larger contracts above primary limits.</li>
+ 84:   </ul>
+ 85:   <p class="text-ink mb-6">
+ 86:     Then add the <em>vendor-side</em> policies you need to track — the COIs from every
+ 87:     contractor, subcontractor, and landlord-adjacent party whose insurance you rely on.
+ 88:   </p>
+ 89: 
+ 90:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">How to track insurance expirations</h2>
+ 91: 
+ 92:   <h3 class="font-display font-bold text-lg mt-6 mb-2">1. Centralise every policy end date in one list</h3>
+ 93:   <p class="text-ink mb-4">
+ 94:     Not in three different brokers' emails. Not in a spreadsheet only one person can access.
+ 95:     One list, with: policy type, insurer, policy number, end date, and renewal contact.
+ 96:   </p>
+ 97: 
+ 98:   <h3 class="font-display font-bold text-lg mt-6 mb-2">2. Set reminders 90, 60, and 30 days before expiry</h3>
+ 99:   <p class="text-ink mb-4">
+100:     Broker turnaround for renewal quotes is often 2–6 weeks. Starting 90 days out gives you
+101:     time to shop alternatives if the renewal quote is bad — which, given how insurance markets
+102:     have moved, is often worth doing.
+103:   </p>
+104: 
+105:   <h3 class="font-display font-bold text-lg mt-6 mb-2">3. Track COI expirations separately</h3>
+106:   <p class="text-ink mb-6">
+107:     Your own policies and your vendors' certificates of insurance are two different lists.
+108:     Both need tracking. For COIs, a 60-day reminder is usually enough — vendors can usually
+109:     produce a renewed certificate within a few days of request.
+110:   </p>
+111: 
+112:   <h3 class="font-display font-bold text-lg mt-6 mb-2">4. Audit annually</h3>
+113:   <p class="text-ink mb-6">
+114:     Once a year, review every policy: is the coverage still right for your business?
+115:     Has your revenue or headcount changed enough to warrant higher limits? Are there
+116:     new coverage types you should carry that you didn't need a year ago (cyber, E&amp;O)?
+117:     Insurance isn't a set-and-forget thing.
+118:   </p>
+119: 
+120:   <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+121:     <h3 class="font-display font-bold text-lg mb-2">Stop chasing expiry dates manually</h3>
+122:     <p class="text-sm text-ink mb-4">
+123:       Fritt Tracker tracks every insurance policy, COI, and renewal deadline — and emails
+124:       you before any of them lapses. Free for up to 20 documents.
+125:     </p>
+126:     <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+127:       Track my policies free →
+128:     </a>
+129:   </div>
+130: 
+131:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">The cost of getting it wrong</h2>
+132:   <p class="text-ink mb-4">
+133:     A single coverage gap can cost more than a decade of insurance premiums:
+134:   </p>
+135:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+136:     <li>A liability claim during a gap: uncapped, out of pocket.</li>
+137:     <li>A lost contract because your COI lapsed: the contract value, plus the relationship.</li>
+138:     <li>A workers' comp incident during a gap: fines, legal exposure, and potential criminal liability in some jurisdictions.</li>
+139:     <li>A property loss during a gap: full replacement cost.</li>
+140:   </ul>
+141:   <p class="text-ink mb-6">
+142:     Tracking expiry dates is cheap. Not tracking them is not.
+143:   </p>
+144: 
+145:   <div class="mt-12 pt-8 border-t border-line">
+146:     <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>
+147:     <div class="grid sm:grid-cols-2 gap-4">
+148:       {% for a in articles if a.slug != 'insurance-coverage-gaps' %}
+149:       <a href="/resources/{{ a.slug }}" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+150:         <div class="text-xs text-muted mb-1">{{ a.category }}</div>
+151:         <div class="font-medium text-sm">{{ a.title }}</div>
+152:       </a>
+153:       {% endfor %}
+154:     </div>
+155:   </div>
+156: </article>
+157: 
+158: {% endblock %}
+
+================
+File: templates/resources/passport-expiration-reminder.html
+================
+  1: {% extends "base.html" %}
+  2: {% block title %}Passport Expiration Reminders: The 6-Month Rule Most Travelers Don't Know{% endblock %}
+  3: {% block meta_description %}Most countries require 6 months of passport validity beyond your travel dates. Learn the 6-month rule, which countries enforce it, and how to never get caught out at the airport.{% endblock %}
+  4: {% block canonical %}https://tracker.fritt.org/resources/passport-expiration-reminder{% endblock %}
+  5: {% block content %}
+  6: 
+  7: <article class="max-w-3xl mx-auto">
+  8:   <p class="text-xs text-muted mb-2">Travel · 7 min read</p>
+  9:   <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">
+ 10:     Passport Expiration Reminders: The 6-Month Rule Most Travelers Don't Know
+ 11:   </h1>
+ 12:   <p class="text-lg text-muted mb-8">
+ 13:     A passport that expires in five months is, for most international travel, an expired passport.
+ 14:     Here's the rule, which countries enforce it, and how to never get turned away at the airport.
+ 15:   </p>
+ 16: 
+ 17:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">The 6-month rule, explained</h2>
+ 18:   <p class="text-ink mb-4">
+ 19:     Most countries require that your passport be valid for <strong>at least six months beyond
+ 20:     your planned date of departure</strong> — not just your arrival date. Some countries
+ 21:     (including China and many Southeast Asian nations) require six months from your
+ 22:     <em>return</em> date, which effectively means seven or eight months of validity if you're
+ 23:     staying a while.
+ 24:   </p>
+ 25:   <p class="text-ink mb-4">
+ 26:     The rule exists so that if something goes wrong on your trip — a medical emergency,
+ 27:     a missed flight, an extended stay — your passport doesn't expire while you're still abroad.
+ 28:     Without it, you'd be stuck in a foreign country with no valid travel document.
+ 29:   </p>
+ 30:   <p class="text-ink mb-6">
+ 31:     The kicker: <strong>airlines enforce this rule at check-in, not immigration.</strong>
+ 32:     That means you can be denied boarding in your home country — before you've even left —
+ 33:     if your passport doesn't meet the destination's validity requirement.
+ 34:   </p>
+ 35: 
+ 36:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">Which countries enforce the 6-month rule?</h2>
+ 37:   <p class="text-ink mb-4">
+ 38:     The list is long and changes occasionally, but the major regions include:
+ 39:   </p>
+ 40:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+ 41:     <li><strong>Most of Asia:</strong> Thailand, Indonesia, Vietnam, Malaysia, Singapore, China, Japan (Japan requires validity through your stay, not 6 months — but airlines often misapply the rule, so keep 6 months anyway).</li>
+ 42:     <li><strong>Most of the Middle East:</strong> UAE, Saudi Arabia, Qatar, Kuwait, Oman, Bahrain.</li>
+ 43:     <li><strong>Much of Africa:</strong> Egypt, Kenya, Tanzania, South Africa.</li>
+ 44:     <li><strong>Parts of Central &amp; South America:</strong> Brazil, Ecuador, Paraguay, Suriname.</li>
+ 45:     <li><strong>Caribbean:</strong> Bahamas, Barbados, Jamaica.</li>
+ 46:   </ul>
+ 47:   <p class="text-ink mb-6">
+ 48:     The <strong>EU, UK, US, Canada, Australia, and New Zealand</strong> generally only require
+ 49:     your passport to be valid for the duration of your stay. But Schengen-area countries
+ 50:     require validity for at least 3 months beyond your planned departure, and this is
+ 51:     enforced unevenly at different entry points.
+ 52:   </p>
+ 53: 
+ 54:   <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 my-8">
+ 55:     <p class="text-sm text-yellow-900">
+ 56:       <strong>Rule of thumb:</strong> If your passport has less than 6 months of validity,
+ 57:       assume it's expired for international travel. Renew it before you book anything.
+ 58:     </p>
+ 59:   </div>
+ 60: 
+ 61:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">The "expires while you're abroad" problem</h2>
+ 62:   <p class="text-ink mb-4">
+ 63:     Even if your destination only requires passport validity for the duration of your stay,
+ 64:     a passport expiring <em>while you're abroad</em> is a serious problem. Here's what can happen:
+ 65:   </p>
+ 66:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+ 67:     <li><strong>You can't fly home.</strong> Airlines won't board you on an international flight with an expired passport, even if it's your home country's passport.</li>
+ 68:     <li><strong>You can't re-enter your own country.</strong> Most countries require citizens to enter on a valid passport, though some have emergency provisions.</li>
+ 69:     <li><strong>You're stuck.</strong> Getting an emergency passport abroad means finding your embassy, filling out forms, paying expedited fees, and waiting days — sometimes longer if it's a weekend or holiday.</li>
+ 70:     <li><strong>You can't leave your current country either.</strong> An expired passport is not a valid travel document, so you can't cross any border with it.</li>
+ 71:   </ul>
+ 72:   <p class="text-ink mb-6">
+ 73:     This happens more than you'd think. The most common scenario: someone books a 3-week trip,
+ 74:     their passport expires 10 days after they're scheduled to return, and they assume that's fine.
+ 75:     It isn't. Airlines calculate validity from your <em>return</em> date, not your departure date,
+ 76:     and often add a buffer on top.
+ 77:   </p>
+ 78: 
+ 79:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">How long does renewal take?</h2>
+ 80:   <p class="text-ink mb-4">
+ 81:     Renewal timelines vary significantly by country:
+ 82:   </p>
+ 83:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+ 84:     <li><strong>US:</strong> 6–8 weeks routine, 2–3 weeks expedited (plus mailing).</li>
+ 85:     <li><strong>UK:</strong> 3 weeks routine, 1 week expedited (online).</li>
+ 86:     <li><strong>Canada:</strong> 10 business days plus mailing, 2–9 days in person.</li>
+ 87:     <li><strong>Australia:</strong> 6 weeks routine, 2 weeks priority.</li>
+ 88:     <li><strong>Nigeria:</strong> 3–6 weeks for standard, 1 week for expedited (in practice, longer).</li>
+ 89:   </ul>
+ 90:   <p class="text-ink mb-6">
+ 91:     These are the <em>official</em> timelines. In practice, renewal times can stretch during
+ 92:     peak season (April–August) or when a country faces backlogs. If you're travelling in
+ 93:     the next 3 months and your passport expires in under 12 months, start the renewal now.
+ 94:   </p>
+ 95: 
+ 96:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">How to never get caught out</h2>
+ 97:   <p class="text-ink mb-4">
+ 98:     The simplest system is to set a reminder for <strong>9 months before expiry</strong> —
+ 99:     early enough that you have time to renew without stress, even if you have a trip
+100:     booked 3 months out.
+101:   </p>
+102:   <p class="text-ink mb-4">
+103:     Then layer a second reminder at <strong>6 months before expiry</strong> as a hard stop:
+104:     no international bookings until the passport is renewed.
+105:   </p>
+106:   <p class="text-ink mb-6">
+107:     If you track other documents too — visas, driver's licenses, professional certifications —
+108:     keep them all in one place. A single dashboard with color-coded urgency beats scattered
+109:     calendar reminders every time.
+110:   </p>
+111: 
+112:   <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+113:     <h3 class="font-display font-bold text-lg mb-2">Track your passport expiry for free</h3>
+114:     <p class="text-sm text-ink mb-4">
+115:       Fritt Tracker sends you an email reminder 9 months, 6 months, and 30 days before your
+116:       passport expires — along with every other document you're tracking. Free for up to 20 documents.
+117:     </p>
+118:     <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+119:       Track my passport free →
+120:     </a>
+121:   </div>
+122: 
+123:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">Quick checklist</h2>
+124:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+125:     <li>Check your passport expiry date today.</li>
+126:     <li>If it expires in under 12 months, mark 9 months from now as your renewal trigger.</li>
+127:     <li>Before booking any international trip, verify your passport has 6+ months beyond your return date.</li>
+128:     <li>Check the destination country's specific rules — some require more.</li>
+129:     <li>Set a recurring reminder so you don't rely on memory.</li>
+130:   </ul>
+131: 
+132:   <div class="mt-12 pt-8 border-t border-line">
+133:     <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>
+134:     <div class="grid sm:grid-cols-2 gap-4">
+135:       {% for a in articles if a.slug != 'passport-expiration-reminder' %}
+136:       <a href="/resources/{{ a.slug }}" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+137:         <div class="text-xs text-muted mb-1">{{ a.category }}</div>
+138:         <div class="font-medium text-sm">{{ a.title }}</div>
+139:       </a>
+140:       {% endfor %}
+141:     </div>
+142:   </div>
+143: </article>
+144: 
+145: {% endblock %}
+
+================
+File: templates/use-cases/business-licenses.html
+================
+ 1: {% extends "base.html" %}
+ 2: {% block title %}Business License Renewal Tracker | Fritt Tracker{% endblock %}
+ 3: {% block meta_description %}Track business licenses, permits, and inspections in one place. Get email reminders before they expire. Free for up to 20 documents.{% endblock %}
+ 4: {% block content %}
+ 5: 
+ 6: <div class="max-w-3xl mx-auto">
+ 7:   <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">Business License &amp; Permit Renewal Tracking</h1>
+ 8:   <p class="text-lg text-muted mb-8">
+ 9:     Every license, permit, and inspection has an expiration date. Miss one and you're looking at
+10:     fines, forced closures, or lost contracts. Fritt Tracker keeps them all in one place and
+11:     reminds you before it's too late.
+12:   </p>
+13: 
+14:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">What you can track</h2>
+15:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+16:     <li>Business operating licenses</li>
+17:     <li>Sales tax / VAT registrations</li>
+18:     <li>Health &amp; safety inspections</li>
+19:     <li>Professional certifications</li>
+20:     <li>Insurance policies</li>
+21:     <li>Vehicle registrations and inspections</li>
+22:   </ul>
+23: 
+24:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">How it works</h2>
+25:   <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+26:     <li>Add each license with its expiration date.</li>
+27:     <li>Fritt Tracker color-codes it: 🟦 Safe, 🟢 Good, 🟠 Warning, 🔴 Urgent, ⚫ Expired.</li>
+28:     <li>You get email reminders at 120, 60, 30, and 7 days before expiration.</li>
+29:     <li>Renew the license, then update the date in one click.</li>
+30:   </ol>
+31: 
+32:   <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+33:     <h3 class="font-display font-bold text-lg mb-2">Start tracking your licenses free</h3>
+34:     <p class="text-sm text-ink mb-4">Free for up to 20 documents. Pro is $8.99/month for 100 documents.</p>
+35:     <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+36:       Create free account →
+37:     </a>
+38:   </div>
+39: 
+40:   <div class="mt-12 pt-8 border-t border-line">
+41:     <h2 class="font-display font-bold text-xl mb-4">Related reading</h2>
+42:     <a href="/resources/how-to-track-business-license-renewal" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+43:       <div class="text-xs text-muted mb-1">Compliance</div>
+44:       <div class="font-medium">How to Track Business License Renewals →</div>
+45:     </a>
+46:   </div>
+47: </div>
+48: 
+49: {% endblock %}
+
+================
+File: templates/use-cases/contracts.html
+================
+ 1: {% extends "base.html" %}
+ 2: {% block title %}Contract &amp; Agreement Renewal Tracking | Fritt Tracker{% endblock %}
+ 3: {% block meta_description %}Track client contracts, NDAs, vendor agreements, and auto-renewal cancellation windows in one place. Get email reminders before every renewal deadline.{% endblock %}
+ 4: {% block canonical %}https://tracker.fritt.org/use-cases/contracts{% endblock %}
+ 5: {% block content %}
+ 6: 
+ 7: <div class="max-w-3xl mx-auto">
+ 8:   <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">Contract &amp; Agreement Renewal Tracking</h1>
+ 9:   <p class="text-lg text-muted mb-8">
+10:     Know when every client contract, NDA, vendor agreement, and SaaS subscription renews —
+11:     and when the cancellation window closes. No more surprises, no more auto-renewal traps.
+12:   </p>
+13: 
+14:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">What you can track</h2>
+15:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+16:     <li>Client contracts and retainers</li>
+17:     <li>Vendor and supplier agreements</li>
+18:     <li>NDAs and consulting agreements</li>
+19:     <li>SaaS subscriptions and software licenses</li>
+20:     <li>Commercial leases and property agreements</li>
+21:     <li>Service level agreements (SLAs)</li>
+22:   </ul>
+23: 
+24:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">How it works</h2>
+25:   <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+26:     <li>Add each contract with its <strong>cancellation deadline</strong> — not just the end date.</li>
+27:     <li>Fritt Tracker colour-codes it by urgency.</li>
+28:     <li>You get reminders at 90 days, 30 days, and 7 days before the cancellation window closes.</li>
+29:     <li>Renew, renegotiate, or cancel — with time to decide.</li>
+30:   </ol>
+31: 
+32:   <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+33:     <h3 class="font-display font-bold text-lg mb-2">Track your contracts free</h3>
+34:     <p class="text-sm text-ink mb-4">Free for up to 20 documents. Pro is $8.99/month for 100 contracts and documents.</p>
+35:     <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+36:       Create free account →
+37:     </a>
+38:   </div>
+39: 
+40:   <div class="mt-12 pt-8 border-t border-line">
+41:     <h2 class="font-display font-bold text-xl mb-4">Learn more</h2>
+42:     <a href="/resources/contract-renewal-tracking" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+43:       <div class="text-xs text-muted mb-1">Business</div>
+44:       <div class="font-medium">Contract Renewal Tracking: How to Escape the Auto-Renewal Trap →</div>
+45:     </a>
+46:   </div>
+47: </div>
+48: 
+49: {% endblock %}
+
+================
+File: templates/use-cases/index.html
+================
+ 1: {% extends "base.html" %}
+ 2: {% block title %}Document Tracking Use Cases | Fritt Tracker{% endblock %}
+ 3: {% block meta_description %}See how individuals, freelancers, and businesses use Fritt Tracker to track passports, business licenses, contracts, and insurance policies before they expire.{% endblock %}
+ 4: {% block content %}
+ 5: 
+ 6: <div class="max-w-4xl mx-auto">
+ 7:   <h1 class="font-display font-bold text-3xl md:text-4xl mb-3">Document Tracking Use Cases</h1>
+ 8:   <p class="text-muted mb-10 max-w-2xl">
+ 9:     Fritt Tracker is a general-purpose document expiry tracker. These are the four use cases
+10:     people ask us about most.
+11:   </p>
+12: 
+13:   <div class="grid md:grid-cols-2 gap-6">
+14:     {% for u in use_cases %}
+15:     <a href="/use-cases/{{ u.slug }}" class="block bg-white border border-line rounded-xl p-6 hover:border-fritt transition-colors">
+16:       <div class="text-3xl mb-3">{{ u.icon }}</div>
+17:       <h2 class="font-display font-bold text-lg mb-2">{{ u.title }}</h2>
+18:       <p class="text-muted text-sm">{{ u.excerpt }}</p>
+19:     </a>
+20:     {% endfor %}
+21:   </div>
+22: </div>
+23: 
+24: {% endblock %}
+
+================
+File: templates/use-cases/insurance.html
+================
+ 1: {% extends "base.html" %}
+ 2: {% block title %}Insurance Policy &amp; COI Expiry Tracking | Fritt Tracker{% endblock %}
+ 3: {% block meta_description %}Track insurance policies, certificates of insurance (COIs), and coverage renewals in one place. Get email reminders before any policy or COI lapses.{% endblock %}
+ 4: {% block canonical %}https://tracker.fritt.org/use-cases/insurance{% endblock %}
+ 5: {% block content %}
+ 6: 
+ 7: <div class="max-w-3xl mx-auto">
+ 8:   <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">Insurance Policy &amp; COI Expiry Tracking</h1>
+ 9:   <p class="text-lg text-muted mb-8">
+10:     A lapsed policy can cost you a contract, a claim, or your business. Fritt Tracker keeps every
+11:     insurance policy and certificate of insurance on one dashboard with reminders before anything
+12:     expires.
+13:   </p>
+14: 
+15:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">What you can track</h2>
+16:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+17:     <li>General liability policies</li>
+18:     <li>Professional liability / E&amp;O</li>
+19:     <li>Workers' compensation</li>
+20:     <li>Commercial auto and property</li>
+21:     <li>Cyber liability and D&amp;O</li>
+22:     <li>Vendor certificates of insurance (COIs)</li>
+23:   </ul>
+24: 
+25:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">How it works</h2>
+26:   <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+27:     <li>Add each policy or COI with its expiration date and renewal contact.</li>
+28:     <li>Fritt Tracker shows you what's expiring soon, at a glance.</li>
+29:     <li>You get email reminders at 90, 60, and 30 days before expiration.</li>
+30:     <li>Renew with time to shop the market if the renewal quote is bad.</li>
+31:   </ol>
+32: 
+33:   <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+34:     <h3 class="font-display font-bold text-lg mb-2">Track your policies free</h3>
+35:     <p class="text-sm text-ink mb-4">Free for up to 20 documents. No credit card required.</p>
+36:     <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+37:       Create free account →
+38:     </a>
+39:   </div>
+40: 
+41:   <div class="mt-12 pt-8 border-t border-line">
+42:     <h2 class="font-display font-bold text-xl mb-4">Learn more</h2>
+43:     <a href="/resources/insurance-coverage-gaps" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+44:       <div class="text-xs text-muted mb-1">Business</div>
+45:       <div class="font-medium">Insurance Coverage Gaps: How Expired Policies Cost You Contracts →</div>
+46:     </a>
+47:   </div>
+48: </div>
+49: 
+50: {% endblock %}
+
+================
+File: templates/use-cases/passports.html
+================
+ 1: {% extends "base.html" %}
+ 2: {% block title %}Passport &amp; Visa Expiration Tracker | Fritt Tracker{% endblock %}
+ 3: {% block meta_description %}Track passport and visa expiry dates with email reminders 9 months, 6 months, and 30 days before they lapse. Free for up to 20 documents.{% endblock %}
+ 4: {% block canonical %}https://tracker.fritt.org/use-cases/passports-visas{% endblock %}
+ 5: {% block content %}
+ 6: 
+ 7: <div class="max-w-3xl mx-auto">
+ 8:   <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">Passport &amp; Visa Expiration Tracking</h1>
+ 9:   <p class="text-lg text-muted mb-8">
+10:     Most countries require 6 months of passport validity beyond your return date. Fritt Tracker
+11:     reminds you 9 months, 6 months, and 30 days before your passport — or any visa — expires,
+12:     so you never get turned away at the airport.
+13:   </p>
+14: 
+15:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">What you can track</h2>
+16:   <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+17:     <li>Passports for every family member</li>
+18:     <li>Visas (tourist, work, student, residence)</li>
+19:     <li>Driver's licenses and international driving permits</li>
+20:     <li>Travel insurance policies</li>
+21:     <li>Loyalty programme tier expirations</li>
+22:     <li>Global Entry / TSA PreCheck / trusted traveller programmes</li>
+23:   </ul>
+24: 
+25:   <h2 class="font-display font-bold text-2xl mt-8 mb-3">How it works</h2>
+26:   <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+27:     <li>Add each passport, visa, or travel document with its expiration date.</li>
+28:     <li>Fritt Tracker shows the status at a glance: 🟦 Safe, 🟢 Good, 🟠 Warning, 🔴 Urgent, ⚫ Expired.</li>
+29:     <li>You get email reminders at 9 months, 6 months, and 30 days before expiration.</li>
+30:     <li>Once renewed, update the date with one click.</li>
+31:   </ol>
+32: 
+33:   <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+34:     <h3 class="font-display font-bold text-lg mb-2">Start tracking your passports free</h3>
+35:     <p class="text-sm text-ink mb-4">Free for up to 20 documents. No credit card required.</p>
+36:     <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+37:       Create free account →
+38:     </a>
+39:   </div>
+40: 
+41:   <div class="mt-12 pt-8 border-t border-line">
+42:     <h2 class="font-display font-bold text-xl mb-4">Learn more</h2>
+43:     <a href="/resources/passport-expiration-reminder" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+44:       <div class="text-xs text-muted mb-1">Travel</div>
+45:       <div class="font-medium">Passport Expiration Reminders: The 6-Month Rule Most Travelers Don't Know →</div>
+46:     </a>
+47:   </div>
+48: </div>
+49: 
+50: {% endblock %}
 
 ================
 File: templates/business.html
@@ -6870,12 +8265,12 @@ File: templates/landing.html
  21: <!-- Hero Section -->
  22: <section class="text-center py-16 md:py-24">
  23:   <h1 class="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-ink leading-tight">
- 24:     Never Miss a<br>
- 25:     <span class="text-fritt">Document Renewal</span> Again
+ 24:     Document Expiry Tracker<br>
+ 25:     <span class="text-fritt">&amp; Renewal Reminders</span>
  26:   </h1>
  27:   <p class="text-lg md:text-xl text-muted max-w-2xl mx-auto mt-4">
- 28:     Track passports, licenses, contracts, and more — 
- 29:     get reminded before they expire. Trusted by individuals, freelancers, and companies to stay on top of renewals.
+ 28:     Track business licenses, passports, contracts, and insurance policies in one place.
+ 29:     Get email reminders before they expire — so you never miss a renewal or pay a fine.
  30:   </p>
  31:   <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
  32:     <a href="/register" class="px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
@@ -6932,122 +8327,153 @@ File: templates/landing.html
  83:   </div>
  84: </section>
  85: 
- 86: <!-- Problem/Solution Section -->
- 87: <section id="features" class="py-16 bg-paper border-t border-line">
- 88:   <h2 class="font-display font-bold text-3xl text-center mb-12">Why People Love Fritt Tracker</h2>
- 89:   <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
- 90:     <div class="bg-white border border-line rounded-xl p-6 text-center">
- 91:       <div class="text-4xl mb-3">📋</div>
- 92:       <h3 class="font-display font-bold text-lg mb-2">One Place for All Docs</h3>
- 93:       <p class="text-muted text-sm">Passports, insurance, contracts, permits — track everything in one dashboard.</p>
- 94:     </div>
- 95:     <div class="bg-white border border-line rounded-xl p-6 text-center">
- 96:       <div class="text-4xl mb-3">🔔</div>
- 97:       <h3 class="font-display font-bold text-lg mb-2">Never Forget a Renewal</h3>
- 98:       <p class="text-muted text-sm">Visual status indicators show you exactly what's urgent — green to red.</p>
- 99:     </div>
-100:     <div class="bg-white border border-line rounded-xl p-6 text-center">
-101:       <div class="text-4xl mb-3">💰</div>
-102:       <h3 class="font-display font-bold text-lg mb-2">Avoid Costly Fines</h3>
-103:       <p class="text-muted text-sm">Expired documents can mean fines or lost business. We help you stay on top of it.</p>
-104:     </div>
-105:   </div>
-106: </section>
-107: 
-108: <!-- How It Works Section -->
-109: <section id="how-it-works" class="py-16 bg-white border-t border-line">
-110:   <h2 class="font-display font-bold text-3xl text-center mb-4">How It Works</h2>
-111:   <p class="text-center text-muted mb-12">Three simple steps to never miss a renewal again.</p>
-112:   
-113:   <div class="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-114:     <!-- Step 1 -->
-115:     <div class="text-center">
-116:       <div class="w-16 h-16 rounded-full bg-fritt text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">1</div>
-117:       <h3 class="font-display font-bold text-lg mb-2">Add Your Documents</h3>
-118:       <p class="text-muted text-sm">Enter the document title and expiry date. That's it — no complex setup.</p>
-119:     </div>
-120:     
-121:     <!-- Step 2 -->
-122:     <div class="text-center">
-123:       <div class="w-16 h-16 rounded-full bg-fritt text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">2</div>
-124:       <h3 class="font-display font-bold text-lg mb-2">See What's Urgent</h3>
-125:       <p class="text-muted text-sm">Documents are color-coded: Safe (🟦) → Good (🟢) → Warning (🟠) → Urgent (🔴) → Expired (⚫).</p>
-126:     </div>
-127:     
-128:     <!-- Step 3 -->
-129:     <div class="text-center">
-130:       <div class="w-16 h-16 rounded-full bg-fritt text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">3</div>
-131:       <h3 class="font-display font-bold text-lg mb-2">Renew On Time</h3>
-132:       <p class="text-muted text-sm">Get reminded before documents expire. Renew with confidence, never pay a fine.</p>
-133:     </div>
-134:   </div>
-135:   
-136:   <!-- Visual Example -->
-137:   <div class="max-w-2xl mx-auto mt-8 bg-white border border-line rounded-xl p-6">
-138:     <p class="text-sm text-muted text-center mb-3">Here's what your dashboard looks like:</p>
-139:     <div class="flex flex-wrap gap-3 justify-center">
-140:       <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border bg-blue-50 text-blue-700 border-blue-200">🟦 Safe — 120+ days left</span>
-141:       <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border bg-green-50 text-green-700 border-green-200">🟢 Good — 60-119 days left</span>
-142:       <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border bg-orange-50 text-orange-700 border-orange-200">🟠 Warning — 15-59 days left</span>
-143:       <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border bg-red-50 text-red-700 border-red-200">🔴 Urgent — 0-14 days left</span>
-144:       <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border bg-slate-100 text-slate-700 border-slate-300">⚫ Expired — Overdue</span>
-145:     </div>
-146:   </div>
-147: </section>
-148: 
-149: <!-- Pricing Section - Clean CTA -->
-150: <section class="py-16 bg-paper border-t border-line">
-151:   <div class="max-w-4xl mx-auto text-center">
-152:     <h2 class="font-display font-bold text-3xl mb-4">Simple, Transparent Pricing</h2>
-153:     <p class="text-muted text-lg max-w-2xl mx-auto">
-154:       Start free with 20 documents. Upgrade to Pro for 100 documents 
-155:       or VIP for unlimited tracking.
-156:     </p>
-157:     
-158:     <div class="mt-8">
-159:       <a href="{{ url_for('pricing') }}" class="inline-block px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
-160:         View All Plans →
-161:       </a>
-162:       <p class="text-sm text-muted mt-3">
-163:         No credit card required. Cancel anytime.
-164:       </p>
-165:     </div>
-166:   </div>
-167: </section>
-168: 
-169: <!-- CTA Section -->
-170: <section class="text-center py-16 bg-white border-t border-line">
-171:   <h2 class="font-display font-bold text-3xl mb-4">Ready to Never Miss a Renewal?</h2>
-172:   <p class="text-muted mb-6">Join thousands tracking their important documents with Fritt Tracker.</p>
-173:   <a href="/register" class="px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
-174:     Start Free — 20 Documents
-175:   </a>
-176: </section>
-177: 
-178: <!-- Feedback Section - Updated to encourage future feature requests -->
-179: <section class="py-16 bg-gray-50 border-t border-line">
-180:     <div class="container mx-auto px-4 max-w-4xl text-center">
-181:         <h2 class="text-3xl font-bold mb-4">💬 We'd Love Your Feedback</h2>
-182:         <p class="text-gray-600 text-lg mb-3">
-183:             Tell us what you think about <strong>current features</strong> — 
-184:             and <strong>what you'd like to see in the future</strong>!
-185:         </p>
-186:         <p class="text-gray-500 mb-6">
-187:             Your ideas shape our roadmap. Feature requests, improvements, or 
-188:             problems you're facing — we want to hear it all.
-189:         </p>
-190:         
-191:         <a href="{{ url_for('feedback') }}" class="inline-block px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
-192:             Share Your Feedback →
-193:         </a>
-194:         
-195:         <p class="text-sm text-muted mt-4">
-196:             💡 Have a feature in mind? We might build it next!
-197:         </p>
-198:     </div>
-199: </section>
-200: 
-201: {% endblock %}
+ 86: <!-- Non-branded keyword sections -->
+ 87: <section class="py-16 border-t border-line">
+ 88:   <h2 class="font-display font-bold text-3xl text-center mb-4">Track Every Document That Expires</h2>
+ 89:   <p class="text-center text-muted mb-12 max-w-2xl mx-auto">
+ 90:     Fritt Tracker is a document expiry tracker built for individuals, freelancers, and small businesses.
+ 91:     Here's what people use it for most:
+ 92:   </p>
+ 93:   <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+ 94:     <a href="/use-cases/business-licenses" class="block bg-white border border-line rounded-xl p-6 hover:border-fritt transition-colors">
+ 95:       <h3 class="font-display font-bold text-lg mb-2">🏢 Business License Renewal Tracking</h3>
+ 96:       <p class="text-muted text-sm">Track licenses, permits, and inspections. Get reminded before they lapse and avoid fines.</p>
+ 97:     </a>
+ 98:     <a href="/use-cases/passports-visas" class="block bg-white border border-line rounded-xl p-6 hover:border-fritt transition-colors">
+ 99:       <h3 class="font-display font-bold text-lg mb-2">🛂 Passport &amp; Visa Expiration Reminders</h3>
+100:       <p class="text-muted text-sm">Most countries require 6 months of validity. Never get turned away at the airport.</p>
+101:     </a>
+102:     <a href="/use-cases/contracts" class="block bg-white border border-line rounded-xl p-6 hover:border-fritt transition-colors">
+103:       <h3 class="font-display font-bold text-lg mb-2">📄 Contract Renewal Tracking</h3>
+104:       <p class="text-muted text-sm">Know when every client contract, NDA, and vendor agreement renews.</p>
+105:     </a>
+106:     <a href="/use-cases/insurance" class="block bg-white border border-line rounded-xl p-6 hover:border-fritt transition-colors">
+107:       <h3 class="font-display font-bold text-lg mb-2">🛡️ Insurance Policy Expiry Tracking</h3>
+108:       <p class="text-muted text-sm">Never have a coverage gap. Track every policy renewal in one dashboard.</p>
+109:     </a>
+110:   </div>
+111:   <p class="text-center text-muted text-sm mt-8">
+112:     Prefer to read first?
+113:     <a href="/resources" class="text-fritt hover:underline font-medium">Browse our guides on document expiry tracking →</a>
+114:   </p>
+115: </section>
+116: 
+117: <!-- Problem/Solution Section -->
+118: <section id="features" class="py-16 bg-paper border-t border-line">
+119:   <h2 class="font-display font-bold text-3xl text-center mb-12">Why People Love Fritt Tracker</h2>
+120:   <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+121:     <div class="bg-white border border-line rounded-xl p-6 text-center">
+122:       <div class="text-4xl mb-3">📋</div>
+123:       <h3 class="font-display font-bold text-lg mb-2">One Place for All Docs</h3>
+124:       <p class="text-muted text-sm">Passports, insurance, contracts, permits — track everything in one dashboard.</p>
+125:     </div>
+126:     <div class="bg-white border border-line rounded-xl p-6 text-center">
+127:       <div class="text-4xl mb-3">🔔</div>
+128:       <h3 class="font-display font-bold text-lg mb-2">Never Forget a Renewal</h3>
+129:       <p class="text-muted text-sm">Visual status indicators show you exactly what's urgent — green to red.</p>
+130:     </div>
+131:     <div class="bg-white border border-line rounded-xl p-6 text-center">
+132:       <div class="text-4xl mb-3">💰</div>
+133:       <h3 class="font-display font-bold text-lg mb-2">Avoid Costly Fines</h3>
+134:       <p class="text-muted text-sm">Expired documents can mean fines or lost business. We help you stay on top of it.</p>
+135:     </div>
+136:   </div>
+137: </section>
+138: 
+139: <!-- How It Works Section -->
+140: <section id="how-it-works" class="py-16 bg-white border-t border-line">
+141:   <h2 class="font-display font-bold text-3xl text-center mb-4">How It Works</h2>
+142:   <p class="text-center text-muted mb-12">Three simple steps to never miss a renewal again.</p>
+143:   
+144:   <div class="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+145:     <!-- Step 1 -->
+146:     <div class="text-center">
+147:       <div class="w-16 h-16 rounded-full bg-fritt text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">1</div>
+148:       <h3 class="font-display font-bold text-lg mb-2">Add Your Documents</h3>
+149:       <p class="text-muted text-sm">Enter the document title and expiry date. That's it — no complex setup.</p>
+150:     </div>
+151:     
+152:     <!-- Step 2 -->
+153:     <div class="text-center">
+154:       <div class="w-16 h-16 rounded-full bg-fritt text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">2</div>
+155:       <h3 class="font-display font-bold text-lg mb-2">See What's Urgent</h3>
+156:       <p class="text-muted text-sm">Documents are color-coded: Safe (🟦) → Good (🟢) → Warning (🟠) → Urgent (🔴) → Expired (⚫).</p>
+157:     </div>
+158:     
+159:     <!-- Step 3 -->
+160:     <div class="text-center">
+161:       <div class="w-16 h-16 rounded-full bg-fritt text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">3</div>
+162:       <h3 class="font-display font-bold text-lg mb-2">Renew On Time</h3>
+163:       <p class="text-muted text-sm">Get reminded before documents expire. Renew with confidence, never pay a fine.</p>
+164:     </div>
+165:   </div>
+166:   
+167:   <!-- Visual Example -->
+168:   <div class="max-w-2xl mx-auto mt-8 bg-white border border-line rounded-xl p-6">
+169:     <p class="text-sm text-muted text-center mb-3">Here's what your dashboard looks like:</p>
+170:     <div class="flex flex-wrap gap-3 justify-center">
+171:       <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border bg-blue-50 text-blue-700 border-blue-200">🟦 Safe — 120+ days left</span>
+172:       <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border bg-green-50 text-green-700 border-green-200">🟢 Good — 60-119 days left</span>
+173:       <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border bg-orange-50 text-orange-700 border-orange-200">🟠 Warning — 15-59 days left</span>
+174:       <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border bg-red-50 text-red-700 border-red-200">🔴 Urgent — 0-14 days left</span>
+175:       <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border bg-slate-100 text-slate-700 border-slate-300">⚫ Expired — Overdue</span>
+176:     </div>
+177:   </div>
+178: </section>
+179: 
+180: <!-- Pricing Section - Clean CTA -->
+181: <section class="py-16 bg-paper border-t border-line">
+182:   <div class="max-w-4xl mx-auto text-center">
+183:     <h2 class="font-display font-bold text-3xl mb-4">Simple, Transparent Pricing</h2>
+184:     <p class="text-muted text-lg max-w-2xl mx-auto">
+185:       Start free with 20 documents. Upgrade to Pro for 100 documents 
+186:       or VIP for unlimited tracking.
+187:     </p>
+188:     
+189:     <div class="mt-8">
+190:       <a href="{{ url_for('pricing') }}" class="inline-block px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
+191:         View All Plans →
+192:       </a>
+193:       <p class="text-sm text-muted mt-3">
+194:         No credit card required. Cancel anytime.
+195:       </p>
+196:     </div>
+197:   </div>
+198: </section>
+199: 
+200: <!-- CTA Section -->
+201: <section class="text-center py-16 bg-white border-t border-line">
+202:   <h2 class="font-display font-bold text-3xl mb-4">Ready to Never Miss a Renewal?</h2>
+203:   <p class="text-muted mb-6">Join thousands tracking their important documents with Fritt Tracker.</p>
+204:   <a href="/register" class="px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
+205:     Start Free — 20 Documents
+206:   </a>
+207: </section>
+208: 
+209: <!-- Feedback Section - Updated to encourage future feature requests -->
+210: <section class="py-16 bg-gray-50 border-t border-line">
+211:     <div class="container mx-auto px-4 max-w-4xl text-center">
+212:         <h2 class="text-3xl font-bold mb-4">💬 We'd Love Your Feedback</h2>
+213:         <p class="text-gray-600 text-lg mb-3">
+214:             Tell us what you think about <strong>current features</strong> — 
+215:             and <strong>what you'd like to see in the future</strong>!
+216:         </p>
+217:         <p class="text-gray-500 mb-6">
+218:             Your ideas shape our roadmap. Feature requests, improvements, or 
+219:             problems you're facing — we want to hear it all.
+220:         </p>
+221:         
+222:         <a href="{{ url_for('feedback') }}" class="inline-block px-8 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-lg">
+223:             Share Your Feedback →
+224:         </a>
+225:         
+226:         <p class="text-sm text-muted mt-4">
+227:             💡 Have a feature in mind? We might build it next!
+228:         </p>
+229:     </div>
+230: </section>
+231: 
+232: {% endblock %}
 
 ================
 File: templates/admin/user_detail.html
@@ -9036,556 +10462,591 @@ File: templates/base.html
   4:     <meta charset="UTF-8">
   5:     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   6:     <meta name="google-site-verification" content="tzlP73O_C9ElTvrpUUb592kJ9dDnIOpRANP7AeFbXB4" />
-  7:     <title>{% block title %}Fritt Tracker{% endblock %}</title>
-  8:     <meta property="og:type" content="website">
-  9:     <meta property="og:site_name" content="Fritt Tracker">
- 10:     <meta property="og:title" content="{% block og_title %}Fritt Tracker — Never Miss a Document Renewal{% endblock %}">
- 11:     <meta property="og:description" content="{% block og_description %}Track company document expiry dates and get reminded before they lapse.{% endblock %}">
- 12:     <meta property="og:image" content="{% block og_image %}https://tracker.fritt.org/static/og-image.png{% endblock %}">
- 13:     <meta property="og:url" content="{{ request.url }}">
- 14: 
- 15: <meta name="twitter:card" content="summary_large_image">
- 16: <meta name="twitter:title" content="{% block twitter_title %}Fritt Tracker — Never Miss a Document Renewal{% endblock %}">
- 17: <meta name="twitter:description" content="{% block twitter_description %}Track company document expiry dates and get reminded before they lapse.{% endblock %}">
- 18: <meta name="twitter:image" content="{% block twitter_image %}https://tracker.fritt.org/static/og-image.png{% endblock %}">
- 19:     <link rel="icon" type="image/svg+xml" href="/static/fritt-tracker-logo.svg">
- 20: 
- 21:     <!-- Font: Space Grotesk (display) + Inter (body) -->
- 22:     <link rel="preconnect" href="https://fonts.googleapis.com">
- 23:     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
- 24: 
- 25:     <script src="https://cdn.tailwindcss.com"></script>
- 26:     <script>
- 27:       tailwind.config = {
- 28:         theme: {
- 29:           extend: {
- 30:             colors: {
- 31:               ink: '#14181F',
- 32:               paper: '#F7F7F5',
- 33:               fritt: { DEFAULT: '#2C5FEF', dark: '#1E46C4' },
- 34:               muted: '#6B7280',
- 35:               line: '#E4E4E1',
- 36:             },
- 37:             fontFamily: {
- 38:               display: ['"Space Grotesk"', 'sans-serif'],
- 39:               body: ['"Inter"', 'sans-serif'],
- 40:             },
- 41:           }
- 42:         }
- 43:       }
- 44:     </script>
- 45:     
- 46:     <style>
- 47:       /* Flash message fade-out animation */
- 48:       .flash-message {
- 49:         transition: opacity 0.5s ease-in-out, transform 0.3s ease-in-out;
- 50:       }
- 51:       .flash-message.fade-out {
- 52:         opacity: 0;
- 53:         transform: translateY(-10px);
- 54:       }
- 55:       
- 56:       /* Banner close button style */
- 57:       .banner-dismiss {
- 58:         cursor: pointer;
- 59:         transition: opacity 0.2s;
- 60:       }
- 61:       .banner-dismiss:hover {
- 62:         opacity: 0.7;
- 63:       }
- 64:     </style>
- 65:   </head>
- 66:   <body class="bg-paper text-ink font-body min-h-screen">
- 67:     <!-- Loading overlay -->
- 68:     <div id="loading-overlay" class="fixed inset-0 z-50 hidden flex-col items-center justify-center bg-paper/90 backdrop-blur-sm">
- 69:       <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
- 70:         <defs>
- 71:           <linearGradient id="frittGradientLoading" x1="0%" y1="0%" x2="100%" y2="100%">
- 72:             <stop offset="0%" stop-color="#2C5FEF"/>
- 73:             <stop offset="100%" stop-color="#22D3C9"/>
- 74:           </linearGradient>
- 75:         </defs>
- 76:         <rect x="13" y="8" width="28" height="38" rx="4" fill="#FFFFFF" stroke="#14181F" stroke-width="2"/>
- 77:         <rect x="18" y="16" width="18" height="3" rx="1.5" fill="#E4E4E1"/>
- 78:         <rect x="18" y="23" width="18" height="3" rx="1.5" fill="#E4E4E1"/>
- 79:         <rect x="18" y="30" width="12" height="3" rx="1.5" fill="#E4E4E1"/>
- 80:         <circle cx="44" cy="41" r="13" fill="none" stroke="#E4E4E1" stroke-width="5"/>
- 81:         <circle id="loading-ring" cx="44" cy="41" r="13" fill="none" stroke="url(#frittGradientLoading)"
- 82:                 stroke-width="5" stroke-linecap="round" stroke-dasharray="81.68" stroke-dashoffset="81.68"
- 83:                 transform="rotate(-90 44 41)" style="transition: stroke-dashoffset 1400ms ease-out;"/>
- 84:         <circle cx="44" cy="41" r="2.5" fill="#2C5FEF"/>
- 85:       </svg>
- 86:       <p class="mt-4 font-display text-sm tracking-wide text-muted">FRITT TRACKER</p>
- 87:     </div>
- 88: 
- 89:     <!-- HEADER (modified for better small-screen fit) -->
- 90:     <header class="bg-white border-b border-line sticky top-0 z-40">
- 91:       <div class="px-3 sm:px-4 py-3 sm:py-4">
- 92:         <div class="flex items-center justify-between gap-2">
- 93:           <!-- LEFT: Menu toggle + Logo (more compact) -->
- 94:           <div class="flex items-center gap-2 sm:gap-3 min-w-0">
- 95:             <button 
- 96:               id="menu-toggle"
- 97:               class="p-1.5 sm:p-2 rounded-md hover:bg-paper transition-colors focus:outline-none focus:ring-2 focus:ring-fritt shrink-0"
- 98:               aria-label="Toggle menu"
- 99:             >
-100:               <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-101:                 <path id="menu-icon-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-102:                 <path id="menu-icon-close" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" class="hidden"/>
-103:               </svg>
-104:             </button>
-105:             
-106:             <a href="/" class="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
-107:               <img src="/static/fritt-tracker-logo.svg" alt="" class="w-6 h-6 sm:w-8 sm:h-8 rounded-md shrink-0">
-108:               <span class="font-display font-bold text-base sm:text-xl text-fritt truncate">
-109:                 Fritt Tracker
-110:                 {% if session.get("user_id") and subscription_tier and subscription_tier not in ['free', 'suspended'] %}
-111:                   <span class="text-xs font-bold 
-112:                     {% if subscription_tier == 'vip' %}text-purple-600 bg-purple-50{% else %}text-green-600 bg-green-50{% endif %}
-113:                     px-1.5 py-0.5 rounded-full ml-0.5 sm:ml-1 align-middle inline-block">
-114:                     {{ subscription_tier|upper }}
-115:                     {% if on_trial and trial_ends_at and trial_ends_at > now %}
-116:                       <span class="text-[10px] font-normal ml-0.5">(Trial)</span>
-117:                     {% endif %}
-118:                   </span>
-119:                 {% endif %}
-120:               </span>
-121:             </a>
-122:           </div>
-123:           
-124:           <!-- RIGHT: Account section (optimized for small screens) -->
-125:           <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-126:             {% if session.get("user_id") %}
-127:               <!-- Logged in - show user avatar/email (compact) -->
-128:               <div class="relative" id="account-dropdown-container">
-129:                 <button 
-130:                   id="account-dropdown-btn"
-131:                   class="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-md hover:bg-paper transition-colors focus:outline-none focus:ring-2 focus:ring-fritt"
-132:                   aria-label="Account menu"
-133:                 >
-134:                   <!-- Avatar (first letter of email) -->
-135:                   <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-fritt text-white flex items-center justify-center text-xs sm:text-sm font-medium shrink-0">
-136:                     {{ session.get("email", "U")[0].upper() }}
-137:                   </div>
-138:                   <svg class="w-3 h-3 sm:w-4 sm:h-4 text-muted hidden xs:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-139:                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-140:                   </svg>
-141:                 </button>
-142:                 
-143:                 <!-- Dropdown menu -->
-144:                 <div id="account-dropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-line overflow-hidden hidden z-50">
-145:                   <div class="px-4 py-3 border-b border-line">
-146:                     <p class="text-sm font-medium truncate">{{ session.get("email", "") }}</p>
-147:                     <p class="text-xs text-muted mt-1">
-148:                       Plan: <span class="font-medium">{{ subscription_tier|capitalize }}</span>
-149:                       {% if on_trial and trial_ends_at and trial_ends_at > now %}
-150:                         <br><span class="text-xs text-blue-600 font-medium">⭐ Free Trial (ends {{ trial_ends_at.strftime('%b %d, %Y') }})</span>
-151:                       {% elif subscription_tier in ['pro', 'vip'] %}
-152:                         {% if subscription_status == 'active' %}
-153:                           {% if subscription_expiry and subscription_expiry > now %}
-154:                             <br><span class="text-xs text-muted">Expires: {{ subscription_expiry.strftime('%b %d, %Y') }}</span>
-155:                           {% elif subscription_expiry is none %}
-156:                             <br><span class="text-xs text-green-600">✅ Indefinite</span>
-157:                           {% endif %}
-158:                         {% elif subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
-159:                           <br><span class="text-xs text-orange-600">⏳ Cancelled (expires {{ subscription_expiry.strftime('%b %d, %Y') }})</span>
-160:                         {% endif %}
-161:                       {% endif %}
-162:                     </p>
-163:                   </div>
-164:                   
-165:                   <div class="py-1">
-166:                     <a href="/change-password" class="block px-4 py-2 text-sm text-gray-700 hover:bg-paper transition-colors">
-167:                       🔑 Change Password
-168:                     </a>
-169:                     
-170:                     {% if subscription_tier in ['pro', 'vip', 'business'] %}
-171:                       <form method="POST" action="{{ url_for('cancel_subscription') }}" class="no-loading"
-172:                             onsubmit="return confirm('⚠️ Are you sure you want to cancel your subscription?\n\nYou will lose Pro features at the end of your billing period.\n\nThis action cannot be undone.');">
-173:                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-174:                         <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-175:                           ❌ Cancel Subscription
-176:                         </button>
-177:                       </form>
-178:                     {% endif %}
-179:                     
-180:                     {% if is_admin() %}
-181:                       <a href="{{ url_for('admin_dashboard') }}" class="block px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 transition-colors border-t border-line">
-182:                         ⚙️ Admin Dashboard
-183:                       </a>
-184:                     {% endif %}
-185:                     
-186:                     <a href="/logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-line">
-187:                       🚪 Logout
-188:                     </a>
-189:                   </div>
-190:                 </div>
-191:               </div>
-192:             {% else %}
-193:               <!-- Not logged in - compact login/signup buttons for small screens -->
-194:               <a href="/login" class="px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 hover:bg-paper rounded-md transition-colors whitespace-nowrap">
-195:                 Log In
-196:               </a>
-197:               <a href="/register" class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium bg-fritt text-white rounded-md hover:bg-fritt-dark transition-colors whitespace-nowrap">
-198:                 Sign Up
-199:               </a>
-200:             {% endif %}
-201:           </div>
-202:         </div>
-203:       </div>
-204:     </header>
-205: 
-206:     <!-- Slide-out menu overlay -->
-207:     <div id="menu-overlay" class="fixed inset-0 bg-black/50 z-50 hidden" onclick="closeMenu()"></div>
-208: 
-209:     <!-- Slide-out menu (LEFT SIDE) -->
-210:     <div id="side-menu" class="fixed top-0 left-0 h-full w-72 bg-white shadow-xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
-211:       <div class="p-6">
-212:         <!-- Close button -->
-213:         <button onclick="closeMenu()" class="absolute top-4 right-4 p-2 rounded-md hover:bg-paper transition-colors">
-214:           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-215:             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-216:           </svg>
-217:         </button>
-218:         
-219:         <!-- Logo in menu -->
-220:         <div class="flex items-center gap-2 mb-8 pt-4">
-221:           <img src="/static/fritt-tracker-logo.svg" alt="" class="w-8 h-8 rounded-md">
-222:           <span class="font-display font-bold text-xl text-fritt">Fritt Tracker</span>
-223:         </div>
-224:         
-225:         <!-- Menu items - Show different content based on admin status -->
-226:         {% if request.endpoint and request.endpoint.startswith('admin_') or request.endpoint == 'newsletter_admin' %}
-227:           <!-- ADMIN MENU ITEMS -->
-228:           <div class="flex flex-col gap-1.5">
-229:             <p class="text-xs text-purple-600 font-semibold uppercase tracking-wider mb-2">⚙️ Admin</p>
-230:             
-231:             <a href="{{ url_for('admin_dashboard') }}" 
-232:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_dashboard' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-233:               📊 Dashboard
-234:             </a>
-235:             <a href="{{ url_for('admin_users') }}" 
-236:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_users' or request.endpoint == 'admin_user_detail' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-237:               👥 Users
-238:             </a>
-239:             <a href="{{ url_for('admin_documents') }}" 
-240:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_documents' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-241:               📄 Documents
-242:             </a>
-243:             <a href="{{ url_for('admin_inquiries') }}" 
-244:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_inquiries' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-245:               💬 Inquiries
-246:             </a>
-247:             <a href="{{ url_for('admin_business_inquiries') }}" 
-248:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_business_inquiries' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-249:               🏢 Business
-250:             </a>
-251:             <a href="{{ url_for('admin_audit_log') }}" 
-252:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_audit_log' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-253:               📋 Audit Log
-254:             </a>
-255:             <a href="{{ url_for('admin_payment_plans') }}" 
-256:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_payment_plans' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-257:               💰 Payment Plans
-258:             </a>
-259:             <a href="{{ url_for('newsletter_admin') }}" 
-260:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'newsletter_admin' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
-261:               📬 Newsletter
-262:             </a>
-263:             
-264:             <hr class="my-3 border-line">
-265:             
-266:             <a href="{{ url_for('home') }}" 
-267:               class="block px-4 py-2.5 rounded-md text-sm bg-gray-100 text-gray-600 hover:bg-gray-200 transition text-center">
-268:               ← Back to Site
-269:             </a>
-270:           </div>
-271:         {% else %}
-272:           <!-- REGULAR USER MENU ITEMS -->
-273:           <div class="flex flex-col gap-2">
-274:             {% if session.get("user_id") %}
-275:               <a href="/add" class="block px-4 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-center">+ Add Document</a>
-276:               
-277:               {% if subscription_tier in ['pro', 'vip', 'business'] %}
-278:                 <a href="/import-csv" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">📥 Import CSV</a>
-279:               {% else %}
-280:                 <a href="{{ url_for('pricing') }}" 
-281:                   class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center opacity-60">
-282:                     📥 Import CSV <span class="text-xs text-muted">(Pro feature)</span>
-283:                 </a>
-284:               {% endif %}
-285:               
-286:               <hr class="my-2 border-line">
-287:               
-288:               <a href="{{ url_for('pricing') }}" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">
-289:                 💰 Upgrade Plan
-290:               </a>
-291:               
-292:               <a href="/" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">
-293:                 📊 Dashboard
-294:               </a>
-295:             {% else %}
-296:               <a href="/login" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center font-medium">Log In</a>
-297:               <a href="/register" class="block px-4 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-center">Sign Up Free</a>
-298:             {% endif %}
-299:           </div>
-300:           
-301:           <!-- Show current plan in menu (for logged-in users) -->
-302:           {% if session.get("user_id") %}
-303:             <div class="mt-6 pt-4 border-t border-line">
-304:               <p class="text-xs text-muted text-center">
-305:                 Current plan: <strong>{{ subscription_tier|capitalize }}</strong>
-306:                 {% if on_trial and trial_ends_at and trial_ends_at > now %}
-307:                   <br><span class="text-xs text-blue-600 font-medium">⭐ Free Trial (ends {{ trial_ends_at.strftime('%b %d, %Y') }})</span>
-308:                 {% elif subscription_tier in ['pro', 'vip'] %}
-309:                   {% if subscription_status == 'active' %}
-310:                     {% if subscription_expiry and subscription_expiry > now %}
-311:                       <br><span class="text-xs">Expires: {{ subscription_expiry.strftime('%b %d, %Y') }}</span>
-312:                     {% elif subscription_expiry is none %}
-313:                       <br><span class="text-xs text-green-600">✅ Indefinite</span>
-314:                     {% endif %}
-315:                   {% elif subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
-316:                     <br><span class="text-xs text-orange-600">⏳ Cancelled (expires {{ subscription_expiry.strftime('%b %d, %Y') }})</span>
-317:                   {% endif %}
-318:                 {% endif %}
-319:                 {% if subscription_tier == 'free' %}
-320:                   <br><a href="{{ url_for('pricing') }}" class="text-fritt hover:underline">Upgrade for more features →</a>
-321:                 {% endif %}
-322:               </p>
-323:             </div>
-324:           {% endif %}
-325:         {% endif %}
-326:       </div>
-327:     </div>
-328: 
-329:     <!-- Flash Messages - Auto-dismiss after 5 seconds -->
-330:     {% with messages = get_flashed_messages(with_categories=true) %}
-331:       {% if messages %}
-332:         <div class="max-w-4xl mx-auto px-4 pt-4 space-y-2" id="flash-messages">
-333:           {% for category, message in messages %}
-334:             <div class="flash-message px-4 py-3 rounded-md border text-sm {% if category == 'success' %}bg-green-50 border-green-200 text-green-700{% elif category == 'warning' %}bg-yellow-50 border-yellow-200 text-yellow-700{% else %}bg-red-50 border-red-200 text-red-700{% endif %}"
-335:                  data-dismiss="5000">
-336:               <div class="flex items-start justify-between">
-337:                 <span>{{ message }}</span>
-338:                 <button class="flash-dismiss ml-4 text-gray-400 hover:text-gray-600 transition-colors" aria-label="Dismiss message">
-339:                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-340:                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-341:                   </svg>
-342:                 </button>
-343:               </div>
-344:             </div>
-345:           {% endfor %}
-346:         </div>
-347:       {% endif %}
-348:     {% endwith %}
-349: 
-350:     <main class="max-w-4xl mx-auto px-4 py-8">
-351:       {% block content %}{% endblock %}
-352:     </main>
+  7:     <title>{% block title %}Fritt Tracker — Document Expiry Tracker & Renewal Reminders{% endblock %}</title>
+  8:     <meta name="description" content="{% block meta_description %}Track document expiry dates and get email reminders before passports, licenses, contracts, and insurance expire. Free for up to 20 documents.{% endblock %}">
+  9:     <link rel="canonical" href="{% block canonical %}{{ request.url.split('?')[0] }}{% endblock %}">
+ 10:     <meta name="robots" content="{% block robots %}index, follow{% endblock %}">
+ 11: 
+ 12:     <meta property="og:type" content="website">
+ 13:     <meta property="og:site_name" content="Fritt Tracker">
+ 14:     <meta property="og:title" content="{% block og_title %}Fritt Tracker — Never Miss a Document Renewal{% endblock %}">
+ 15:     <meta property="og:description" content="{% block og_description %}Track company document expiry dates and get reminded before they lapse.{% endblock %}">
+ 16:     <meta property="og:image" content="{% block og_image %}https://tracker.fritt.org/static/og-image.png{% endblock %}">
+ 17:     <meta property="og:url" content="{{ request.url.split('?')[0] }}">
+ 18: 
+ 19:     <meta name="twitter:card" content="summary_large_image">
+ 20:     <meta name="twitter:title" content="{% block twitter_title %}Fritt Tracker — Document Expiry Tracker{% endblock %}">
+ 21:     <meta name="twitter:description" content="{% block twitter_description %}Track company document expiry dates and get reminded before they lapse.{% endblock %}">
+ 22:     <meta name="twitter:image" content="{% block twitter_image %}https://tracker.fritt.org/static/og-image.png{% endblock %}">
+ 23: 
+ 24:     <!-- JSON-LD: SoftwareApplication (helps Google understand the product) -->
+ 25:     <script type="application/ld+json">
+ 26:     {
+ 27:       "@context": "https://schema.org",
+ 28:       "@type": "SoftwareApplication",
+ 29:       "name": "Fritt Tracker",
+ 30:       "applicationCategory": "BusinessApplication",
+ 31:       "operatingSystem": "Web",
+ 32:       "description": "Document expiry tracker that sends email reminders before passports, licenses, contracts, and insurance policies expire.",
+ 33:       "url": "https://tracker.fritt.org/",
+ 34:       "offers": {
+ 35:         "@type": "Offer",
+ 36:         "price": "0",
+ 37:         "priceCurrency": "USD",
+ 38:         "description": "Free for up to 20 documents"
+ 39:       }
+ 40:     }
+ 41:    
+ 42:     </script>
+ 43:     {% block structured_data %}{% endblock %}
+ 44:     <link rel="icon" type="image/svg+xml" href="/static/fritt-tracker-logo.svg">
+ 45: 
+ 46:     <!-- Font: Space Grotesk (display) + Inter (body) -->
+ 47:     <link rel="preconnect" href="https://fonts.googleapis.com">
+ 48:     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+ 49: 
+ 50:     <script src="https://cdn.tailwindcss.com"></script>
+ 51:     <script>
+ 52:       tailwind.config = {
+ 53:         theme: {
+ 54:           extend: {
+ 55:             colors: {
+ 56:               ink: '#14181F',
+ 57:               paper: '#F7F7F5',
+ 58:               fritt: { DEFAULT: '#2C5FEF', dark: '#1E46C4' },
+ 59:               muted: '#6B7280',
+ 60:               line: '#E4E4E1',
+ 61:             },
+ 62:             fontFamily: {
+ 63:               display: ['"Space Grotesk"', 'sans-serif'],
+ 64:               body: ['"Inter"', 'sans-serif'],
+ 65:             },
+ 66:           }
+ 67:         }
+ 68:       }
+ 69:     </script>
+ 70:     
+ 71:     <style>
+ 72:       /* Flash message fade-out animation */
+ 73:       .flash-message {
+ 74:         transition: opacity 0.5s ease-in-out, transform 0.3s ease-in-out;
+ 75:       }
+ 76:       .flash-message.fade-out {
+ 77:         opacity: 0;
+ 78:         transform: translateY(-10px);
+ 79:       }
+ 80:       
+ 81:       /* Banner close button style */
+ 82:       .banner-dismiss {
+ 83:         cursor: pointer;
+ 84:         transition: opacity 0.2s;
+ 85:       }
+ 86:       .banner-dismiss:hover {
+ 87:         opacity: 0.7;
+ 88:       }
+ 89:     </style>
+ 90:   </head>
+ 91:   <body class="bg-paper text-ink font-body min-h-screen">
+ 92:     <!-- Loading overlay -->
+ 93:     <div id="loading-overlay" class="fixed inset-0 z-50 hidden flex-col items-center justify-center bg-paper/90 backdrop-blur-sm">
+ 94:       <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+ 95:         <defs>
+ 96:           <linearGradient id="frittGradientLoading" x1="0%" y1="0%" x2="100%" y2="100%">
+ 97:             <stop offset="0%" stop-color="#2C5FEF"/>
+ 98:             <stop offset="100%" stop-color="#22D3C9"/>
+ 99:           </linearGradient>
+100:         </defs>
+101:         <rect x="13" y="8" width="28" height="38" rx="4" fill="#FFFFFF" stroke="#14181F" stroke-width="2"/>
+102:         <rect x="18" y="16" width="18" height="3" rx="1.5" fill="#E4E4E1"/>
+103:         <rect x="18" y="23" width="18" height="3" rx="1.5" fill="#E4E4E1"/>
+104:         <rect x="18" y="30" width="12" height="3" rx="1.5" fill="#E4E4E1"/>
+105:         <circle cx="44" cy="41" r="13" fill="none" stroke="#E4E4E1" stroke-width="5"/>
+106:         <circle id="loading-ring" cx="44" cy="41" r="13" fill="none" stroke="url(#frittGradientLoading)"
+107:                 stroke-width="5" stroke-linecap="round" stroke-dasharray="81.68" stroke-dashoffset="81.68"
+108:                 transform="rotate(-90 44 41)" style="transition: stroke-dashoffset 1400ms ease-out;"/>
+109:         <circle cx="44" cy="41" r="2.5" fill="#2C5FEF"/>
+110:       </svg>
+111:       <p class="mt-4 font-display text-sm tracking-wide text-muted">FRITT TRACKER</p>
+112:     </div>
+113: 
+114:     <!-- HEADER (modified for better small-screen fit) -->
+115:     <header class="bg-white border-b border-line sticky top-0 z-40">
+116:       <div class="px-3 sm:px-4 py-3 sm:py-4">
+117:         <div class="flex items-center justify-between gap-2">
+118:           <!-- LEFT: Menu toggle + Logo (more compact) -->
+119:           <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+120:             <button 
+121:               id="menu-toggle"
+122:               class="p-1.5 sm:p-2 rounded-md hover:bg-paper transition-colors focus:outline-none focus:ring-2 focus:ring-fritt shrink-0"
+123:               aria-label="Toggle menu"
+124:             >
+125:               <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+126:                 <path id="menu-icon-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+127:                 <path id="menu-icon-close" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" class="hidden"/>
+128:               </svg>
+129:             </button>
+130:             
+131:             <a href="/" class="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
+132:               <img src="/static/fritt-tracker-logo.svg" alt="" class="w-6 h-6 sm:w-8 sm:h-8 rounded-md shrink-0">
+133:               <span class="font-display font-bold text-base sm:text-xl text-fritt truncate">
+134:                 Fritt Tracker
+135:                 {% if session.get("user_id") and subscription_tier and subscription_tier not in ['free', 'suspended'] %}
+136:                   <span class="text-xs font-bold 
+137:                     {% if subscription_tier == 'vip' %}text-purple-600 bg-purple-50{% else %}text-green-600 bg-green-50{% endif %}
+138:                     px-1.5 py-0.5 rounded-full ml-0.5 sm:ml-1 align-middle inline-block">
+139:                     {{ subscription_tier|upper }}
+140:                     {% if on_trial and trial_ends_at and trial_ends_at > now %}
+141:                       <span class="text-[10px] font-normal ml-0.5">(Trial)</span>
+142:                     {% endif %}
+143:                   </span>
+144:                 {% endif %}
+145:               </span>
+146:             </a>
+147:           </div>
+148:           
+149:           <!-- RIGHT: Account section (optimized for small screens) -->
+150:           <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+151:             {% if session.get("user_id") %}
+152:               <!-- Logged in - show user avatar/email (compact) -->
+153:               <div class="relative" id="account-dropdown-container">
+154:                 <button 
+155:                   id="account-dropdown-btn"
+156:                   class="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-md hover:bg-paper transition-colors focus:outline-none focus:ring-2 focus:ring-fritt"
+157:                   aria-label="Account menu"
+158:                 >
+159:                   <!-- Avatar (first letter of email) -->
+160:                   <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-fritt text-white flex items-center justify-center text-xs sm:text-sm font-medium shrink-0">
+161:                     {{ session.get("email", "U")[0].upper() }}
+162:                   </div>
+163:                   <svg class="w-3 h-3 sm:w-4 sm:h-4 text-muted hidden xs:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+164:                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+165:                   </svg>
+166:                 </button>
+167:                 
+168:                 <!-- Dropdown menu -->
+169:                 <div id="account-dropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-line overflow-hidden hidden z-50">
+170:                   <div class="px-4 py-3 border-b border-line">
+171:                     <p class="text-sm font-medium truncate">{{ session.get("email", "") }}</p>
+172:                     <p class="text-xs text-muted mt-1">
+173:                       Plan: <span class="font-medium">{{ subscription_tier|capitalize }}</span>
+174:                       {% if on_trial and trial_ends_at and trial_ends_at > now %}
+175:                         <br><span class="text-xs text-blue-600 font-medium">⭐ Free Trial (ends {{ trial_ends_at.strftime('%b %d, %Y') }})</span>
+176:                       {% elif subscription_tier in ['pro', 'vip'] %}
+177:                         {% if subscription_status == 'active' %}
+178:                           {% if subscription_expiry and subscription_expiry > now %}
+179:                             <br><span class="text-xs text-muted">Expires: {{ subscription_expiry.strftime('%b %d, %Y') }}</span>
+180:                           {% elif subscription_expiry is none %}
+181:                             <br><span class="text-xs text-green-600">✅ Indefinite</span>
+182:                           {% endif %}
+183:                         {% elif subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
+184:                           <br><span class="text-xs text-orange-600">⏳ Cancelled (expires {{ subscription_expiry.strftime('%b %d, %Y') }})</span>
+185:                         {% endif %}
+186:                       {% endif %}
+187:                     </p>
+188:                   </div>
+189:                   
+190:                   <div class="py-1">
+191:                     <a href="/change-password" class="block px-4 py-2 text-sm text-gray-700 hover:bg-paper transition-colors">
+192:                       🔑 Change Password
+193:                     </a>
+194:                     
+195:                     {% if subscription_tier in ['pro', 'vip', 'business'] %}
+196:                       <form method="POST" action="{{ url_for('cancel_subscription') }}" class="no-loading"
+197:                             onsubmit="return confirm('⚠️ Are you sure you want to cancel your subscription?\n\nYou will lose Pro features at the end of your billing period.\n\nThis action cannot be undone.');">
+198:                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+199:                         <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+200:                           ❌ Cancel Subscription
+201:                         </button>
+202:                       </form>
+203:                     {% endif %}
+204:                     
+205:                     {% if is_admin() %}
+206:                       <a href="{{ url_for('admin_dashboard') }}" class="block px-4 py-2 text-sm text-purple-700 hover:bg-purple-50 transition-colors border-t border-line">
+207:                         ⚙️ Admin Dashboard
+208:                       </a>
+209:                     {% endif %}
+210:                     
+211:                     <a href="/logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-line">
+212:                       🚪 Logout
+213:                     </a>
+214:                   </div>
+215:                 </div>
+216:               </div>
+217:             {% else %}
+218:               <!-- Not logged in - compact login/signup buttons for small screens -->
+219:               <a href="/login" class="px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 hover:bg-paper rounded-md transition-colors whitespace-nowrap">
+220:                 Log In
+221:               </a>
+222:               <a href="/register" class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium bg-fritt text-white rounded-md hover:bg-fritt-dark transition-colors whitespace-nowrap">
+223:                 Sign Up
+224:               </a>
+225:             {% endif %}
+226:           </div>
+227:         </div>
+228:       </div>
+229:     </header>
+230: 
+231:     <!-- Slide-out menu overlay -->
+232:     <div id="menu-overlay" class="fixed inset-0 bg-black/50 z-50 hidden" onclick="closeMenu()"></div>
+233: 
+234:     <!-- Slide-out menu (LEFT SIDE) -->
+235:     <div id="side-menu" class="fixed top-0 left-0 h-full w-72 bg-white shadow-xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
+236:       <div class="p-6">
+237:         <!-- Close button -->
+238:         <button onclick="closeMenu()" class="absolute top-4 right-4 p-2 rounded-md hover:bg-paper transition-colors">
+239:           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+240:             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+241:           </svg>
+242:         </button>
+243:         
+244:         <!-- Logo in menu -->
+245:         <div class="flex items-center gap-2 mb-8 pt-4">
+246:           <img src="/static/fritt-tracker-logo.svg" alt="" class="w-8 h-8 rounded-md">
+247:           <span class="font-display font-bold text-xl text-fritt">Fritt Tracker</span>
+248:         </div>
+249:         
+250:         <!-- Menu items - Show different content based on admin status -->
+251:         {% if request.endpoint and request.endpoint.startswith('admin_') or request.endpoint == 'newsletter_admin' %}
+252:           <!-- ADMIN MENU ITEMS -->
+253:           <div class="flex flex-col gap-1.5">
+254:             <p class="text-xs text-purple-600 font-semibold uppercase tracking-wider mb-2">⚙️ Admin</p>
+255:             
+256:             <a href="{{ url_for('admin_dashboard') }}" 
+257:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_dashboard' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+258:               📊 Dashboard
+259:             </a>
+260:             <a href="{{ url_for('admin_users') }}" 
+261:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_users' or request.endpoint == 'admin_user_detail' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+262:               👥 Users
+263:             </a>
+264:             <a href="{{ url_for('admin_documents') }}" 
+265:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_documents' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+266:               📄 Documents
+267:             </a>
+268:             <a href="{{ url_for('admin_inquiries') }}" 
+269:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_inquiries' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+270:               💬 Inquiries
+271:             </a>
+272:             <a href="{{ url_for('admin_business_inquiries') }}" 
+273:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_business_inquiries' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+274:               🏢 Business
+275:             </a>
+276:             <a href="{{ url_for('admin_audit_log') }}" 
+277:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_audit_log' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+278:               📋 Audit Log
+279:             </a>
+280:             <a href="{{ url_for('admin_payment_plans') }}" 
+281:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'admin_payment_plans' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+282:               💰 Payment Plans
+283:             </a>
+284:             <a href="{{ url_for('newsletter_admin') }}" 
+285:               class="block px-4 py-2.5 rounded-md text-sm {% if request.endpoint == 'newsletter_admin' %}bg-purple-100 text-purple-700 font-medium{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+286:               📬 Newsletter
+287:             </a>
+288:             
+289:             <hr class="my-3 border-line">
+290:             
+291:             <a href="{{ url_for('home') }}" 
+292:               class="block px-4 py-2.5 rounded-md text-sm bg-gray-100 text-gray-600 hover:bg-gray-200 transition text-center">
+293:               ← Back to Site
+294:             </a>
+295:           </div>
+296:         {% else %}
+297:           <!-- REGULAR USER MENU ITEMS -->
+298:           <div class="flex flex-col gap-2">
+299:             {% if session.get("user_id") %}
+300:               <a href="/add" class="block px-4 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-center">+ Add Document</a>
+301:               
+302:               {% if subscription_tier in ['pro', 'vip', 'business'] %}
+303:                 <a href="/import-csv" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">📥 Import CSV</a>
+304:               {% else %}
+305:                 <a href="{{ url_for('pricing') }}" 
+306:                   class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center opacity-60">
+307:                     📥 Import CSV <span class="text-xs text-muted">(Pro feature)</span>
+308:                 </a>
+309:               {% endif %}
+310:               
+311:               <hr class="my-2 border-line">
+312:               
+313:               <a href="{{ url_for('pricing') }}" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">
+314:                 💰 Upgrade Plan
+315:               </a>
+316:               
+317:               <a href="/" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center">
+318:                 📊 Dashboard
+319:               </a>
+320:             {% else %}
+321:               <a href="/login" class="block px-4 py-3 rounded-md border border-line hover:bg-paper transition-colors text-center font-medium">Log In</a>
+322:               <a href="/register" class="block px-4 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-center">Sign Up Free</a>
+323:             {% endif %}
+324:           </div>
+325:           
+326:           <!-- Show current plan in menu (for logged-in users) -->
+327:           {% if session.get("user_id") %}
+328:             <div class="mt-6 pt-4 border-t border-line">
+329:               <p class="text-xs text-muted text-center">
+330:                 Current plan: <strong>{{ subscription_tier|capitalize }}</strong>
+331:                 {% if on_trial and trial_ends_at and trial_ends_at > now %}
+332:                   <br><span class="text-xs text-blue-600 font-medium">⭐ Free Trial (ends {{ trial_ends_at.strftime('%b %d, %Y') }})</span>
+333:                 {% elif subscription_tier in ['pro', 'vip'] %}
+334:                   {% if subscription_status == 'active' %}
+335:                     {% if subscription_expiry and subscription_expiry > now %}
+336:                       <br><span class="text-xs">Expires: {{ subscription_expiry.strftime('%b %d, %Y') }}</span>
+337:                     {% elif subscription_expiry is none %}
+338:                       <br><span class="text-xs text-green-600">✅ Indefinite</span>
+339:                     {% endif %}
+340:                   {% elif subscription_status == 'cancelled' and subscription_expiry and subscription_expiry > now %}
+341:                     <br><span class="text-xs text-orange-600">⏳ Cancelled (expires {{ subscription_expiry.strftime('%b %d, %Y') }})</span>
+342:                   {% endif %}
+343:                 {% endif %}
+344:                 {% if subscription_tier == 'free' %}
+345:                   <br><a href="{{ url_for('pricing') }}" class="text-fritt hover:underline">Upgrade for more features →</a>
+346:                 {% endif %}
+347:               </p>
+348:             </div>
+349:           {% endif %}
+350:         {% endif %}
+351:       </div>
+352:     </div>
 353: 
-354:     <!-- Bulk Delete Modal -->
-355:     <div id="bulk-delete-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-356:       <div class="bg-white rounded-xl max-w-md w-full shadow-2xl" role="dialog" aria-labelledby="bulk-delete-title">
-357:         <div class="p-6">
-358:           <div class="flex items-start gap-4">
-359:             <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-360:               <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-361:                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-362:               </svg>
-363:             </div>
-364:             <div class="flex-1">
-365:               <h3 id="bulk-delete-title" class="text-lg font-display font-bold text-gray-900">Delete Documents</h3>
-366:               <p class="text-sm text-gray-600 mt-1">
-367:                 You are about to delete <strong id="bulk-delete-count">0</strong> document(s).
-368:                 <span class="block mt-2 text-red-600 font-medium">This action cannot be undone!</span>
-369:               </p>
-370:               <div class="mt-4">
-371:                 <label for="bulk-delete-confirm" class="block text-xs font-medium text-gray-700 mb-1">
-372:                   Type <strong class="text-red-600">DELETE</strong> to confirm:
-373:                 </label>
-374:                 <input type="text" id="bulk-delete-confirm" 
-375:                       class="w-full px-3 py-2 border border-line rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-376:                       placeholder="Type DELETE here"
-377:                       autocomplete="off">
-378:               </div>
-379:               <div class="mt-2 text-xs text-gray-500">
-380:                 <p>Documents to be deleted:</p>
-381:                 <ul id="bulk-delete-list" class="mt-1 max-h-32 overflow-y-auto text-gray-600 list-disc list-inside">
-382:                 </ul>
-383:               </div>
-384:             </div>
-385:           </div>
-386:           <div class="flex gap-3 mt-6">
-387:             <button onclick="closeBulkDelete()" 
-388:                     class="flex-1 px-4 py-2 border border-line rounded-md text-sm font-medium text-gray-700 hover:bg-paper transition-colors">
-389:               Cancel
-390:             </button>
-391:             <button id="bulk-delete-confirm-btn" 
-392:                     class="flex-1 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-393:                     disabled>
-394:               Delete Documents
-395:             </button>
-396:           </div>
-397:         </div>
-398:       </div>
-399:     </div>
-400: 
-401:     <footer class="max-w-4xl mx-auto px-4 py-6 text-center text-xs text-muted border-t border-line mt-8">
-402:       <p>
-403:         <a href="/feedback" class="hover:text-ink transition-colors">Feedback</a> · 
-404:         <a href="/terms" class="hover:text-ink transition-colors">Terms</a> · 
-405:         <a href="/privacy" class="hover:text-ink transition-colors">Privacy</a> · 
-406:         <a href="mailto:support@fritt.org" class="hover:text-ink transition-colors">Support</a> · 
-407:         <a href="mailto:business@fritt.org" class="hover:text-ink transition-colors">Business</a>
-408:       </p>
-409:       <p class="mt-1">© 2026 Fritt Tracker</p>
-410:     </footer>
-411: 
-412:     <script src="/static/loading.js"></script>
-413:     <script>
-414:       // --- Flash message auto-dismiss ---
-415:       document.addEventListener('DOMContentLoaded', function() {
-416:         const flashMessages = document.querySelectorAll('.flash-message');
-417:         
-418:         flashMessages.forEach(function(msg) {
-419:           // Auto-dismiss after 5 seconds
-420:           const dismissAfter = parseInt(msg.dataset.dismiss) || 5000;
-421:           
-422:           setTimeout(function() {
-423:             msg.classList.add('fade-out');
-424:             setTimeout(function() {
-425:               msg.remove();
-426:             }, 500);
-427:           }, dismissAfter);
-428:           
-429:           // Manual dismiss on X button click
-430:           const dismissBtn = msg.querySelector('.flash-dismiss');
-431:           if (dismissBtn) {
-432:             dismissBtn.addEventListener('click', function() {
-433:               msg.classList.add('fade-out');
-434:               setTimeout(function() {
-435:                 msg.remove();
-436:               }, 500);
-437:             });
-438:           }
-439:         });
-440:       });
-441: 
-442:       // --- Banner dismissal (for any remaining banners in index.html) ---
-443:       document.addEventListener('click', function(e) {
-444:         const bannerDismiss = e.target.closest('.banner-dismiss');
-445:         if (bannerDismiss) {
-446:           const banner = bannerDismiss.closest('.banner-container');
-447:           if (banner) {
-448:             banner.style.transition = 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out';
-449:             banner.style.opacity = '0';
-450:             banner.style.transform = 'translateY(-10px)';
-451:             setTimeout(function() {
-452:               banner.style.display = 'none';
-453:             }, 300);
-454:           }
-455:         }
-456:       });
-457: 
-458:       // Menu toggle functions
-459:       function openMenu() {
-460:         document.getElementById('menu-overlay').classList.remove('hidden');
-461:         document.getElementById('side-menu').classList.remove('-translate-x-full');
-462:         document.getElementById('side-menu').classList.add('translate-x-0');
-463:         
-464:         // Toggle icon
-465:         document.getElementById('menu-icon-open').classList.add('hidden');
-466:         document.getElementById('menu-icon-close').classList.remove('hidden');
-467:       }
-468:       
-469:       function closeMenu() {
-470:         document.getElementById('menu-overlay').classList.add('hidden');
-471:         document.getElementById('side-menu').classList.remove('translate-x-0');
-472:         document.getElementById('side-menu').classList.add('-translate-x-full');
-473:         
-474:         // Toggle icon
-475:         document.getElementById('menu-icon-open').classList.remove('hidden');
-476:         document.getElementById('menu-icon-close').classList.add('hidden');
-477:       }
-478:       
-479:       // Account dropdown toggle
-480:       document.addEventListener("DOMContentLoaded", function () {
-481:         const dropdownBtn = document.getElementById('account-dropdown-btn');
-482:         const dropdown = document.getElementById('account-dropdown');
-483:         
-484:         if (dropdownBtn && dropdown) {
-485:           dropdownBtn.addEventListener('click', function(e) {
-486:             e.stopPropagation();
-487:             dropdown.classList.toggle('hidden');
-488:           });
-489:           
-490:           // Close dropdown when clicking outside
-491:           document.addEventListener('click', function(e) {
-492:             const container = document.getElementById('account-dropdown-container');
-493:             if (container && !container.contains(e.target)) {
-494:               dropdown.classList.add('hidden');
-495:             }
-496:           });
-497:           
-498:           // Close dropdown on Escape
-499:           document.addEventListener('keydown', function(e) {
-500:             if (e.key === 'Escape') {
-501:               dropdown.classList.add('hidden');
-502:             }
-503:           });
-504:         }
-505:       });
-506:       
-507:       // Toggle menu on button click
-508:       document.addEventListener("DOMContentLoaded", function () {
-509:         const toggle = document.getElementById('menu-toggle');
-510:         
-511:         if (toggle) {
-512:           toggle.addEventListener('click', function() {
-513:             const menu = document.getElementById('side-menu');
-514:             const isOpen = !menu.classList.contains('-translate-x-full');
-515:             
-516:             if (isOpen) {
-517:               closeMenu();
-518:             } else {
-519:               openMenu();
-520:             }
-521:           });
-522:         }
-523: 
-524:         // Close menu on Escape key
-525:         document.addEventListener('keydown', function(e) {
-526:           if (e.key === 'Escape') {
-527:             closeMenu();
-528:           }
-529:         });
-530: 
-531:         // Auto-focus the first field
-532:         const first = document.querySelector("[autofocus]");
-533:         if (first) first.focus();
-534:       });
-535: 
-536:       // Password toggle function (available globally)
-537:       function togglePassword(inputId, button) {
-538:         const input = document.getElementById(inputId);
-539:         const icon = button.querySelector('.eye-icon');
-540:         
-541:         if (input.type === 'password') {
-542:           input.type = 'text';
-543:           icon.innerHTML = `
-544:             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
-545:           `;
-546:         } else {
-547:           input.type = 'password';
-548:           icon.innerHTML = `
-549:             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-550:             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-551:           `;
-552:         }
-553:       }
-554:     </script>
-555:   </body>
-556: </html>
+354:     <!-- Flash Messages - Auto-dismiss after 5 seconds -->
+355:     {% with messages = get_flashed_messages(with_categories=true) %}
+356:       {% if messages %}
+357:         <div class="max-w-4xl mx-auto px-4 pt-4 space-y-2" id="flash-messages">
+358:           {% for category, message in messages %}
+359:             <div class="flash-message px-4 py-3 rounded-md border text-sm {% if category == 'success' %}bg-green-50 border-green-200 text-green-700{% elif category == 'warning' %}bg-yellow-50 border-yellow-200 text-yellow-700{% else %}bg-red-50 border-red-200 text-red-700{% endif %}"
+360:                  data-dismiss="5000">
+361:               <div class="flex items-start justify-between">
+362:                 <span>{{ message }}</span>
+363:                 <button class="flash-dismiss ml-4 text-gray-400 hover:text-gray-600 transition-colors" aria-label="Dismiss message">
+364:                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+365:                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+366:                   </svg>
+367:                 </button>
+368:               </div>
+369:             </div>
+370:           {% endfor %}
+371:         </div>
+372:       {% endif %}
+373:     {% endwith %}
+374: 
+375:     <main class="max-w-4xl mx-auto px-4 py-8">
+376:       {% block content %}{% endblock %}
+377:     </main>
+378: 
+379:     <!-- Bulk Delete Modal -->
+380:     <div id="bulk-delete-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+381:       <div class="bg-white rounded-xl max-w-md w-full shadow-2xl" role="dialog" aria-labelledby="bulk-delete-title">
+382:         <div class="p-6">
+383:           <div class="flex items-start gap-4">
+384:             <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+385:               <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+386:                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+387:               </svg>
+388:             </div>
+389:             <div class="flex-1">
+390:               <h3 id="bulk-delete-title" class="text-lg font-display font-bold text-gray-900">Delete Documents</h3>
+391:               <p class="text-sm text-gray-600 mt-1">
+392:                 You are about to delete <strong id="bulk-delete-count">0</strong> document(s).
+393:                 <span class="block mt-2 text-red-600 font-medium">This action cannot be undone!</span>
+394:               </p>
+395:               <div class="mt-4">
+396:                 <label for="bulk-delete-confirm" class="block text-xs font-medium text-gray-700 mb-1">
+397:                   Type <strong class="text-red-600">DELETE</strong> to confirm:
+398:                 </label>
+399:                 <input type="text" id="bulk-delete-confirm" 
+400:                       class="w-full px-3 py-2 border border-line rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+401:                       placeholder="Type DELETE here"
+402:                       autocomplete="off">
+403:               </div>
+404:               <div class="mt-2 text-xs text-gray-500">
+405:                 <p>Documents to be deleted:</p>
+406:                 <ul id="bulk-delete-list" class="mt-1 max-h-32 overflow-y-auto text-gray-600 list-disc list-inside">
+407:                 </ul>
+408:               </div>
+409:             </div>
+410:           </div>
+411:           <div class="flex gap-3 mt-6">
+412:             <button onclick="closeBulkDelete()" 
+413:                     class="flex-1 px-4 py-2 border border-line rounded-md text-sm font-medium text-gray-700 hover:bg-paper transition-colors">
+414:               Cancel
+415:             </button>
+416:             <button id="bulk-delete-confirm-btn" 
+417:                     class="flex-1 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+418:                     disabled>
+419:               Delete Documents
+420:             </button>
+421:           </div>
+422:         </div>
+423:       </div>
+424:     </div>
+425: 
+426:     <footer class="max-w-4xl mx-auto px-4 py-6 text-center text-xs text-muted border-t border-line mt-8">
+427:       <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-3">
+428:         <a href="/resources" class="hover:text-ink transition-colors">Resources</a>
+429:         <a href="/use-cases" class="hover:text-ink transition-colors">Use Cases</a>
+430:         <a href="/use-cases/passports-visas" class="hover:text-ink transition-colors">Passports</a>
+431:         <a href="/use-cases/business-licenses" class="hover:text-ink transition-colors">Business Licenses</a>
+432:         <a href="/use-cases/contracts" class="hover:text-ink transition-colors">Contracts</a>
+433:         <a href="/use-cases/insurance" class="hover:text-ink transition-colors">Insurance</a>
+434:         <a href="/pricing" class="hover:text-ink transition-colors">Pricing</a>
+435:         <a href="/business" class="hover:text-ink transition-colors">Business</a>
+436:       </div>
+437:       <p>
+438:         <a href="/feedback" class="hover:text-ink transition-colors">Feedback</a> ·
+439:         <a href="/terms" class="hover:text-ink transition-colors">Terms</a> ·
+440:         <a href="/privacy" class="hover:text-ink transition-colors">Privacy</a> ·
+441:         <a href="mailto:support@fritt.org" class="hover:text-ink transition-colors">Support</a> ·
+442:         <a href="mailto:business@fritt.org" class="hover:text-ink transition-colors">Business</a>
+443:       </p>
+444:       <p class="mt-1">© 2026 Fritt Tracker</p>
+445:     </footer>
+446: 
+447:     <script src="/static/loading.js"></script>
+448:     <script>
+449:       // --- Flash message auto-dismiss ---
+450:       document.addEventListener('DOMContentLoaded', function() {
+451:         const flashMessages = document.querySelectorAll('.flash-message');
+452:         
+453:         flashMessages.forEach(function(msg) {
+454:           // Auto-dismiss after 5 seconds
+455:           const dismissAfter = parseInt(msg.dataset.dismiss) || 5000;
+456:           
+457:           setTimeout(function() {
+458:             msg.classList.add('fade-out');
+459:             setTimeout(function() {
+460:               msg.remove();
+461:             }, 500);
+462:           }, dismissAfter);
+463:           
+464:           // Manual dismiss on X button click
+465:           const dismissBtn = msg.querySelector('.flash-dismiss');
+466:           if (dismissBtn) {
+467:             dismissBtn.addEventListener('click', function() {
+468:               msg.classList.add('fade-out');
+469:               setTimeout(function() {
+470:                 msg.remove();
+471:               }, 500);
+472:             });
+473:           }
+474:         });
+475:       });
+476: 
+477:       // --- Banner dismissal (for any remaining banners in index.html) ---
+478:       document.addEventListener('click', function(e) {
+479:         const bannerDismiss = e.target.closest('.banner-dismiss');
+480:         if (bannerDismiss) {
+481:           const banner = bannerDismiss.closest('.banner-container');
+482:           if (banner) {
+483:             banner.style.transition = 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out';
+484:             banner.style.opacity = '0';
+485:             banner.style.transform = 'translateY(-10px)';
+486:             setTimeout(function() {
+487:               banner.style.display = 'none';
+488:             }, 300);
+489:           }
+490:         }
+491:       });
+492: 
+493:       // Menu toggle functions
+494:       function openMenu() {
+495:         document.getElementById('menu-overlay').classList.remove('hidden');
+496:         document.getElementById('side-menu').classList.remove('-translate-x-full');
+497:         document.getElementById('side-menu').classList.add('translate-x-0');
+498:         
+499:         // Toggle icon
+500:         document.getElementById('menu-icon-open').classList.add('hidden');
+501:         document.getElementById('menu-icon-close').classList.remove('hidden');
+502:       }
+503:       
+504:       function closeMenu() {
+505:         document.getElementById('menu-overlay').classList.add('hidden');
+506:         document.getElementById('side-menu').classList.remove('translate-x-0');
+507:         document.getElementById('side-menu').classList.add('-translate-x-full');
+508:         
+509:         // Toggle icon
+510:         document.getElementById('menu-icon-open').classList.remove('hidden');
+511:         document.getElementById('menu-icon-close').classList.add('hidden');
+512:       }
+513:       
+514:       // Account dropdown toggle
+515:       document.addEventListener("DOMContentLoaded", function () {
+516:         const dropdownBtn = document.getElementById('account-dropdown-btn');
+517:         const dropdown = document.getElementById('account-dropdown');
+518:         
+519:         if (dropdownBtn && dropdown) {
+520:           dropdownBtn.addEventListener('click', function(e) {
+521:             e.stopPropagation();
+522:             dropdown.classList.toggle('hidden');
+523:           });
+524:           
+525:           // Close dropdown when clicking outside
+526:           document.addEventListener('click', function(e) {
+527:             const container = document.getElementById('account-dropdown-container');
+528:             if (container && !container.contains(e.target)) {
+529:               dropdown.classList.add('hidden');
+530:             }
+531:           });
+532:           
+533:           // Close dropdown on Escape
+534:           document.addEventListener('keydown', function(e) {
+535:             if (e.key === 'Escape') {
+536:               dropdown.classList.add('hidden');
+537:             }
+538:           });
+539:         }
+540:       });
+541:       
+542:       // Toggle menu on button click
+543:       document.addEventListener("DOMContentLoaded", function () {
+544:         const toggle = document.getElementById('menu-toggle');
+545:         
+546:         if (toggle) {
+547:           toggle.addEventListener('click', function() {
+548:             const menu = document.getElementById('side-menu');
+549:             const isOpen = !menu.classList.contains('-translate-x-full');
+550:             
+551:             if (isOpen) {
+552:               closeMenu();
+553:             } else {
+554:               openMenu();
+555:             }
+556:           });
+557:         }
+558: 
+559:         // Close menu on Escape key
+560:         document.addEventListener('keydown', function(e) {
+561:           if (e.key === 'Escape') {
+562:             closeMenu();
+563:           }
+564:         });
+565: 
+566:         // Auto-focus the first field
+567:         const first = document.querySelector("[autofocus]");
+568:         if (first) first.focus();
+569:       });
+570: 
+571:       // Password toggle function (available globally)
+572:       function togglePassword(inputId, button) {
+573:         const input = document.getElementById(inputId);
+574:         const icon = button.querySelector('.eye-icon');
+575:         
+576:         if (input.type === 'password') {
+577:           input.type = 'text';
+578:           icon.innerHTML = `
+579:             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+580:           `;
+581:         } else {
+582:           input.type = 'password';
+583:           icon.innerHTML = `
+584:             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+585:             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+586:           `;
+587:         }
+588:       }
+589:     </script>
+590:   </body>
+591: </html>
 
 ================
 File: app.py
@@ -13943,12 +15404,269 @@ File: app.py
 4351: # reset_user_to_free('sedejordan88@gmail.com')
 4352: 
 4353: # =============================================================================
-4354: # APPLICATION ENTRY POINT
+4354: # ROUTES - SEO CONTENT & INFRASTRUCTURE
 4355: # =============================================================================
 4356: 
-4357: if __name__ == "__main__":
-4358:     debug_mode = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
-4359:     app.run(debug=False)
+4357: def _base_url():
+4358:     """Return the canonical base URL (with scheme)."""
+4359:     base = os.environ.get("APP_URL", "tracker.fritt.org")
+4360:     if not base.startswith(("http://", "https://")):
+4361:         base = f"https://{base}"
+4362:     return base.rstrip("/")
+4363: 
+4364: 
+4365: # All resource articles - single source of truth for index, sitemap, and internal links
+4366: RESOURCE_ARTICLES = [
+4367:     {
+4368:         "slug": "how-to-track-business-license-renewal",
+4369:         "title": "How to Track Business License Renewals",
+4370:         "excerpt": "A step-by-step guide to tracking license renewals without spreadsheets or missed deadlines.",
+4371:         "category": "Compliance",
+4372:         "read_time": "6 min read",
+4373:     },
+4374:     {
+4375:         "slug": "passport-expiration-reminder",
+4376:         "title": "Passport Expiration Reminders: The 6-Month Rule Most Travelers Don't Know",
+4377:         "excerpt": "Most countries require 6 months of passport validity. Here's why, which countries enforce it, and how to never get caught out.",
+4378:         "category": "Travel",
+4379:         "read_time": "7 min read",
+4380:     },
+4381:     {
+4382:         "slug": "contract-renewal-tracking",
+4383:         "title": "Contract Renewal Tracking: How to Escape the Auto-Renewal Trap",
+4384:         "excerpt": "Auto-renewals are great until they're not. Here's how to track cancellation windows so you're never surprised by a charge.",
+4385:         "category": "Business",
+4386:         "read_time": "8 min read",
+4387:     },
+4388:     {
+4389:         "slug": "insurance-coverage-gaps",
+4390:         "title": "Insurance Coverage Gaps: How Expired Policies Cost You Contracts",
+4391:         "excerpt": "A lapsed insurance policy can kill a deal faster than a bad quote. Here's how to track policy expirations and certificates of insurance.",
+4392:         "category": "Business",
+4393:         "read_time": "7 min read",
+4394:     },
+4395:     {
+4396:         "slug": "document-expiry-tracking-checklist",
+4397:         "title": "The Document Expiry Tracking Checklist",
+4398:         "excerpt": "A printable checklist of the documents most people forget to track until it's too late.",
+4399:         "category": "Guide",
+4400:         "read_time": "6 min read",
+4401:     },
+4402: ]
+4403: 
+4404: USE_CASES = [
+4405:     {
+4406:         "slug": "passports-visas",
+4407:         "title": "Passport & Visa Expiry Tracking",
+4408:         "excerpt": "Never be turned away at the airport for a passport that expires in 5 months.",
+4409:         "icon": "🛂",
+4410:     },
+4411:     {
+4412:         "slug": "business-licenses",
+4413:         "title": "Business License & Permit Tracking",
+4414:         "excerpt": "Stay compliant and avoid fines. Track every license, permit, and inspection.",
+4415:         "icon": "🏢",
+4416:     },
+4417:     {
+4418:         "slug": "contracts",
+4419:         "title": "Contract & Agreement Renewal Tracking",
+4420:         "excerpt": "Know when every client contract, NDA, and vendor agreement renews.",
+4421:         "icon": "📄",
+4422:     },
+4423:     {
+4424:         "slug": "insurance",
+4425:         "title": "Insurance Policy Expiry Tracking",
+4426:         "excerpt": "Never have a coverage gap. Track every policy renewal in one place.",
+4427:         "icon": "🛡️",
+4428:     },
+4429: ]
+4430: 
+4431: 
+4432: @app.route("/sitemap.xml")
+4433: @limiter.exempt
+4434: def sitemap():
+4435:     """Generate sitemap.xml for search engines."""
+4436:     from flask import Response
+4437: 
+4438:     base = _base_url()
+4439:     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+4440: 
+4441:     static_pages = [
+4442:         ("/", "1.0", "weekly"),
+4443:         ("/pricing", "0.9", "weekly"),
+4444:         ("/business", "0.8", "monthly"),
+4445:         ("/resources", "0.9", "weekly"),
+4446:         ("/use-cases", "0.8", "weekly"),
+4447:         ("/compare/spreadsheets-vs-fritt-tracker", "0.8", "monthly"),
+4448:         ("/contact", "0.5", "monthly"),
+4449:         ("/feedback", "0.4", "monthly"),
+4450:         ("/terms", "0.2", "yearly"),
+4451:         ("/privacy", "0.2", "yearly"),
+4452:     ]
+4453: 
+4454:     xml = ['<?xml version="1.0" encoding="UTF-8"?>']
+4455:     xml.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+4456: 
+4457:     for path, priority, freq in static_pages:
+4458:         xml.append(
+4459:             f"  <url>\n"
+4460:             f"    <loc>{base}{path}</loc>\n"
+4461:             f"    <lastmod>{today}</lastmod>\n"
+4462:             f"    <changefreq>{freq}</changefreq>\n"
+4463:             f"    <priority>{priority}</priority>\n"
+4464:             f"  </url>"
+4465:         )
+4466: 
+4467:     for a in RESOURCE_ARTICLES:
+4468:         xml.append(
+4469:             f"  <url>\n"
+4470:             f"    <loc>{base}/resources/{a['slug']}</loc>\n"
+4471:             f"    <lastmod>{today}</lastmod>\n"
+4472:             f"    <changefreq>monthly</changefreq>\n"
+4473:             f"    <priority>0.7</priority>\n"
+4474:             f"  </url>"
+4475:         )
+4476: 
+4477:     for u in USE_CASES:
+4478:         xml.append(
+4479:             f"  <url>\n"
+4480:             f"    <loc>{base}/use-cases/{u['slug']}</loc>\n"
+4481:             f"    <lastmod>{today}</lastmod>\n"
+4482:             f"    <changefreq>monthly</changefreq>\n"
+4483:             f"    <priority>0.7</priority>\n"
+4484:             f"  </url>"
+4485:         )
+4486: 
+4487:     xml.append("</urlset>")
+4488:     return Response("\n".join(xml), mimetype="application/xml")
+4489: 
+4490: 
+4491: @app.route("/robots.txt")
+4492: @limiter.exempt
+4493: def robots_txt():
+4494:     """Serve robots.txt with sitemap reference."""
+4495:     from flask import Response
+4496: 
+4497:     base = _base_url()
+4498:     content = f"""User-agent: *
+4499: Allow: /
+4500: Disallow: /admin/
+4501: Disallow: /login
+4502: Disallow: /register
+4503: Disallow: /forgot-password
+4504: Disallow: /reset-password/
+4505: Disallow: /verify-email/
+4506: Disallow: /change-password
+4507: Disallow: /delete-account
+4508: Disallow: /webhook/
+4509: Disallow: /cron/
+4510: 
+4511: Sitemap: {base}/sitemap.xml
+4512: """
+4513:     return Response(content, mimetype="text/plain")
+4514: 
+4515: 
+4516: # ---------------------------------------------------------------------------
+4517: # Resource hub (blog) - targets non-branded, intent-based queries
+4518: # ---------------------------------------------------------------------------
+4519: 
+4520: @app.route("/resources")
+4521: @limiter.exempt
+4522: def resources_index():
+4523:     """Resource hub - articles targeting non-branded search queries."""
+4524:     return render_template("resources/index.html", articles=RESOURCE_ARTICLES)
+4525: 
+4526: 
+4527: @app.route("/resources/how-to-track-business-license-renewal")
+4528: @limiter.exempt
+4529: def resource_business_license_renewal():
+4530:     return render_template(
+4531:         "resources/how-to-track-business-license-renewal.html",
+4532:         articles=RESOURCE_ARTICLES,
+4533:     )
+4534: 
+4535: 
+4536: @app.route("/resources/passport-expiration-reminder")
+4537: @limiter.exempt
+4538: def resource_passport_expiration():
+4539:     return render_template(
+4540:         "resources/passport-expiration-reminder.html", articles=RESOURCE_ARTICLES
+4541:     )
+4542: 
+4543: 
+4544: @app.route("/resources/contract-renewal-tracking")
+4545: @limiter.exempt
+4546: def resource_contract_renewal():
+4547:     return render_template(
+4548:         "resources/contract-renewal-tracking.html", articles=RESOURCE_ARTICLES
+4549:     )
+4550: 
+4551: @app.route("/resources/insurance-coverage-gaps")
+4552: @limiter.exempt
+4553: def resource_insurance_gaps():
+4554:     return render_template(
+4555:         "resources/insurance-coverage-gaps.html", articles=RESOURCE_ARTICLES
+4556:     )
+4557: 
+4558: 
+4559: @app.route("/resources/document-expiry-tracking-checklist")
+4560: @limiter.exempt
+4561: def resource_document_checklist():
+4562:     return render_template(
+4563:         "resources/document-expiry-tracking-checklist.html", articles=RESOURCE_ARTICLES
+4564:     )
+4565: 
+4566: 
+4567: # ---------------------------------------------------------------------------
+4568: # Use-case landing pages (per ICP segment)
+4569: # ---------------------------------------------------------------------------
+4570: 
+4571: @app.route("/use-cases")
+4572: @limiter.exempt
+4573: def use_cases_index():
+4574:     return render_template("use-cases/index.html", use_cases=USE_CASES)
+4575: 
+4576: 
+4577: @app.route("/use-cases/passports-visas")
+4578: @limiter.exempt
+4579: def use_case_passports():
+4580:     return render_template("use-cases/passports.html")
+4581: 
+4582: 
+4583: @app.route("/use-cases/business-licenses")
+4584: @limiter.exempt
+4585: def use_case_business_licenses():
+4586:     return render_template("use-cases/business-licenses.html")
+4587: 
+4588: 
+4589: @app.route("/use-cases/contracts")
+4590: @limiter.exempt
+4591: def use_case_contracts():
+4592:     return render_template("use-cases/contracts.html")
+4593: 
+4594: 
+4595: @app.route("/use-cases/insurance")
+4596: @limiter.exempt
+4597: def use_case_insurance():
+4598:     return render_template("use-cases/insurance.html")
+4599: 
+4600: 
+4601: # ---------------------------------------------------------------------------
+4602: # Comparison pages (high-intent "vs" searches)
+4603: # ---------------------------------------------------------------------------
+4604: 
+4605: @app.route("/compare/spreadsheets-vs-fritt-tracker")
+4606: @limiter.exempt
+4607: def compare_spreadsheets():
+4608:     return render_template("compare/vs-spreadsheets.html")
+4609: 
+4610: # =============================================================================
+4611: # APPLICATION ENTRY POINT
+4612: # =============================================================================
+4613: 
+4614: if __name__ == "__main__":
+4615:     debug_mode = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
+4616:     app.run(debug=False)
 
 
 
