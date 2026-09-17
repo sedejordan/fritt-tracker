@@ -97,8 +97,8 @@ SUBSCRIPTION_TIERS = {
     'pro': {
         'name': 'Pro',
         'doc_limit': 100,
-        'price_monthly': 8.99,
-        'price_yearly': 89.99
+        'price_monthly': 8.00,
+        'price_yearly': 80.00
     },
     'vip': {
         'name': 'VIP',
