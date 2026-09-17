@@ -296,6 +296,22 @@
         {% else %}
           <!-- REGULAR USER MENU ITEMS -->
           <div class="flex flex-col gap-2">
+            <!-- Browse -->
+            <div class="mb-6">
+              <p class="text-xs text-muted font-semibold uppercase tracking-wider mb-2">Browse</p>
+              <div class="flex flex-col gap-1">
+                <a href="/resources" class="block px-4 py-2.5 rounded-md text-sm text-gray-700 hover:bg-paper transition-colors">
+                  📚 Resources
+                </a>
+                <a href="/use-cases" class="block px-4 py-2.5 rounded-md text-sm text-gray-700 hover:bg-paper transition-colors">
+                  🗂️ Use Cases
+                </a>
+                <a href="/compare/spreadsheets-vs-fritt-tracker" class="block px-4 py-2.5 rounded-md text-sm text-gray-700 hover:bg-paper transition-colors">
+                  ⚖️ Vs Spreadsheets
+                </a>
+              </div>
+            </div>
+
             {% if session.get("user_id") %}
               <a href="/add" class="block px-4 py-3 rounded-md bg-fritt text-white font-medium hover:bg-fritt-dark transition-colors text-center">+ Add Document</a>
               
