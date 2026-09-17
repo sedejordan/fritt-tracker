@@ -105,7 +105,7 @@
 
 <!-- Pricing Cards -->
 <div class="container mx-auto px-4 max-w-6xl">
-    <div class="grid md:grid-cols-3 gap-8">
+    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         <!-- Free Plan -->
         <div class="pricing-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition {% if subscription_tier == 'free' %}border-2 border-blue-500{% endif %}">
             {% if subscription_tier == 'free' %}
@@ -245,103 +245,6 @@
                         </a>
                         <p class="text-sm text-muted mt-2">
                             Don't have an account? <a href="{{ url_for('register') }}" class="text-blue-600 hover:underline">Create one free</a>
-                        </p>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- VIP Plan -->
-        <div class="pricing-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition border-2 border-purple-500 {% if subscription_tier == 'vip' %}border-4 border-purple-700{% endif %}">
-            {% if subscription_tier == 'vip' %}
-                <div class="bg-purple-700 text-white text-center py-2 text-sm font-semibold">YOUR CURRENT PLAN</div>
-            {% else %}
-                <div class="bg-purple-600 text-white text-center py-2 text-sm font-semibold">BEST VALUE</div>
-            {% endif %}
-            <div class="p-6">
-                <h2 class="text-2xl font-bold text-gray-800">VIP</h2>
-                <p class="text-gray-500 mt-1">For teams and power users</p>
-                
-                <!-- Monthly Price -->
-                <div class="mt-4 monthly-price" {% if billing_period == 'annual' %}style="display:none;"{% endif %}>
-                    <span class="text-4xl font-bold text-purple-600">{{ pricing.currency }}{{ pricing.vip_monthly or '14.99' }}</span>
-                    <span class="text-gray-500">/month</span>
-                </div>
-                <!-- Annual Price -->
-                <div class="mt-4 annual-price" {% if billing_period == 'monthly' %}style="display:none;"{% endif %}>
-                    <span class="text-4xl font-bold text-purple-600">{{ pricing.currency }}{{ pricing.vip_yearly or '149.99' }}</span>
-                    <span class="text-gray-500">/year</span>
-                    <p class="text-sm text-green-600 mt-1">Save 16% with annual billing</p>
-                </div>
-                
-                <ul class="mt-6 space-y-3">
-                    <li class="flex items-center text-gray-600">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <strong>Unlimited</strong> documents
-                    </li>
-                    <li class="flex items-center text-gray-600">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        All Pro features
-                    </li>
-                    <li class="flex items-center text-gray-600">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        Priority support
-                    </li>
-                    <!--<li class="flex items-center text-gray-600">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        Advanced analytics
-                    </li>
-                    <li class="flex items-center text-gray-600">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        API access
-                    </li>
-                    <li class="flex items-center text-gray-600">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        Team sharing
-                    </li>-->
-                </ul>
-                {% if session.get('user_id') %}
-                    <!-- Free trial button -->
-                    {% if subscription_tier == 'free' and not trial_used %}
-                        <form method="POST" action="{{ url_for('start_trial') }}">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <input type="hidden" name="tier" value="vip">
-                            <button type="submit" class="block w-full mt-6 text-center bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 rounded-lg hover:opacity-90 transition">
-                                🎁 Start 7-Day Free Trial
-                            </button>
-                            <p class="text-xs text-gray-500 mt-2 text-center">No credit card required. Cancel anytime.</p>
-                        </form>
-                    {% elif subscription_tier == 'vip' and trial_used %}
-                        <button class="block w-full mt-6 text-center bg-green-500 text-white py-3 rounded-lg cursor-default font-medium" disabled>
-                            ⏳ Trial in Progress
-                        </button>
-                    {% endif %}
-
-                    {% if subscription_tier != 'vip' %}
-                        <!-- Monthly Subscribe Button -->
-                        <a href="{{ url_for('subscribe', plan_type='vip_monthly') }}" 
-                           class="block w-full mt-6 text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition monthly-btn"
-                           {% if billing_period == 'annual' %}style="display:none;"{% endif %}>
-                            <i class="fas fa-crown mr-2"></i> Upgrade to VIP Monthly
-                        </a>
-                        <!-- Annual Subscribe Button -->
-                        <a href="{{ url_for('subscribe', plan_type='vip_yearly') }}" 
-                           class="block w-full mt-6 text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition annual-btn"
-                           {% if billing_period == 'monthly' %}style="display:none;"{% endif %}>
-                            <i class="fas fa-crown mr-2"></i> Upgrade to VIP Yearly
-                        </a>
-                    {% else %}
-                        <button class="block w-full mt-6 text-center bg-purple-700 text-white py-2 rounded-lg cursor-default" disabled>
-                            <i class="fas fa-check mr-2"></i> Current Plan
-                        </button>
-                    {% endif %}
-                {% else %}
-                    <div class="mt-6 text-center">
-                        <a href="{{ url_for('login') }}" class="block w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">
-                            <i class="fas fa-sign-in-alt mr-2"></i> Log in to Subscribe
-                        </a>
-                        <p class="text-sm text-muted mt-2">
-                            Don't have an account? <a href="{{ url_for('register') }}" class="text-purple-600 hover:underline">Create one free</a>
                         </p>
                     </div>
                 {% endif %}

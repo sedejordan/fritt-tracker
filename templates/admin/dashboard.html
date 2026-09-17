@@ -45,8 +45,6 @@
             <div class="text-sm text-gray-500">
                 {% if tier == 'pro' and count > 0 %}
                     Pro
-                {% elif tier == 'vip' and count > 0 %}
-                    VIP
                 {% else %}
                     {{ tier|capitalize }}
                 {% endif %}

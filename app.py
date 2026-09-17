@@ -2201,7 +2201,7 @@ def admin_user_action(user_id):
             new_tier = request.form.get("new_tier")
             duration = request.form.get("duration", "indefinite")
             
-            if new_tier not in ['pro', 'vip']:
+            if new_tier not in ['pro']:
                 flash("Invalid tier selected.", "error")
                 return redirect(url_for("admin_user_detail", user_id=user_id))
             
@@ -3639,8 +3639,9 @@ def subscribe(plan_type):
     plan_details = {
         'pro_monthly': {'name': 'Pro Monthly', 'price': pricing['monthly'], 'tier': 'Pro'},
         'pro_yearly': {'name': 'Pro Yearly', 'price': pricing['yearly'], 'tier': 'Pro'},
-        'vip_monthly': {'name': 'VIP Monthly', 'price': pricing['vip_monthly'], 'tier': 'VIP'},
-        'vip_yearly': {'name': 'VIP Yearly', 'price': pricing['vip_yearly'], 'tier': 'VIP'},
+        # remove these two lines:
+        # 'vip_monthly': {'name': 'VIP Monthly', 'price': pricing['vip_monthly'], 'tier': 'VIP'},
+        # 'vip_yearly':  {'name': 'VIP Yearly',  'price': pricing['vip_yearly'],  'tier': 'VIP'},
     }
     
     if plan_type not in plan_details:
@@ -3683,7 +3684,7 @@ def start_trial():
     
     # Get tier from form
     tier_to_try = request.form.get('tier', 'pro')
-    if tier_to_try not in ['pro', 'vip']:
+    if tier_to_try not in ['pro']:
         tier_to_try = 'pro'
     
     # Start trial
