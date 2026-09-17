@@ -86,26 +86,11 @@ ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")
 if not RESEND_API_KEY:
     print("⚠️ WARNING: RESEND_API_KEY not set - email features will be disabled")
 
-# Subscription tiers
+# SUBSCRIPTION TIERS
 SUBSCRIPTION_TIERS = {
-    'free': {
-        'name': 'Free',
-        'doc_limit': 20,
-        'price_monthly': 0,
-        'price_yearly': 0
-    },
-    'pro': {
-        'name': 'Pro',
-        'doc_limit': 100,
-        'price_monthly': 8.00,
-        'price_yearly': 80.00
-    },
-    'vip': {
-        'name': 'VIP',
-        'doc_limit': 0,  # Unlimited
-        'price_monthly': 19.99,
-        'price_yearly': 199.99
-    }
+    'free': { 'name': 'Free', 'doc_limit': 20 },
+    'pro':  { 'name': 'Pro',  'doc_limit': 100 },
+    'vip':  { 'name': 'VIP',  'doc_limit': 0 }, # 0 = unlimited
 }
 
 # Webhook configuration
@@ -850,6 +835,14 @@ def is_test_mode():
 def utility_processor():
     """Make utility functions available to all templates."""
     return dict(is_admin=is_admin)
+
+@app.context_processor
+def inject_pricing():
+    """Make pricing available to every template without an IP lookup.
+    Region is populated by get_user_region() on /, /pricing, /subscribe, etc.
+    Falls back to 'us' (USD) so crawlers and new sessions still get sane prices."""
+    region = session.get('region', 'us')
+    return dict(pricing=get_pricing(region))
 
 # =============================================================================
 # DECORATORS & AUTHENTICATION HELPERS
