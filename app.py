@@ -285,15 +285,10 @@ def _ensure_aware(dt):
 
 
 def compute_display_plan(tier, status, trial_used, trial_ends_at,
-                         subscription_expiry, now):
+                         subscription_expiry, now, suspended=False):
     """
     Return (display_label, is_trial, is_trial_expired, is_expired).
-
-    - display_label:   human-readable plan label for admin display
-                       e.g. "Pro", "Pro (Trial)", "Pro (Trial expired)", "Pro (Expired)"
-    - is_trial:        user is currently on an active free trial
-    - is_trial_expired: trial has lapsed but user not yet downgraded
-    - is_expired:      paid subscription has lapsed but user not yet downgraded
+    ...
     """
     tier = (tier or 'free').lower()
     status = (status or 'active').lower()
@@ -324,15 +319,25 @@ def compute_display_plan(tier, status, trial_used, trial_ends_at,
         and subscription_expiry
         and subscription_expiry <= now
     )
+    # NEW: paid tier whose subscription was cancelled (self-cancel or
+    # admin-suspend). Distinguished from "expired" — expired means the
+    # billing window has already lapsed with no cancellation on record.
+    cancelled = bool(paid_tier and status == 'cancelled')
 
+    if suspended:
+        return ("Suspended", False, False, False)
     if is_trial:
         return (f"{tier.capitalize()} (Trial)", True, False, False)
     if trial_expired:
         return (f"{tier.capitalize()} (Trial expired)", False, True, True)
+    if cancelled:
+        # Cancelled-but-still-in-window: is_expired=False (blue badge).
+        # Cancelled-and-past-expiry: is_expired=True (red badge).
+        already_lapsed = bool(subscription_expiry and subscription_expiry <= now)
+        return (f"{tier.capitalize()} (Cancelled)", False, False, already_lapsed)
     if subscription_expired:
         return (f"{tier.capitalize()} (Expired)", False, False, True)
     return (tier.capitalize(), False, False, False)
-
 
 def get_user_by_email(email):
     """
@@ -1997,7 +2002,8 @@ def admin_users():
                 EXISTS(SELECT 1 FROM admin_users a WHERE a.user_id = u.id) as is_admin,
                 EXISTS(SELECT 1 FROM flagged_users f WHERE f.user_id = u.id AND f.status = 'pending') as is_flagged,
                 u.trial_used,
-                u.trial_ends_at
+                u.trial_ends_at,
+                u.suspended
             FROM users u
             LEFT JOIN documents d ON d.user_id = u.id
         """
@@ -2060,6 +2066,7 @@ def admin_users():
             trial_ends_at=row[10],
             subscription_expiry=None,  # not selected here; not needed by this view
             now=now,
+            suspended=row[11]
         )
         row.extend([label, is_trial, is_trial_expired, is_expired])
         users.append(tuple(row))
@@ -2092,7 +2099,8 @@ def admin_user_detail(user_id):
                 EXISTS(SELECT 1 FROM admin_users a WHERE a.user_id = u.id) as is_admin,
                 EXISTS(SELECT 1 FROM flagged_users f WHERE f.user_id = u.id AND f.status = 'pending') as is_flagged,
                 u.trial_used,
-                u.trial_ends_at
+                u.trial_ends_at,
+                u.suspended
             FROM users u
             WHERE u.id = %s
         """, (user_id,))
@@ -2167,6 +2175,7 @@ def admin_user_detail(user_id):
         trial_ends_at=user[10],
         subscription_expiry=user[5],
         now=now,
+        suspended=user[11]
     )
     user.extend([label, is_trial, is_trial_expired, is_expired])
     user = tuple(user)
@@ -2301,23 +2310,47 @@ def admin_user_action(user_id):
                     
                     flash(f"✅ User unsuspended and {current_tier.upper()} subscription reactivated!", "success")
                 else:
-                    # No valid subscription - just unsuspend to free
-                    cursor.execute("""
-                        UPDATE users 
-                        SET suspended = FALSE,
-                            subscription_tier = 'free',
-                            subscription_status = 'active'
-                        WHERE id = %s
-                    """, (user_id,))
-                    conn.commit()
-                    
-                    log_admin_action("unsuspend_user", "user", user_id, {
-                        "action": "unsuspended",
-                        "subscription_reactivated": False,
-                        "tier": "free"
-                    })
-                    
-                    flash("✅ User unsuspended and set to Free plan. No active subscription found.", "success")
+                    # No valid subscription window remains — but the user *was* on a
+                    # paid tier. Keep the tier and mark it cancelled so the admin sees
+                    # "Pro (Cancelled)" rather than losing the history entirely.
+                    if current_tier in ['pro', 'vip', 'business']:
+                        cursor.execute("""
+                            UPDATE users 
+                            SET suspended = FALSE,
+                                subscription_status = 'cancelled'
+                            WHERE id = %s
+                        """, (user_id,))
+                        conn.commit()
+
+                        log_admin_action("unsuspend_user", "user", user_id, {
+                            "action": "unsuspended",
+                            "subscription_reactivated": False,
+                            "tier": current_tier,
+                            "state": "cancelled",
+                        })
+
+                        flash(
+                            f"✅ User unsuspended. Kept as {current_tier.upper()} (Cancelled) — "
+                            f"their subscription window had already lapsed.",
+                            "success",
+                        )
+                    else:
+                        # Was already on free — nothing to preserve, just clear the flag.
+                        cursor.execute("""
+                            UPDATE users 
+                            SET suspended = FALSE,
+                                subscription_status = 'active'
+                            WHERE id = %s
+                        """, (user_id,))
+                        conn.commit()
+
+                        log_admin_action("unsuspend_user", "user", user_id, {
+                            "action": "unsuspended",
+                            "subscription_reactivated": False,
+                            "tier": "free",
+                        })
+
+                        flash("✅ User unsuspended and set to Free plan. No active subscription found.", "success")
             else:
                 # Fallback - just unsuspend
                 cursor.execute("""
