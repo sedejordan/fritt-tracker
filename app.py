@@ -277,6 +277,62 @@ def get_utc_now():
     """Helper function to get timezone-aware UTC datetime."""
     return datetime.now(timezone.utc)
 
+def _ensure_aware(dt):
+    """Return a timezone-aware datetime. Naive datetimes are assumed UTC."""
+    if dt is not None and dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
+def compute_display_plan(tier, status, trial_used, trial_ends_at,
+                         subscription_expiry, now):
+    """
+    Return (display_label, is_trial, is_trial_expired, is_expired).
+
+    - display_label:   human-readable plan label for admin display
+                       e.g. "Pro", "Pro (Trial)", "Pro (Trial expired)", "Pro (Expired)"
+    - is_trial:        user is currently on an active free trial
+    - is_trial_expired: trial has lapsed but user not yet downgraded
+    - is_expired:      paid subscription has lapsed but user not yet downgraded
+    """
+    tier = (tier or 'free').lower()
+    status = (status or 'active').lower()
+    now = _ensure_aware(now)
+    trial_ends_at = _ensure_aware(trial_ends_at)
+    subscription_expiry = _ensure_aware(subscription_expiry)
+
+    paid_tier = tier in ('pro', 'vip')
+
+    is_trial = bool(
+        paid_tier
+        and status == 'active'
+        and trial_used
+        and trial_ends_at
+        and trial_ends_at > now
+    )
+    trial_expired = bool(
+        paid_tier
+        and status == 'active'
+        and trial_used
+        and trial_ends_at
+        and trial_ends_at <= now
+    )
+    subscription_expired = bool(
+        paid_tier
+        and status == 'active'
+        and not trial_used
+        and subscription_expiry
+        and subscription_expiry <= now
+    )
+
+    if is_trial:
+        return (f"{tier.capitalize()} (Trial)", True, False, False)
+    if trial_expired:
+        return (f"{tier.capitalize()} (Trial expired)", False, True, True)
+    if subscription_expired:
+        return (f"{tier.capitalize()} (Expired)", False, False, True)
+    return (tier.capitalize(), False, False, False)
+
 
 def get_user_by_email(email):
     """
@@ -1856,12 +1912,14 @@ def admin_dashboard():
         pending_inquiries = cursor.fetchone()[0]
         
         cursor.execute("""
-            SELECT id, email, subscription_tier, email_verified, created_at, trial_used, trial_ends_at
-            FROM users 
-            ORDER BY created_at DESC 
+            SELECT id, email, subscription_tier, email_verified, created_at,
+                   trial_used, trial_ends_at,
+                   subscription_status, subscription_expiry
+            FROM users
+            ORDER BY created_at DESC
             LIMIT 10
         """)
-        recent_users = cursor.fetchall()
+        raw_recent_users = cursor.fetchall()
 
         cursor.execute("""
             SELECT COUNT(*) FROM users
@@ -1876,6 +1934,27 @@ def admin_dashboard():
         
     finally:
         put_db(conn)
+
+    # Enrich recent_users with display info.
+    # Raw layout (indices 0..8):
+    #   [0]=id, [1]=email, [2]=tier, [3]=verified, [4]=created_at,
+    #   [5]=trial_used, [6]=trial_ends_at, [7]=subscription_status,
+    #   [8]=subscription_expiry
+    # Enriched: [9]=display_label, [10]=is_trial, [11]=is_trial_expired, [12]=is_expired
+    now = datetime.now(timezone.utc)
+    recent_users = []
+    for row in raw_recent_users:
+        row = list(row)
+        label, is_trial, is_trial_expired, is_expired = compute_display_plan(
+            tier=row[2],
+            status=row[7],
+            trial_used=row[5],
+            trial_ends_at=row[6],
+            subscription_expiry=row[8],
+            now=now,
+        )
+        row.extend([label, is_trial, is_trial_expired, is_expired])
+        recent_users.append(tuple(row))
     
     return render_template(
         "admin/dashboard.html",
@@ -1899,20 +1978,20 @@ def admin_users():
     auth = require_admin()
     if auth:
         return auth
-    
+
     search = request.args.get("search", "")
     status = request.args.get("status", "all")
     page = int(request.args.get("page", 1))
     per_page = 20
     offset = (page - 1) * per_page
-    
+
     conn = get_db()
     try:
         cursor = conn.cursor()
-        
+
         # Build query
         query = """
-            SELECT u.id, u.email, u.email_verified, u.subscription_tier, 
+            SELECT u.id, u.email, u.email_verified, u.subscription_tier,
                 u.subscription_status, u.created_at,
                 COUNT(d.id) as doc_count,
                 EXISTS(SELECT 1 FROM admin_users a WHERE a.user_id = u.id) as is_admin,
@@ -1924,41 +2003,67 @@ def admin_users():
         """
         where_clauses = []
         params = []
-        
+
         if search:
             where_clauses.append("u.email ILIKE %s")
             params.append(f"%{search}%")
-        
+
         if status == "verified":
             where_clauses.append("u.email_verified = TRUE")
         elif status == "unverified":
             where_clauses.append("u.email_verified = FALSE")
         elif status == "flagged":
-            where_clauses.append("EXISTS(SELECT 1 FROM flagged_users f WHERE f.user_id = u.id AND f.status = 'pending')")
+            where_clauses.append(
+                "EXISTS(SELECT 1 FROM flagged_users f WHERE f.user_id = u.id AND f.status = 'pending')"
+            )
         elif status == "admin":
-            where_clauses.append("EXISTS(SELECT 1 FROM admin_users a WHERE a.user_id = u.id)")
-        
+            where_clauses.append(
+                "EXISTS(SELECT 1 FROM admin_users a WHERE a.user_id = u.id)"
+            )
+
         if where_clauses:
             query += " WHERE " + " AND ".join(where_clauses)
-        
+
         query += " GROUP BY u.id ORDER BY u.created_at DESC LIMIT %s OFFSET %s"
         params.extend([per_page, offset])
-        
+
         cursor.execute(query, params)
-        users = cursor.fetchall()
-        
+        raw_users = cursor.fetchall()
+
         # Get total count for pagination
         count_query = "SELECT COUNT(DISTINCT u.id) FROM users u"
         if where_clauses:
             count_query += " WHERE " + " AND ".join(where_clauses)
         cursor.execute(count_query, params[:-2])  # Exclude LIMIT/OFFSET
         total_users = cursor.fetchone()[0]
-        
+
         cursor.close()
-        
+
     finally:
         put_db(conn)
-    
+
+    # Enrich each row with computed display info.
+    # Raw row layout (indices 0..10):
+    #   [0]=id, [1]=email, [2]=verified, [3]=tier, [4]=sub_status,
+    #   [5]=created_at, [6]=doc_count, [7]=is_admin, [8]=is_flagged,
+    #   [9]=trial_used, [10]=trial_ends_at
+    # Enriched row appends:
+    #   [11]=display_label, [12]=is_trial, [13]=is_trial_expired, [14]=is_expired
+    now = datetime.now(timezone.utc)
+    users = []
+    for row in raw_users:
+        row = list(row)
+        label, is_trial, is_trial_expired, is_expired = compute_display_plan(
+            tier=row[3],
+            status=row[4],
+            trial_used=row[9],
+            trial_ends_at=row[10],
+            subscription_expiry=None,  # not selected here; not needed by this view
+            now=now,
+        )
+        row.extend([label, is_trial, is_trial_expired, is_expired])
+        users.append(tuple(row))
+
     return render_template(
         "admin/users.html",
         users=users,
@@ -1967,9 +2072,8 @@ def admin_users():
         per_page=per_page,
         search=search,
         status=status,
-        now=datetime.now(timezone.utc)   # ← add this
+        now=now,
     )
-
 
 @app.route("/admin/user/<int:user_id>")
 def admin_user_detail(user_id):
@@ -1977,13 +2081,11 @@ def admin_user_detail(user_id):
     auth = require_admin()
     if auth:
         return auth
-    
+
     conn = get_db()
     try:
         cursor = conn.cursor()
-        
-        # Make sure user[5] (subscription_expiry) is timezone-aware
-        # When fetching user data, ensure expiry is timezone-aware
+
         cursor.execute("""
             SELECT u.id, u.email, u.email_verified, u.subscription_tier,
                 u.subscription_status, u.subscription_expiry, u.created_at,
@@ -1996,15 +2098,15 @@ def admin_user_detail(user_id):
         """, (user_id,))
         user = cursor.fetchone()
 
+        if not user:
+            abort(404)
+
         # Convert expiry to timezone-aware if needed
-        if user and user[5] and user[5].tzinfo is None:
+        if user[5] and user[5].tzinfo is None:
             user = list(user)
             user[5] = user[5].replace(tzinfo=timezone.utc)
             user = tuple(user)
-        
-        if not user:
-            abort(404)
-        
+
         # Get user documents - just get the raw data
         cursor.execute("""
             SELECT id, title, expiry_date
@@ -2013,8 +2115,7 @@ def admin_user_detail(user_id):
             ORDER BY expiry_date ASC
         """, (user_id,))
         raw_documents = cursor.fetchall()
-        
-        # Process documents through get_status() for consistency
+
         documents = []
         for doc_id, title, expiry_date in raw_documents:
             days_left, status, color, icon = get_status(expiry_date)
@@ -2025,9 +2126,9 @@ def admin_user_detail(user_id):
                 'days_left': days_left,
                 'status': status,
                 'color': color,
-                'icon': icon
+                'icon': icon,
             })
-        
+
         # Get user activity logs
         cursor.execute("""
             SELECT action, details, created_at
@@ -2037,7 +2138,7 @@ def admin_user_detail(user_id):
             LIMIT 50
         """, (user_id,))
         activity_logs = cursor.fetchall()
-        
+
         # Get audit logs for this user
         cursor.execute("""
             SELECT action, target_type, details, created_at
@@ -2047,21 +2148,36 @@ def admin_user_detail(user_id):
             LIMIT 20
         """, (user_id,))
         audit_logs = cursor.fetchall()
-        
+
         cursor.close()
-        
+
     finally:
         put_db(conn)
-    
+
     now = datetime.now(timezone.utc)
-    
+
+    # Enrich user row with computed display info.
+    # Raw layout: [0..10] same as above
+    # Appended:   [11]=display_label, [12]=is_trial, [13]=is_trial_expired, [14]=is_expired
+    user = list(user)
+    label, is_trial, is_trial_expired, is_expired = compute_display_plan(
+        tier=user[3],
+        status=user[4],
+        trial_used=user[9],
+        trial_ends_at=user[10],
+        subscription_expiry=user[5],
+        now=now,
+    )
+    user.extend([label, is_trial, is_trial_expired, is_expired])
+    user = tuple(user)
+
     return render_template(
         "admin/user_detail.html",
         user=user,
         documents=documents,
         activity_logs=activity_logs,
         audit_logs=audit_logs,
-        now=now
+        now=now,
     )
 
 @app.route("/admin/user/<int:user_id>/action", methods=["POST"])
