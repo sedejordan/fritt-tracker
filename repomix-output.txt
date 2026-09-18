@@ -6748,119 +6748,6 @@ File: templates/admin/payment_plans.html
 64: {% endblock %}
 
 ================
-File: templates/admin/users.html
-================
-  1: {% extends "admin/admin_base.html" %}
-  2: 
-  3: {% block admin_title %}Users{% endblock %}
-  4: 
-  5: {% block admin_content %}
-  6: <div class="flex justify-between items-center mb-6">
-  7:     <h1 class="text-2xl font-bold">All Users</h1>
-  8:     <span class="text-sm text-gray-500">Total: {{ total_users }}</span>
-  9: </div>
- 10: 
- 11: <!-- Filters -->
- 12: <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
- 13:     <form method="GET" class="flex flex-wrap gap-3">
- 14:         <input type="text" name="search" value="{{ search }}" 
- 15:                placeholder="Search by email..." 
- 16:                class="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
- 17:         
- 18:         <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
- 19:             <option value="all" {% if status == 'all' %}selected{% endif %}>All Users</option>
- 20:             <option value="verified" {% if status == 'verified' %}selected{% endif %}>Verified</option>
- 21:             <option value="unverified" {% if status == 'unverified' %}selected{% endif %}>Unverified</option>
- 22:             <option value="flagged" {% if status == 'flagged' %}selected{% endif %}>Flagged</option>
- 23:             <option value="admin" {% if status == 'admin' %}selected{% endif %}>Admins</option>
- 24:         </select>
- 25:         
- 26:         <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
- 27:             Filter
- 28:         </button>
- 29:         
- 30:         <a href="{{ url_for('admin_users') }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
- 31:             Clear
- 32:         </a>
- 33:     </form>
- 34: </div>
- 35: 
- 36: <!-- Users Table -->
- 37: <div class="bg-white rounded-xl shadow-sm overflow-hidden">
- 38:     <div class="overflow-x-auto">
- 39:         <table class="w-full text-sm">
- 40:             <thead>
- 41:                 <tr class="bg-gray-50 text-left text-gray-500 border-b">
- 42:                     <th class="px-6 py-3">User</th>
- 43:                     <th class="px-6 py-3">Plan</th>
- 44:                     <th class="px-6 py-3">Docs</th>
- 45:                     <th class="px-6 py-3">Status</th>
- 46:                     <th class="px-6 py-3">Joined</th>
- 47:                     <th class="px-6 py-3">Actions</th>
- 48:                 </tr>
- 49:             </thead>
- 50:             <tbody>
- 51:                 {% for user in users %}
- 52:                 <tr class="border-b border-gray-100 hover:bg-gray-50">
- 53:                     <td class="px-6 py-3">
- 54:                         <div class="font-medium">{{ user[1] }}</div>
- 55:                         <div class="text-xs text-gray-500">ID: {{ user[0] }}</div>
- 56:                     </td>
- 57:                     <td class="px-6 py-3">
- 58:                         <span class="px-2 py-1 rounded-full text-xs 
- 59:                             {% elif user[3] == 'pro' %}bg-blue-100 text-blue-700
- 60:                             {% elif user[3] == 'suspended' %}bg-red-100 text-red-700
- 61:                             {% else %}bg-gray-100 text-gray-700{% endif %}">
- 62:                             {{ user[3]|capitalize }}
- 63:                         </span>
- 64:                         {% if user[7] %}
- 65:                         <span class="ml-1 text-xs text-purple-600">👑</span>
- 66:                         {% endif %}
- 67:                         {% if user[8] %}
- 68:                         <span class="ml-1 text-xs text-red-600">🚩</span>
- 69:                         {% endif %}
- 70:                     </td>
- 71:                     <td class="px-6 py-3">{{ user[6] or 0 }}</td>
- 72:                     <td class="px-6 py-3">
- 73:                         {% if user[2] %}
- 74:                         <span class="text-green-600">✅ Verified</span>
- 75:                         {% else %}
- 76:                         <span class="text-yellow-600">⏳ Unverified</span>
- 77:                         {% endif %}
- 78:                     </td>
- 79:                     <td class="px-6 py-3 text-gray-500">{{ user[5].strftime('%Y-%m-%d') }}</td>
- 80:                     <td class="px-6 py-3">
- 81:                         <a href="{{ url_for('admin_user_detail', user_id=user[0]) }}" 
- 82:                            class="text-blue-600 hover:underline text-xs">View</a>
- 83:                     </td>
- 84:                 </tr>
- 85:                 {% endfor %}
- 86:             </tbody>
- 87:         </table>
- 88:     </div>
- 89:     
- 90:     <!-- Pagination -->
- 91:     {% if total_users > per_page %}
- 92:     <div class="px-6 py-4 border-t flex justify-between items-center">
- 93:         <div class="text-sm text-gray-500">
- 94:             Showing {{ (page-1)*per_page + 1 }} - {{ [page*per_page, total_users]|min }} of {{ total_users }}
- 95:         </div>
- 96:         <div class="flex gap-2">
- 97:             {% if page > 1 %}
- 98:             <a href="{{ url_for('admin_users', page=page-1, search=search, status=status) }}" 
- 99:                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">Previous</a>
-100:             {% endif %}
-101:             {% if page * per_page < total_users %}
-102:             <a href="{{ url_for('admin_users', page=page+1, search=search, status=status) }}" 
-103:                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">Next</a>
-104:             {% endif %}
-105:         </div>
-106:     </div>
-107:     {% endif %}
-108: </div>
-109: {% endblock %}
-
-================
 File: templates/legal/terms.html
 ================
   1: {% extends "base.html" %}
@@ -8666,6 +8553,119 @@ File: templates/resources/document-expiry-tracking-checklist.html
 512: {% endblock %}
 
 ================
+File: templates/admin/users.html
+================
+  1: {% extends "admin/admin_base.html" %}
+  2: 
+  3: {% block admin_title %}Users{% endblock %}
+  4: 
+  5: {% block admin_content %}
+  6: <div class="flex justify-between items-center mb-6">
+  7:     <h1 class="text-2xl font-bold">All Users</h1>
+  8:     <span class="text-sm text-gray-500">Total: {{ total_users }}</span>
+  9: </div>
+ 10: 
+ 11: <!-- Filters -->
+ 12: <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+ 13:     <form method="GET" class="flex flex-wrap gap-3">
+ 14:         <input type="text" name="search" value="{{ search }}" 
+ 15:                placeholder="Search by email..." 
+ 16:                class="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+ 17:         
+ 18:         <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+ 19:             <option value="all" {% if status == 'all' %}selected{% endif %}>All Users</option>
+ 20:             <option value="verified" {% if status == 'verified' %}selected{% endif %}>Verified</option>
+ 21:             <option value="unverified" {% if status == 'unverified' %}selected{% endif %}>Unverified</option>
+ 22:             <option value="flagged" {% if status == 'flagged' %}selected{% endif %}>Flagged</option>
+ 23:             <option value="admin" {% if status == 'admin' %}selected{% endif %}>Admins</option>
+ 24:         </select>
+ 25:         
+ 26:         <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+ 27:             Filter
+ 28:         </button>
+ 29:         
+ 30:         <a href="{{ url_for('admin_users') }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+ 31:             Clear
+ 32:         </a>
+ 33:     </form>
+ 34: </div>
+ 35: 
+ 36: <!-- Users Table -->
+ 37: <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+ 38:     <div class="overflow-x-auto">
+ 39:         <table class="w-full text-sm">
+ 40:             <thead>
+ 41:                 <tr class="bg-gray-50 text-left text-gray-500 border-b">
+ 42:                     <th class="px-6 py-3">User</th>
+ 43:                     <th class="px-6 py-3">Plan</th>
+ 44:                     <th class="px-6 py-3">Docs</th>
+ 45:                     <th class="px-6 py-3">Status</th>
+ 46:                     <th class="px-6 py-3">Joined</th>
+ 47:                     <th class="px-6 py-3">Actions</th>
+ 48:                 </tr>
+ 49:             </thead>
+ 50:             <tbody>
+ 51:                 {% for user in users %}
+ 52:                 <tr class="border-b border-gray-100 hover:bg-gray-50">
+ 53:                     <td class="px-6 py-3">
+ 54:                         <div class="font-medium">{{ user[1] }}</div>
+ 55:                         <div class="text-xs text-gray-500">ID: {{ user[0] }}</div>
+ 56:                     </td>
+ 57:                     <td class="px-6 py-3">
+ 58:                         <span class="px-2 py-1 rounded-full text-xs 
+ 59:                             {% if user[3] == 'pro' %}bg-blue-100 text-blue-700
+ 60:                             {% elif user[3] == 'suspended' %}bg-red-100 text-red-700
+ 61:                             {% else %}bg-gray-100 text-gray-700{% endif %}">
+ 62:                             {{ user[3]|capitalize }}
+ 63:                         </span>
+ 64:                         {% if user[7] %}
+ 65:                         <span class="ml-1 text-xs text-purple-600">👑</span>
+ 66:                         {% endif %}
+ 67:                         {% if user[8] %}
+ 68:                         <span class="ml-1 text-xs text-red-600">🚩</span>
+ 69:                         {% endif %}
+ 70:                     </td>
+ 71:                     <td class="px-6 py-3">{{ user[6] or 0 }}</td>
+ 72:                     <td class="px-6 py-3">
+ 73:                         {% if user[2] %}
+ 74:                         <span class="text-green-600">✅ Verified</span>
+ 75:                         {% else %}
+ 76:                         <span class="text-yellow-600">⏳ Unverified</span>
+ 77:                         {% endif %}
+ 78:                     </td>
+ 79:                     <td class="px-6 py-3 text-gray-500">{{ user[5].strftime('%Y-%m-%d') }}</td>
+ 80:                     <td class="px-6 py-3">
+ 81:                         <a href="{{ url_for('admin_user_detail', user_id=user[0]) }}" 
+ 82:                            class="text-blue-600 hover:underline text-xs">View</a>
+ 83:                     </td>
+ 84:                 </tr>
+ 85:                 {% endfor %}
+ 86:             </tbody>
+ 87:         </table>
+ 88:     </div>
+ 89:     
+ 90:     <!-- Pagination -->
+ 91:     {% if total_users > per_page %}
+ 92:     <div class="px-6 py-4 border-t flex justify-between items-center">
+ 93:         <div class="text-sm text-gray-500">
+ 94:             Showing {{ (page-1)*per_page + 1 }} - {{ [page*per_page, total_users]|min }} of {{ total_users }}
+ 95:         </div>
+ 96:         <div class="flex gap-2">
+ 97:             {% if page > 1 %}
+ 98:             <a href="{{ url_for('admin_users', page=page-1, search=search, status=status) }}" 
+ 99:                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">Previous</a>
+100:             {% endif %}
+101:             {% if page * per_page < total_users %}
+102:             <a href="{{ url_for('admin_users', page=page+1, search=search, status=status) }}" 
+103:                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">Next</a>
+104:             {% endif %}
+105:         </div>
+106:     </div>
+107:     {% endif %}
+108: </div>
+109: {% endblock %}
+
+================
 File: templates/resources/contract-renewal-tracking.html
 ================
   1: {% extends "base.html" %}
@@ -9506,11 +9506,11 @@ File: templates/admin/user_detail.html
  29:             <div>
  30:                 <span class="text-gray-500">Plan:</span>
  31:                 <span class="px-2 py-1 rounded-full text-xs 
- 32:                     {% elif user[3] == 'pro' %}bg-blue-100 text-blue-700
+ 32:                     {% if user[3] == 'pro' %}bg-blue-100 text-blue-700
  33:                     {% elif user[3] == 'suspended' %}bg-red-100 text-red-700
  34:                     {% else %}bg-gray-100 text-gray-700{% endif %}">
- 35:                     {% user[3] == 'pro' and user[4] == 'active' %}
- 36:                         {% if user[3] == 'pro' and (user[5] is none or user[5] < now) %}
+ 35:                     {% if user[3] == 'pro' and user[4] == 'active' %}
+ 36:                         {% if user[5] is none or user[5] < now %}
  37:                             {{ user[3]|capitalize }} (Trial)
  38:                         {% else %}
  39:                             {{ user[3]|capitalize }}
