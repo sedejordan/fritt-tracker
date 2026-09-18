@@ -55,10 +55,10 @@
                         <div class="text-xs text-gray-500">ID: {{ user[0] }}</div>
                     </td>
                     <td class="px-6 py-3">
-                        <span class="px-2 py-1 rounded-full text-xs 
+                        <span class="px-2 py-1 rounded-full text-xs">
                             {% elif user[3] == 'pro' %}bg-blue-100 text-blue-700
                             {% elif user[3] == 'suspended' %}bg-red-100 text-red-700
-                            {% else %}bg-gray-100 text-gray-700{% endif %}">
+                            {% else %}bg-gray-100 text-gray-700{% endif %}
                             {{ user[3]|capitalize }}
                         </span>
                         {% if user[7] %}
