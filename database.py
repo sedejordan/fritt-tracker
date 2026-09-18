@@ -443,6 +443,13 @@ def init_db():
             except Exception as e:
                 print(f"ℹ️ Could not update grace_period_end: {e}")
 
+
+            try:
+                cursor.execute("UPDATE users SET subscription_tier = 'pro' WHERE subscription_tier = 'vip';")
+                print("✅Updated vip to pro")
+            except Exception as e:
+                print(f"ℹ️ Could not update vip to pro: {e}")
+
             # ---------------------------------------------------------------------
             # DOCUMENTS TABLE
             # ---------------------------------------------------------------------

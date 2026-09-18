@@ -1856,12 +1856,21 @@ def admin_dashboard():
         pending_inquiries = cursor.fetchone()[0]
         
         cursor.execute("""
-            SELECT id, email, subscription_tier, email_verified, created_at
+            SELECT id, email, subscription_tier, email_verified, created_at, trial_used, trial_ends_at
             FROM users 
             ORDER BY created_at DESC 
             LIMIT 10
         """)
         recent_users = cursor.fetchall()
+
+        cursor.execute("""
+            SELECT COUNT(*) FROM users
+            WHERE trial_used = TRUE
+            AND trial_ends_at IS NOT NULL
+            AND trial_ends_at > CURRENT_TIMESTAMP
+            AND subscription_status = 'active'
+        """)
+        trial_count = cursor.fetchone()[0]
         
         cursor.close()
         
@@ -1878,7 +1887,9 @@ def admin_dashboard():
         expiring_soon=expiring_soon,
         pending_flags=pending_flags,
         pending_inquiries=pending_inquiries,
-        recent_users=recent_users
+        recent_users=recent_users,
+        trial_count=trial_count,
+        now=datetime.now(timezone.utc)
     )
 
 
@@ -1902,10 +1913,12 @@ def admin_users():
         # Build query
         query = """
             SELECT u.id, u.email, u.email_verified, u.subscription_tier, 
-                   u.subscription_status, u.created_at,
-                   COUNT(d.id) as doc_count,
-                   EXISTS(SELECT 1 FROM admin_users a WHERE a.user_id = u.id) as is_admin,
-                   EXISTS(SELECT 1 FROM flagged_users f WHERE f.user_id = u.id AND f.status = 'pending') as is_flagged
+                u.subscription_status, u.created_at,
+                COUNT(d.id) as doc_count,
+                EXISTS(SELECT 1 FROM admin_users a WHERE a.user_id = u.id) as is_admin,
+                EXISTS(SELECT 1 FROM flagged_users f WHERE f.user_id = u.id AND f.status = 'pending') as is_flagged,
+                u.trial_used,
+                u.trial_ends_at
             FROM users u
             LEFT JOIN documents d ON d.user_id = u.id
         """
@@ -1953,7 +1966,8 @@ def admin_users():
         page=page,
         per_page=per_page,
         search=search,
-        status=status
+        status=status,
+        now=datetime.now(timezone.utc)   # ← add this
     )
 
 
@@ -1974,7 +1988,9 @@ def admin_user_detail(user_id):
             SELECT u.id, u.email, u.email_verified, u.subscription_tier,
                 u.subscription_status, u.subscription_expiry, u.created_at,
                 EXISTS(SELECT 1 FROM admin_users a WHERE a.user_id = u.id) as is_admin,
-                EXISTS(SELECT 1 FROM flagged_users f WHERE f.user_id = u.id AND f.status = 'pending') as is_flagged
+                EXISTS(SELECT 1 FROM flagged_users f WHERE f.user_id = u.id AND f.status = 'pending') as is_flagged,
+                u.trial_used,
+                u.trial_ends_at
             FROM users u
             WHERE u.id = %s
         """, (user_id,))

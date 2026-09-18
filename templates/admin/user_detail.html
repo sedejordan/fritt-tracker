@@ -32,12 +32,8 @@
                     {% if user[3] == 'pro' %}bg-blue-100 text-blue-700
                     {% elif user[3] == 'suspended' %}bg-red-100 text-red-700
                     {% else %}bg-gray-100 text-gray-700{% endif %}">
-                    {% if user[3] == 'pro' and user[4] == 'active' %}
-                        {% if user[5] is none or user[5] < now %}
-                            {{ user[3]|capitalize }} (Trial)
-                        {% else %}
-                            {{ user[3]|capitalize }}
-                        {% endif %}
+                    {% if user[3] in ['pro', 'vip'] and user[4] == 'active' and user[9] and user[10] and user[10] > now %}
+                        {{ user[3]|capitalize }} <span class="font-semibold">(Trial)</span>
                     {% else %}
                         {{ user[3]|capitalize }}
                     {% endif %}
