@@ -4558,6 +4558,34 @@ RESOURCE_ARTICLES = [
         "category": "Guide",
         "read_time": "6 min read",
     },
+    {
+        "slug": "excel-document-expiry-tracker-vs-dedicated-tracker",
+        "title": "Excel Document Expiry Tracker: Why Spreadsheets Fail and What to Use Instead",
+        "excerpt": "Tracking expiry dates in a spreadsheet? Learn how to set one up, where it breaks down, and when to switch to a dedicated tracker.",
+        "category": "Guide",
+        "read_time": "7 min read",
+    },
+    {
+        "slug": "employee-document-expiry-tracking",
+        "title": "How to Track Employee Document Expiry: Right to Work, Licences and Certifications",
+        "excerpt": "A practical guide for managers and HR on tracking employee document expiry, from right to work checks to safety certificates and licences.",
+        "category": "Compliance",
+        "read_time": "8 min read",
+    },
+    {
+        "slug": "nigeria-business-compliance-checklist",
+        "title": "Nigerian Business Compliance Checklist: Documents and Filings to Renew Every Year",
+        "excerpt": "A practical checklist of the documents, filings and certificates Nigerian businesses need to keep current, from CAC annual returns to vehicle papers.",
+        "category": "Compliance",
+        "read_time": "8 min read",
+    },
+    {
+        "slug": "what-happens-if-business-licence-expires",
+        "title": "What Happens If a Business Licence or Permit Expires?",
+        "excerpt": "The consequences of an expired business licence, permit or certificate in the US, UK and Nigeria, with real examples and how to avoid a lapse.",
+        "category": "Compliance",
+        "read_time": "7 min read",
+    },
 ]
 
 USE_CASES = [
@@ -4720,7 +4748,15 @@ def resource_insurance_gaps():
 def resource_document_checklist():
     return render_template(
         "resources/document-expiry-tracking-checklist.html", articles=RESOURCE_ARTICLES
-    )
+    
+
+@app.route("/resources/<slug>")
+@limiter.exempt
+def resource_article(slug):
+    allowed = {a["slug"] for a in RESOURCE_ARTICLES}
+    if slug not in allowed:
+        abort(404)
+    return render_template(f"resources/{slug}.html", articles=RESOURCE_ARTICLES)
 
 
 # ---------------------------------------------------------------------------
