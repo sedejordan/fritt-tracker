@@ -1,28 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>What Happens If a Business Licence or Permit Expires?</title>
-<meta name="description" content="The consequences of an expired business licence, permit or certificate in the US, UK and Nigeria, real examples of penalties, and how to avoid a lapse.">
-<link rel="canonical" href="https://tracker.fritt.org/resources/what-happens-if-business-licence-expires">
+{% extends "base.html" %}
+{% block title %}What Happens If a Business Licence or Permit Expires? | Fritt Tracker{% endblock %}
+{% block meta_description %}The consequences of an expired business licence, permit or certificate in the US, UK and Nigeria, real examples of penalties, and how to avoid a lapse.{% endblock %}
+{% block canonical %}https://tracker.fritt.org/resources/what-happens-if-business-licence-expires{% endblock %}
+
+{% block structured_data %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "What Happens If a Business Licence or Permit Expires?",
   "description": "The consequences of an expired business licence, permit or certificate in the US, UK and Nigeria, real examples of penalties, and how to avoid a lapse.",
-  "datePublished": "2026-09-21",
-  "author": {
-    "@type": "Organization",
-    "name": "Fritt Tracker"
-  },
+  "author": { "@type": "Organization", "name": "Fritt Tracker", "url": "https://tracker.fritt.org/" },
   "publisher": {
     "@type": "Organization",
     "name": "Fritt Tracker",
-    "url": "https://tracker.fritt.org"
+    "logo": { "@type": "ImageObject", "url": "https://tracker.fritt.org/static/fritt-tracker-logo.svg" }
   },
-  "mainEntityOfPage": "https://tracker.fritt.org/resources/what-happens-if-business-licence-expires"
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://tracker.fritt.org/resources/what-happens-if-business-licence-expires" },
+  "datePublished": "2026-09-21"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Resources", "item": "https://tracker.fritt.org/resources" },
+    { "@type": "ListItem", "position": 2, "name": "What Happens If a Business Licence Expires?", "item": "https://tracker.fritt.org/resources/what-happens-if-business-licence-expires" }
+  ]
 }
 </script>
 <script type="application/ld+json">
@@ -57,112 +62,165 @@
   ]
 }
 </script>
-<style>
-body{margin:0;background:#fff;color:#1c2430;font:18px/1.75 Georgia,"Times New Roman"}
-header{border-bottom:1px solid #dfe3e8;padding:14px 0}
-header div,main{width:min(720px,92vw);margin:0 auto}
-header a{font:700 1rem "Helvetica Neue",Helvetica,Arial;color:#0b5cad}
-h1{font:700 2.2rem/1.2 "Helvetica Neue",Helvetica,Arial;margin:40px 0 12px}
-h2{font:700 1.5rem/1.3 "Helvetica Neue",Helvetica,Arial;margin:44px 0 10px}
-h3{font:700 1.1rem/1.4 "Helvetica Neue",Helvetica,Arial;margin:26px 0 4px}
-p{margin:0 0 18px}
-ul,ol{margin:0 0 18px;padding:0 0 0 24px}
-li{margin:0 0 8px}
-a{color:#0b5cad}
-.byline{font:0.95rem "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 28px}
-.callout{background:#eef4fb;border:1px solid #cfe0f3;padding:18px 20px;margin:28px 0}
-.callout p{margin:0}
-.tw{overflow:auto;margin:0 0 24px}
-table{width:100%;font:0.92rem/1.5 "Helvetica Neue",Helvetica,Arial}
-th,td{border:1px solid #dfe3e8;padding:10px 12px;text-align:left;vertical-align:top}
-th{background:#f3f5f7}
-code{font:0.88em Consolas,Menlo;background:#f3f5f7;padding:2px 6px}
-.cta{background:#0b5cad;color:#fff;padding:28px;margin:52px 0 24px}
-.cta h2{margin:0 0 8px;color:#fff}
-.cta p{margin:0 0 18px}
-.cta a{display:table;background:#fff;color:#0b5cad;padding:12px 22px;font:700 1rem "Helvetica Neue",Helvetica,Arial}
-.note{font:0.85rem/1.6 "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 48px}
-</style>
-</head>
-<body>
-<header><div><a href="https://tracker.fritt.org">Fritt Tracker</a></div></header>
-<main>
-<article>
-<h1>What Happens If a Business Licence or Permit Expires?</h1>
-<p class="byline">By the Fritt Tracker team</p>
+{% endblock %}
 
-<p>A business licence usually does not fail with a bang. The date passes, nobody notices, and the problem shows up later as a fine, a rejected tender, a stopped job or an insurer that disputes a claim. The consequences depend on the document, the authority and the country, but the pattern is consistent: expired paperwork is far more expensive than renewed paperwork.</p>
-<p>This guide explains what typically happens when a business licence (spelled license in the US), permit or certificate lapses, gives real examples, and shows how to stop it happening to you.</p>
+{% block content %}
 
-<h2>The short answer</h2>
-<p>It depends on what expired and who issued it. In general, an expired document leads to one or more of four things:</p>
-<ul>
-<li><strong>Penalties and fines.</strong> Late fees, fixed penalties or, in serious cases, criminal offences.</li>
-<li><strong>Restrictions on operating.</strong> Authorities can require you to stop the regulated activity until the document is renewed.</li>
-<li><strong>Commercial loss.</strong> Clients and procurement teams ask for valid certificates. An expired one can disqualify a bid or pause a contract.</li>
-<li><strong>Extra cost and time.</strong> Reinstatement fees, rush processing and the staff hours needed to sort it out.</li>
-</ul>
+<article class="max-w-3xl mx-auto">
+  <p class="text-xs text-muted mb-2">Compliance · 7 min read</p>
+  <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">
+    What Happens If a Business Licence or Permit Expires?
+  </h1>
+  <p class="text-lg text-muted mb-8">
+    The consequences of an expired business licence, permit or certificate in the US, UK and Nigeria,
+    real examples of penalties, and how to avoid a lapse.
+  </p>
 
-<h2>Real examples from Nigeria, the UK and the US</h2>
-<h3>Nigeria: CAC annual returns</h3>
-<p>Companies must file annual returns every year. The CAC has said penalties can apply to both the company and its directors or officers, and it has published notices about striking off companies that fall behind, including a notice in July 2026 that gave listed companies 90 days to file.</p>
-<h3>UK: right to work checks and Companies House</h3>
-<p>An employer who employs someone without the right to work, and cannot show a valid statutory excuse, can face a civil penalty of up to &pound;45,000 per worker for a first breach. Separately, UK companies must file a confirmation statement with Companies House at least once every 12 months. Failing to file is an offence, and the registrar can begin action to strike the company off the register.</p>
-<h3>US: state and local licences, contractor licences and insurance</h3>
-<p>In the US the rules vary by state, county and city. Late renewal of a business license commonly brings late fees, and operating without a current license can lead to fines. In some states, contractors working with a lapsed licence can face fines or difficulty collecting payment. Many commercial clients also require a current certificate of insurance before your crew can start work.</p>
+  <p class="text-ink mb-4">
+    A business licence usually does not fail with a bang. The date passes, nobody notices, and the problem
+    shows up later as a fine, a rejected tender, a stopped job or an insurer that disputes a claim. The
+    consequences depend on the document, the authority and the country, but the pattern is consistent:
+    expired paperwork is far more expensive than renewed paperwork.
+  </p>
+  <p class="text-ink mb-6">
+    This guide explains what typically happens when a business licence (spelled license in the US), permit
+    or certificate lapses, gives real examples, and shows how to stop it happening to you.
+  </p>
 
-<h2>The costs people forget</h2>
-<ul>
-<li>Reinstatement or late fees on top of the normal renewal fee</li>
-<li>Days or weeks of lost work while the renewal is processed</li>
-<li>Disqualified bids and lost contracts</li>
-<li>Claims that may be challenged if a required licence or certificate had lapsed</li>
-<li>Senior time spent on damage control instead of running the business</li>
-</ul>
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">The short answer</h2>
+  <p class="text-ink mb-4">
+    It depends on what expired and who issued it. In general, an expired document leads to one or more of
+    four things:
+  </p>
+  <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+    <li><strong>Penalties and fines.</strong> Late fees, fixed penalties or, in serious cases, criminal offences.</li>
+    <li><strong>Restrictions on operating.</strong> Authorities can require you to stop the regulated activity until the document is renewed.</li>
+    <li><strong>Commercial loss.</strong> Clients and procurement teams ask for valid certificates. An expired one can disqualify a bid or pause a contract.</li>
+    <li><strong>Extra cost and time.</strong> Reinstatement fees, rush processing and the staff hours needed to sort it out.</li>
+  </ul>
 
-<h2>Why licences expire without anyone noticing</h2>
-<ul>
-<li>The documents are spread across people, drawers, inboxes and online portals.</li>
-<li>Each one has a different renewal cycle: annual, every two years, every five years.</li>
-<li>The one person who knew the dates has moved on.</li>
-<li>Renewals take longer than expected, so a reminder that arrives at the last minute is too late.</li>
-<li>Reminders live in one calendar that nobody else can see.</li>
-</ul>
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Real examples from Nigeria, the UK and the US</h2>
 
-<h2>How to avoid a lapse</h2>
-<ol>
-<li>Put every licence, permit, certificate and insurance policy in one list.</li>
-<li>Record the expiry date, the authority, the fee and the person responsible.</li>
-<li>Work backward from processing time. If renewal takes a month, your first reminder should arrive at least two months before expiry.</li>
-<li>Send reminders to a named person and a backup.</li>
-<li>Save proof of each renewal and update the next expiry date immediately.</li>
-</ol>
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">Nigeria: CAC annual returns</h3>
+  <p class="text-ink mb-4">
+    Companies must file annual returns every year. The CAC has said penalties can apply to both the company
+    and its directors or officers, and it has published notices about striking off companies that fall
+    behind, including a notice in July 2026 that gave listed companies 90 days to file.
+  </p>
 
-<h2>What to do if something has already expired</h2>
-<ol>
-<li>Confirm the exact status with the issuing authority. Do not assume.</li>
-<li>Find out whether you can continue the regulated activity while the renewal is pending, and get the answer in writing.</li>
-<li>Submit the renewal or reinstatement application immediately and keep the receipt.</li>
-<li>If a penalty notice has already arrived, get advice from a qualified professional before you respond.</li>
-</ol>
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">UK: right to work checks and Companies House</h3>
+  <p class="text-ink mb-4">
+    An employer who employs someone without the right to work, and cannot show a valid statutory excuse,
+    can face a civil penalty of up to &pound;45,000 per worker for a first breach. Separately, UK companies
+    must file a confirmation statement with Companies House at least once every 12 months. Failing to file
+    is an offence, and the registrar can begin action to strike the company off the register.
+  </p>
 
-<h2>How Fritt Tracker helps</h2>
-<p>Fritt Tracker gives you one dashboard for every licence, permit, certificate and policy. Add the expiry date and get reminders before it lapses, then search and filter to see what is due next. The free plan covers up to 20 documents.</p>
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">US: state and local licences, contractor licences and insurance</h3>
+  <p class="text-ink mb-6">
+    In the US the rules vary by state, county and city. Late renewal of a business license commonly brings
+    late fees, and operating without a current license can lead to fines. In some states, contractors working
+    with a lapsed licence can face fines or difficulty collecting payment. Many commercial clients also
+    require a current certificate of insurance before your crew can start work.
+  </p>
 
-<h2>Frequently asked questions</h2>
-<h3>Can I keep trading while my licence renewal is pending?</h3>
-<p>It depends on the licence and the authority. Some authorities treat a submitted renewal as enough while it is processed, and others do not. Ask the issuing body and get the answer in writing.</p>
-<h3>How early should I renew a business licence?</h3>
-<p>Start early enough to cover the processing time plus a buffer. Many businesses set reminders at 90, 60 and 30 days before expiry, and longer for licences that need inspections or supporting documents.</p>
-<h3>What documents should a small business track for expiry?</h3>
-<p>Business registration filings, operating licences and permits, tax certificates, insurance policies, professional and safety certificates for staff, vehicle papers, and lease and contract end dates.</p>
-<div class="cta">
-<h2>Catch every expiry date before it costs you</h2>
-<p>Add your licences, permits and certificates to Fritt Tracker and get reminders in time to renew. Free for up to 20 documents.</p>
-<a href="https://tracker.fritt.org">Start tracking for free</a>
-</div>
-<p class="note">This article is general information, not legal advice. Rules differ by authority and change over time, so confirm details with the issuing body.</p>
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">The costs people forget</h2>
+  <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+    <li>Reinstatement or late fees on top of the normal renewal fee</li>
+    <li>Days or weeks of lost work while the renewal is processed</li>
+    <li>Disqualified bids and lost contracts</li>
+    <li>Claims that may be challenged if a required licence or certificate had lapsed</li>
+    <li>Senior time spent on damage control instead of running the business</li>
+  </ul>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Why licences expire without anyone noticing</h2>
+  <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+    <li>The documents are spread across people, drawers, inboxes and online portals.</li>
+    <li>Each one has a different renewal cycle: annual, every two years, every five years.</li>
+    <li>The one person who knew the dates has moved on.</li>
+    <li>Renewals take longer than expected, so a reminder that arrives at the last minute is too late.</li>
+    <li>Reminders live in one calendar that nobody else can see.</li>
+  </ul>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">How to avoid a lapse</h2>
+  <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+    <li>Put every licence, permit, certificate and insurance policy in one list.</li>
+    <li>Record the expiry date, the authority, the fee and the person responsible.</li>
+    <li>Work backward from processing time. If renewal takes a month, your first reminder should arrive at least two months before expiry.</li>
+    <li>Send reminders to a named person and a backup.</li>
+    <li>Save proof of each renewal and update the next expiry date immediately.</li>
+  </ol>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">What to do if something has already expired</h2>
+  <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+    <li>Confirm the exact status with the issuing authority. Do not assume.</li>
+    <li>Find out whether you can continue the regulated activity while the renewal is pending, and get the answer in writing.</li>
+    <li>Submit the renewal or reinstatement application immediately and keep the receipt.</li>
+    <li>If a penalty notice has already arrived, get advice from a qualified professional before you respond.</li>
+  </ol>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">How Fritt Tracker helps</h2>
+  <p class="text-ink mb-6">
+    Fritt Tracker gives you one dashboard for every licence, permit, certificate and policy. Add the expiry
+    date and get reminders before it lapses, then search and filter to see what is due next. The free plan
+    covers up to 20 documents.
+  </p>
+
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+    <h3 class="font-display font-bold text-lg mb-2">Catch every expiry date before it costs you</h3>
+    <p class="text-sm text-ink mb-4">
+      Add your licences, permits and certificates to Fritt Tracker and get reminders in time to renew.
+      Free for up to 20 documents.
+    </p>
+    <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+      Start tracking for free →
+    </a>
+  </div>
+
+  <section class="mt-12">
+    <h2 class="font-display font-bold text-2xl mt-8 mb-4">Frequently asked questions</h2>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">Can I keep trading while my licence renewal is pending?</summary>
+      <p class="text-sm text-ink mt-3">
+        It depends on the licence and the authority. Some authorities treat a submitted renewal as enough
+        while it is processed, and others do not. Ask the issuing body and get the answer in writing.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">How early should I renew a business licence?</summary>
+      <p class="text-sm text-ink mt-3">
+        Start early enough to cover the processing time plus a buffer. Many businesses set reminders at 90,
+        60 and 30 days before expiry, and longer for licences that need inspections or supporting documents.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">What documents should a small business track for expiry?</summary>
+      <p class="text-sm text-ink mt-3">
+        Business registration filings, operating licences and permits, tax certificates, insurance policies,
+        professional and safety certificates for staff, vehicle papers, and lease and contract end dates.
+      </p>
+    </details>
+  </section>
+
+  <div class="mt-12 pt-8 border-t border-line">
+    <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>
+    <div class="grid sm:grid-cols-2 gap-4">
+      {% for a in articles if a.slug != 'what-happens-if-business-licence-expires' %}
+      <a href="/resources/{{ a.slug }}" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+        <div class="text-xs text-muted mb-1">{{ a.category }}</div>
+        <div class="font-medium text-sm">{{ a.title }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <p class="text-xs text-muted mt-8">
+    This article is general information, not legal advice. Rules differ by authority and change over time,
+    so confirm details with the issuing body.
+  </p>
 </article>
-</main>
-</body>
-</html>
+
+{% endblock %}

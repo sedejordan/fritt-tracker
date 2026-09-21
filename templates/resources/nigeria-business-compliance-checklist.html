@@ -1,28 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nigerian Business Compliance Checklist: Documents and Filings to Renew Every Year</title>
-<meta name="description" content="A practical checklist of the documents, filings and certificates Nigerian businesses need to keep current, from CAC annual returns to vehicle papers, and how to track them.">
-<link rel="canonical" href="https://tracker.fritt.org/resources/nigeria-business-compliance-checklist">
+{% extends "base.html" %}
+{% block title %}Nigerian Business Compliance Checklist: Documents and Filings to Renew Every Year | Fritt Tracker{% endblock %}
+{% block meta_description %}A practical checklist of the documents, filings and certificates Nigerian businesses need to keep current, from CAC annual returns to vehicle papers, and how to track them.{% endblock %}
+{% block canonical %}https://tracker.fritt.org/resources/nigeria-business-compliance-checklist{% endblock %}
+
+{% block structured_data %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "Nigerian Business Compliance Checklist: Documents and Filings to Renew Every Year",
   "description": "A practical checklist of the documents, filings and certificates Nigerian businesses need to keep current, from CAC annual returns to vehicle papers, and how to track them.",
-  "datePublished": "2026-09-21",
-  "author": {
-    "@type": "Organization",
-    "name": "Fritt Tracker"
-  },
+  "author": { "@type": "Organization", "name": "Fritt Tracker", "url": "https://tracker.fritt.org/" },
   "publisher": {
     "@type": "Organization",
     "name": "Fritt Tracker",
-    "url": "https://tracker.fritt.org"
+    "logo": { "@type": "ImageObject", "url": "https://tracker.fritt.org/static/fritt-tracker-logo.svg" }
   },
-  "mainEntityOfPage": "https://tracker.fritt.org/resources/nigeria-business-compliance-checklist"
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://tracker.fritt.org/resources/nigeria-business-compliance-checklist" },
+  "datePublished": "2026-09-21"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Resources", "item": "https://tracker.fritt.org/resources" },
+    { "@type": "ListItem", "position": 2, "name": "Nigerian Business Compliance Checklist", "item": "https://tracker.fritt.org/resources/nigeria-business-compliance-checklist" }
+  ]
 }
 </script>
 <script type="application/ld+json">
@@ -57,89 +62,155 @@
   ]
 }
 </script>
-<style>
-body{margin:0;background:#fff;color:#1c2430;font:18px/1.75 Georgia,"Times New Roman"}
-header{border-bottom:1px solid #dfe3e8;padding:14px 0}
-header div,main{width:min(720px,92vw);margin:0 auto}
-header a{font:700 1rem "Helvetica Neue",Helvetica,Arial;color:#0b5cad}
-h1{font:700 2.2rem/1.2 "Helvetica Neue",Helvetica,Arial;margin:40px 0 12px}
-h2{font:700 1.5rem/1.3 "Helvetica Neue",Helvetica,Arial;margin:44px 0 10px}
-h3{font:700 1.1rem/1.4 "Helvetica Neue",Helvetica,Arial;margin:26px 0 4px}
-p{margin:0 0 18px}
-ul,ol{margin:0 0 18px;padding:0 0 0 24px}
-li{margin:0 0 8px}
-a{color:#0b5cad}
-.byline{font:0.95rem "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 28px}
-.callout{background:#eef4fb;border:1px solid #cfe0f3;padding:18px 20px;margin:28px 0}
-.callout p{margin:0}
-.tw{overflow:auto;margin:0 0 24px}
-table{width:100%;font:0.92rem/1.5 "Helvetica Neue",Helvetica,Arial}
-th,td{border:1px solid #dfe3e8;padding:10px 12px;text-align:left;vertical-align:top}
-th{background:#f3f5f7}
-code{font:0.88em Consolas,Menlo;background:#f3f5f7;padding:2px 6px}
-.cta{background:#0b5cad;color:#fff;padding:28px;margin:52px 0 24px}
-.cta h2{margin:0 0 8px;color:#fff}
-.cta p{margin:0 0 18px}
-.cta a{display:table;background:#fff;color:#0b5cad;padding:12px 22px;font:700 1rem "Helvetica Neue",Helvetica,Arial}
-.note{font:0.85rem/1.6 "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 48px}
-</style>
-</head>
-<body>
-<header><div><a href="https://tracker.fritt.org">Fritt Tracker</a></div></header>
-<main>
-<article>
-<h1>Nigerian Business Compliance Checklist: Documents and Filings to Renew Every Year</h1>
-<p class="byline">By the Fritt Tracker team</p>
+{% endblock %}
 
-<p>Running a business in Nigeria means answering to several authorities at once. The Corporate Affairs Commission (CAC), tax authorities, pension and insurance bodies, sector regulators, state governments and local councils each issue their own documents, and each has its own renewal date. Miss one and the cost can be a penalty, a delayed contract or a business that is no longer in good standing.</p>
-<p>This checklist covers the documents and filings most Nigerian businesses need to keep current. It is a starting point, not legal advice. Requirements differ by sector, state and company type, so confirm details with the relevant authority.</p>
+{% block content %}
 
-<h2>CAC annual returns</h2>
-<p>Under the Companies and Allied Matters Act 2020, registered companies must file annual returns with the CAC every year, whether or not they traded. The CAC has said that penalties can apply to the company and to each of its directors or officers, and it has moved to remove inactive or noncompliant companies from the register.</p>
-<p>A public notice dated 15 July 2026, as reported in the press, listed around 100,000 companies for striking off and gave them 90 days to file outstanding annual returns, including persons with significant control and beneficial ownership information. If you have not checked your own company's status recently, do it now on the CAC website at <a href="https://cac.gov.ng">cac.gov.ng</a>.</p>
+<article class="max-w-3xl mx-auto">
+  <p class="text-xs text-muted mb-2">Compliance · 8 min read</p>
+  <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">
+    Nigerian Business Compliance Checklist: Documents and Filings to Renew Every Year
+  </h1>
+  <p class="text-lg text-muted mb-8">
+    A practical checklist of the documents, filings and certificates Nigerian businesses need to keep
+    current, from CAC annual returns to vehicle papers, and how to track them.
+  </p>
 
-<h2>Tax registration and clearance</h2>
-<p>Keep your tax identification details in order and file your returns on time. Many government contracts, tenders, bank facilities and licence applications ask for a tax clearance certificate, so note its validity period and renew it before you need to submit it.</p>
+  <p class="text-ink mb-4">
+    Running a business in Nigeria means answering to several authorities at once. The Corporate Affairs
+    Commission (CAC), tax authorities, pension and insurance bodies, sector regulators, state governments
+    and local councils each issue their own documents, and each has its own renewal date. Miss one and the
+    cost can be a penalty, a delayed contract or a business that is no longer in good standing.
+  </p>
+  <p class="text-ink mb-6">
+    This checklist covers the documents and filings most Nigerian businesses need to keep current. It is
+    a starting point, not legal advice. Requirements differ by sector, state and company type, so confirm
+    details with the relevant authority.
+  </p>
 
-<h2>Employee related certificates</h2>
-<p>If you have staff, look at the pension, employee compensation and training fund requirements that apply to your business, and at the compliance certificates attached to them. Buyers and procurement teams often ask for these as proof of good standing. Group life insurance for employees is another item to track where the law requires it.</p>
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">CAC annual returns</h2>
+  <p class="text-ink mb-4">
+    Under the Companies and Allied Matters Act 2020, registered companies must file annual returns with the
+    CAC every year, whether or not they traded. The CAC has said that penalties can apply to the company and
+    to each of its directors or officers, and it has moved to remove inactive or noncompliant companies from
+    the register.
+  </p>
+  <p class="text-ink mb-6">
+    A public notice dated 15 July 2026, as reported in the press, listed around 100,000 companies for striking
+    off and gave them 90 days to file outstanding annual returns, including persons with significant control
+    and beneficial ownership information. If you have not checked your own company's status recently, do it
+    now on the CAC website at <a href="https://cac.gov.ng" class="text-fritt hover:underline">cac.gov.ng</a>.
+  </p>
 
-<h2>Sector licences and product registrations</h2>
-<p>Regulated businesses carry extra documents. Food, drug and cosmetic products need registration with NAFDAC, which is valid for a fixed number of years before it must be renewed. Manufacturers and importers may hold standards certifications from SON. Other sectors such as transport, energy, health and finance have their own regulators, licences and renewal cycles.</p>
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Tax registration and clearance</h2>
+  <p class="text-ink mb-6">
+    Keep your tax identification details in order and file your returns on time. Many government contracts,
+    tenders, bank facilities and licence applications ask for a tax clearance certificate, so note its
+    validity period and renew it before you need to submit it.
+  </p>
 
-<h2>Vehicles and drivers</h2>
-<p>If your business runs vehicles, each one carries several dates: vehicle licence, road worthiness, insurance and any permits your state or route requires. Each driver adds a driver's licence expiry. A fleet of ten vehicles can quickly mean dozens of dates to watch.</p>
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Employee related certificates</h2>
+  <p class="text-ink mb-6">
+    If you have staff, look at the pension, employee compensation and training fund requirements that apply
+    to your business, and at the compliance certificates attached to them. Buyers and procurement teams often
+    ask for these as proof of good standing. Group life insurance for employees is another item to track
+    where the law requires it.
+  </p>
 
-<h2>Premises, insurance and contracts</h2>
-<p>Track your lease or tenancy end date, business premises permits from your state or local government, signage or advertising permits, and every insurance policy. Add contract end dates and renewal windows too, because a lapsed agreement with a key client or supplier is just as damaging as a lapsed licence.</p>
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Sector licences and product registrations</h2>
+  <p class="text-ink mb-6">
+    Regulated businesses carry extra documents. Food, drug and cosmetic products need registration with NAFDAC,
+    which is valid for a fixed number of years before it must be renewed. Manufacturers and importers may
+    hold standards certifications from SON. Other sectors such as transport, energy, health and finance have
+    their own regulators, licences and renewal cycles.
+  </p>
 
-<h2>Staff and foreign worker documents</h2>
-<p>Professional bodies typically require regular renewal of practising licences, and foreign staff need valid residence and work documents. Keep these on the list under each person's name.</p>
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Vehicles and drivers</h2>
+  <p class="text-ink mb-6">
+    If your business runs vehicles, each one carries several dates: vehicle licence, road worthiness,
+    insurance and any permits your state or route requires. Each driver adds a driver's licence expiry.
+    A fleet of ten vehicles can quickly mean dozens of dates to watch.
+  </p>
 
-<h2>How to build a renewal calendar that works</h2>
-<ol>
-<li>List every document. Start with everything above, then ask each department what it holds.</li>
-<li>Record the expiry date, the issuing body and the person responsible for renewal.</li>
-<li>Decide how early you need warning. If a renewal takes three weeks to process, a reminder one week before expiry is too late. Many businesses use 90, 60 and 30 days.</li>
-<li>Send the reminder to a named person, not only a shared inbox.</li>
-<li>After each renewal, update the new expiry date straight away and note the cost.</li>
-</ol>
-<div class="callout"><p>Fritt Tracker was built for this. Add each document, its expiry date and who is responsible, and get reminders before it lapses. It is free for up to 20 documents.</p></div>
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Premises, insurance and contracts</h2>
+  <p class="text-ink mb-6">
+    Track your lease or tenancy end date, business premises permits from your state or local government,
+    signage or advertising permits, and every insurance policy. Add contract end dates and renewal windows
+    too, because a lapsed agreement with a key client or supplier is just as damaging as a lapsed licence.
+  </p>
 
-<h2>Frequently asked questions</h2>
-<h3>How often do companies file annual returns in Nigeria?</h3>
-<p>Every year. The Companies and Allied Matters Act 2020 requires registered companies to file annual returns with the CAC each year, even if the company is inactive.</p>
-<h3>What happens if a Nigerian company does not file annual returns?</h3>
-<p>The CAC can apply penalties to the company and to its directors or officers, and it can strike a company off the register. It has publicly announced striking off exercises for companies that fall behind. Check the CAC website for your company&#x27;s current status.</p>
-<h3>What documents should a small business in Nigeria track?</h3>
-<p>At minimum, CAC filings, tax documents and clearance certificates, insurance policies, premises and lease dates, vehicle papers, sector licences and staff certifications. Add anything else that has an expiry or renewal date.</p>
-<div class="cta">
-<h2>Keep every Nigerian business document current</h2>
-<p>Put your CAC filings, licences, vehicle papers and insurance dates in one place and get reminders before they lapse. Free for up to 20 documents.</p>
-<a href="https://tracker.fritt.org">Start tracking for free</a>
-</div>
-<p class="note">This article is general information, not legal advice. Rules differ by authority and change over time, so confirm details with the issuing body.</p>
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Staff and foreign worker documents</h2>
+  <p class="text-ink mb-6">
+    Professional bodies typically require regular renewal of practising licences, and foreign staff need
+    valid residence and work documents. Keep these on the list under each person's name.
+  </p>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">How to build a renewal calendar that works</h2>
+  <ol class="list-decimal pl-6 space-y-2 mb-6 text-ink">
+    <li>List every document. Start with everything above, then ask each department what it holds.</li>
+    <li>Record the expiry date, the issuing body and the person responsible for renewal.</li>
+    <li>Decide how early you need warning. If a renewal takes three weeks to process, a reminder one week before expiry is too late. Many businesses use 90, 60 and 30 days.</li>
+    <li>Send the reminder to a named person, not only a shared inbox.</li>
+    <li>After each renewal, update the new expiry date straight away and note the cost.</li>
+  </ol>
+
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+    <h3 class="font-display font-bold text-lg mb-2">Keep every Nigerian business document current</h3>
+    <p class="text-sm text-ink mb-4">
+      Fritt Tracker was built for this. Add each document, its expiry date and who is responsible, and get
+      reminders before it lapses. Free for up to 20 documents.
+    </p>
+    <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+      Start tracking for free →
+    </a>
+  </div>
+
+  <section class="mt-12">
+    <h2 class="font-display font-bold text-2xl mt-8 mb-4">Frequently asked questions</h2>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">How often do companies file annual returns in Nigeria?</summary>
+      <p class="text-sm text-ink mt-3">
+        Every year. The Companies and Allied Matters Act 2020 requires registered companies to file annual
+        returns with the CAC each year, even if the company is inactive.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">What happens if a Nigerian company does not file annual returns?</summary>
+      <p class="text-sm text-ink mt-3">
+        The CAC can apply penalties to the company and to its directors or officers, and it can strike a
+        company off the register. It has publicly announced striking off exercises for companies that fall
+        behind. Check the CAC website for your company's current status.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">What documents should a small business in Nigeria track?</summary>
+      <p class="text-sm text-ink mt-3">
+        At minimum, CAC filings, tax documents and clearance certificates, insurance policies, premises and
+        lease dates, vehicle papers, sector licences and staff certifications. Add anything else that has
+        an expiry or renewal date.
+      </p>
+    </details>
+  </section>
+
+  <div class="mt-12 pt-8 border-t border-line">
+    <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>
+    <div class="grid sm:grid-cols-2 gap-4">
+      {% for a in articles if a.slug != 'nigeria-business-compliance-checklist' %}
+      <a href="/resources/{{ a.slug }}" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+        <div class="text-xs text-muted mb-1">{{ a.category }}</div>
+        <div class="font-medium text-sm">{{ a.title }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <p class="text-xs text-muted mt-8">
+    This article is general information, not legal advice. Rules differ by authority and change over time,
+    so confirm details with the issuing body.
+  </p>
 </article>
-</main>
-</body>
-</html>
+
+{% endblock %}

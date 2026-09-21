@@ -1,28 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Excel Document Expiry Tracker: Why Spreadsheets Fail and What to Use Instead</title>
-<meta name="description" content="Tracking document expiry dates in a spreadsheet? Learn how to set one up properly, where it breaks down, and when to switch to a dedicated expiry tracker.">
-<link rel="canonical" href="https://tracker.fritt.org/resources/excel-document-expiry-tracker-vs-dedicated-tracker">
+{% extends "base.html" %}
+{% block title %}Excel Document Expiry Tracker: Why Spreadsheets Fail and What to Use Instead | Fritt Tracker{% endblock %}
+{% block meta_description %}Tracking document expiry dates in a spreadsheet? Learn how to set one up properly, where it breaks down, and when to switch to a dedicated expiry tracker.{% endblock %}
+{% block canonical %}https://tracker.fritt.org/resources/excel-document-expiry-tracker-vs-dedicated-tracker{% endblock %}
+
+{% block structured_data %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "Excel Document Expiry Tracker: Why Spreadsheets Fail and What to Use Instead",
   "description": "Tracking document expiry dates in a spreadsheet? Learn how to set one up properly, where it breaks down, and when to switch to a dedicated expiry tracker.",
-  "datePublished": "2026-09-21",
-  "author": {
-    "@type": "Organization",
-    "name": "Fritt Tracker"
-  },
+  "author": { "@type": "Organization", "name": "Fritt Tracker", "url": "https://tracker.fritt.org/" },
   "publisher": {
     "@type": "Organization",
     "name": "Fritt Tracker",
-    "url": "https://tracker.fritt.org"
+    "logo": { "@type": "ImageObject", "url": "https://tracker.fritt.org/static/fritt-tracker-logo.svg" }
   },
-  "mainEntityOfPage": "https://tracker.fritt.org/resources/excel-document-expiry-tracker-vs-dedicated-tracker"
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://tracker.fritt.org/resources/excel-document-expiry-tracker-vs-dedicated-tracker" },
+  "datePublished": "2026-09-21"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Resources", "item": "https://tracker.fritt.org/resources" },
+    { "@type": "ListItem", "position": 2, "name": "Excel Document Expiry Tracker vs Dedicated Tracker", "item": "https://tracker.fritt.org/resources/excel-document-expiry-tracker-vs-dedicated-tracker" }
+  ]
 }
 </script>
 <script type="application/ld+json">
@@ -57,120 +62,192 @@
   ]
 }
 </script>
-<style>
-body{margin:0;background:#fff;color:#1c2430;font:18px/1.75 Georgia,"Times New Roman"}
-header{border-bottom:1px solid #dfe3e8;padding:14px 0}
-header div,main{width:min(720px,92vw);margin:0 auto}
-header a{font:700 1rem "Helvetica Neue",Helvetica,Arial;color:#0b5cad}
-h1{font:700 2.2rem/1.2 "Helvetica Neue",Helvetica,Arial;margin:40px 0 12px}
-h2{font:700 1.5rem/1.3 "Helvetica Neue",Helvetica,Arial;margin:44px 0 10px}
-h3{font:700 1.1rem/1.4 "Helvetica Neue",Helvetica,Arial;margin:26px 0 4px}
-p{margin:0 0 18px}
-ul,ol{margin:0 0 18px;padding:0 0 0 24px}
-li{margin:0 0 8px}
-a{color:#0b5cad}
-.byline{font:0.95rem "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 28px}
-.callout{background:#eef4fb;border:1px solid #cfe0f3;padding:18px 20px;margin:28px 0}
-.callout p{margin:0}
-.tw{overflow:auto;margin:0 0 24px}
-table{width:100%;font:0.92rem/1.5 "Helvetica Neue",Helvetica,Arial}
-th,td{border:1px solid #dfe3e8;padding:10px 12px;text-align:left;vertical-align:top}
-th{background:#f3f5f7}
-code{font:0.88em Consolas,Menlo;background:#f3f5f7;padding:2px 6px}
-.cta{background:#0b5cad;color:#fff;padding:28px;margin:52px 0 24px}
-.cta h2{margin:0 0 8px;color:#fff}
-.cta p{margin:0 0 18px}
-.cta a{display:table;background:#fff;color:#0b5cad;padding:12px 22px;font:700 1rem "Helvetica Neue",Helvetica,Arial}
-.note{font:0.85rem/1.6 "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 48px}
-</style>
-</head>
-<body>
-<header><div><a href="https://tracker.fritt.org">Fritt Tracker</a></div></header>
-<main>
-<article>
-<h1>Excel Document Expiry Tracker: Why Spreadsheets Fail and What to Use Instead</h1>
-<p class="byline">By the Fritt Tracker team</p>
+{% endblock %}
 
-<p>If you run a business, you probably have a spreadsheet somewhere with licence dates, insurance renewals or staff certificates in it. That is a sensible place to start. It is free, you already know how it works, and for a handful of documents it does the job.</p>
-<p>The trouble is that a spreadsheet only helps if someone opens it at the right time. This guide shows you how to build a spreadsheet expiry tracker properly, where it tends to fail, and how to tell when it is time to move to something that reminds you instead.</p>
+{% block content %}
 
-<h2>How to set up an expiry date tracker in Excel or Google Sheets</h2>
-<p>Create one row per document and give it these columns:</p>
-<ul>
-<li>Document name, for example Business Premises Licence</li>
-<li>Type, such as licence, insurance, certificate, contract or permit</li>
-<li>Belongs to, meaning the person, vehicle, site or company it covers</li>
-<li>Issuing body</li>
-<li>Expiry date</li>
-<li>Days left</li>
-<li>Person responsible for renewal</li>
-<li>Notes, such as the fee, reference number or renewal link</li>
-</ul>
-<p>If your expiry date is in column E, use this formula in the Days left column:</p>
-<p><code>=IF(E2&lt;TODAY(),"Expired",DATEDIF(TODAY(),E2,"d"))</code></p>
-<p>Then add conditional formatting so a row turns amber when fewer than 90 days remain and red when fewer than 30 remain. Sort by expiry date, and agree that one named person opens the file every week.</p>
+<article class="max-w-3xl mx-auto">
+  <p class="text-xs text-muted mb-2">Guide · 7 min read</p>
+  <h1 class="font-display font-bold text-3xl md:text-4xl mb-4">
+    Excel Document Expiry Tracker: Why Spreadsheets Fail and What to Use Instead
+  </h1>
+  <p class="text-lg text-muted mb-8">
+    Tracking document expiry dates in a spreadsheet? Here's how to set one up properly, where it breaks down,
+    and how to tell when it's time to move to something that reminds you instead.
+  </p>
 
-<h2>Where spreadsheets fail</h2>
-<h3>Nothing tells you when a date is close</h3>
-<p>A spreadsheet is passive. It shows the right answer only when someone looks. Most missed renewals are not caused by people who did not care. They happen in the week nobody opened the file.</p>
-<h3>It depends on one person</h3>
-<p>The sheet usually belongs to whoever built it. When that person is on leave, busy or gone, the reminders go with them.</p>
-<h3>Versions drift</h3>
-<p>Copies get emailed around, a formula gets overwritten, and soon two people are looking at different dates for the same licence.</p>
-<h3>It gets messy as you grow</h3>
-<p>Twenty rows are easy to scan. Two hundred rows across staff, vehicles, sites and suppliers are not.</p>
-<h3>Reminders become another thing to maintain</h3>
-<p>Scripts and automations can send emails from a sheet, but somebody has to build them, fix them when they break and remember how they work.</p>
+  <p class="text-ink mb-4">
+    If you run a business, you probably have a spreadsheet somewhere with licence dates, insurance renewals
+    or staff certificates in it. That is a sensible place to start. It is free, you already know how it works,
+    and for a handful of documents it does the job.
+  </p>
+  <p class="text-ink mb-6">
+    The trouble is that a spreadsheet only helps if someone opens it at the right time.
+  </p>
 
-<h2>Spreadsheet, calendar or dedicated tracker</h2>
-<div class="tw"><table cellspacing="0">
-<tr><th>What you need</th><th>Spreadsheet</th><th>Calendar reminders</th><th>Dedicated tracker</th></tr>
-<tr><td>Reminders before expiry</td><td>Only if you build them</td><td>Yes, one event at a time</td><td>Built in</td></tr>
-<tr><td>One view of everything</td><td>Yes, if everyone uses the same file</td><td>Hard, dates are scattered</td><td>Yes</td></tr>
-<tr><td>Search and filter</td><td>Manual</td><td>No</td><td>Yes</td></tr>
-<tr><td>Setup effort</td><td>Low</td><td>Low</td><td>Low</td></tr>
-<tr><td>Risk when the owner leaves</td><td>High</td><td>High</td><td>Lower, if access is shared</td></tr>
-</table></div>
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">How to set up an expiry date tracker in Excel or Google Sheets</h2>
+  <p class="text-ink mb-4">Create one row per document and give it these columns:</p>
+  <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+    <li>Document name, for example Business Premises Licence</li>
+    <li>Type, such as licence, insurance, certificate, contract or permit</li>
+    <li>Belongs to, meaning the person, vehicle, site or company it covers</li>
+    <li>Issuing body</li>
+    <li>Expiry date</li>
+    <li>Days left</li>
+    <li>Person responsible for renewal</li>
+    <li>Notes, such as the fee, reference number or renewal link</li>
+  </ul>
+  <p class="text-ink mb-4">If your expiry date is in column E, use this formula in the Days left column:</p>
+  <p class="text-sm font-mono bg-paper border border-line rounded-md p-4 mb-4 text-ink">
+    =IF(E2&lt;TODAY(),"Expired",DATEDIF(TODAY(),E2,"d"))
+  </p>
+  <p class="text-ink mb-6">
+    Then add conditional formatting so a row turns amber when fewer than 90 days remain and red when fewer than 30 remain.
+    Sort by expiry date, and agree that one named person opens the file every week.
+  </p>
 
-<h2>When a spreadsheet is enough</h2>
-<p>A spreadsheet is fine when you track fewer than about ten documents, one person manages them, and that person genuinely opens the file every week. If any of those three things is not true, the risk is higher than it looks.</p>
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Where spreadsheets fail</h2>
 
-<h2>Signs it is time to switch</h2>
-<ul>
-<li>You have found an expired document by accident.</li>
-<li>More than one person needs to see and update the dates.</li>
-<li>You are tracking more than 20 documents.</li>
-<li>Renewals need lead time, such as training, inspections or applications, so a last minute warning is too late.</li>
-<li>You track documents for several people, sites or vehicles.</li>
-</ul>
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">Nothing tells you when a date is close</h3>
+  <p class="text-ink mb-4">
+    A spreadsheet is passive. It shows the right answer only when someone looks. Most missed renewals are not
+    caused by people who did not care. They happen in the week nobody opened the file.
+  </p>
 
-<h2>What to look for in an expiry tracker</h2>
-<ul>
-<li>Reminders that arrive before the deadline, not on it.</li>
-<li>One place for every document type.</li>
-<li>Search and filter, so you can answer "what expires next month?" in seconds.</li>
-<li>Simple enough that your team will actually use it.</li>
-<li>Pricing that does not push a small list onto an enterprise plan.</li>
-</ul>
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">It depends on one person</h3>
+  <p class="text-ink mb-4">
+    The sheet usually belongs to whoever built it. When that person is on leave, busy or gone, the reminders
+    go with them.
+  </p>
 
-<h2>Where Fritt Tracker fits</h2>
-<p>Fritt Tracker is a document expiry tracker for business owners and managers who are tired of managing renewals from a spreadsheet. You add each document with its expiry date, and Fritt Tracker sends renewal reminders before it lapses. Your dashboard lets you search and filter everything in one place. The free plan covers up to 20 documents, so most small teams can try it without paying anything.</p>
-<!-- <div class="callout"><p>Fritt Tracker keeps the details and dates of your documents. It does not store the document files themselves.</p></div> -->
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">Versions drift</h3>
+  <p class="text-ink mb-4">
+    Copies get emailed around, a formula gets overwritten, and soon two people are looking at different dates
+    for the same licence.
+  </p>
 
-<h2>Frequently asked questions</h2>
-<h3>Can I track document expiry dates in Excel for free?</h3>
-<p>Yes. Excel and Google Sheets both work. Set up one row per document, calculate days remaining with a formula, and highlight rows that are close to expiring. The weak point is reminders, because a spreadsheet will not contact you on its own.</p>
-<h3>How do I get a spreadsheet to remind me of expiry dates?</h3>
-<p>Conditional formatting can highlight upcoming dates, but it only helps when the file is open. For real reminders you need to build an automation or add a calendar event for each date, and both need upkeep. A dedicated tracker sends reminders for you.</p>
-<h3>How many documents can I manage in a spreadsheet before it becomes risky?</h3>
-<p>There is no fixed number, but many teams find it starts to slip once they pass about 20 documents or when more than one person needs to see and update the list.</p>
-<div class="cta">
-<h2>Stop tracking renewals by hand</h2>
-<p>Add your documents to Fritt Tracker and get reminders before they expire. Free for up to 20 documents.</p>
-<a href="https://tracker.fritt.org">Start tracking for free</a>
-</div>
-<p class="note">This article is general information, not legal advice. Rules differ by authority and change over time, so confirm details with the issuing body.</p>
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">It gets messy as you grow</h3>
+  <p class="text-ink mb-4">
+    Twenty rows are easy to scan. Two hundred rows across staff, vehicles, sites and suppliers are not.
+  </p>
+
+  <h3 class="font-display font-bold text-lg mt-6 mb-2">Reminders become another thing to maintain</h3>
+  <p class="text-ink mb-6">
+    Scripts and automations can send emails from a sheet, but somebody has to build them, fix them when they
+    break and remember how they work.
+  </p>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Spreadsheet, calendar or dedicated tracker</h2>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border border-line rounded-xl overflow-hidden">
+      <thead class="bg-paper">
+        <tr>
+          <th class="text-left px-4 py-3 font-medium">What you need</th>
+          <th class="text-left px-4 py-3 font-medium">Spreadsheet</th>
+          <th class="text-left px-4 py-3 font-medium">Calendar reminders</th>
+          <th class="text-left px-4 py-3 font-medium text-fritt">Dedicated tracker</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-t border-line"><td class="px-4 py-3">Reminders before expiry</td><td class="px-4 py-3 text-muted">Only if you build them</td><td class="px-4 py-3 text-muted">Yes, one event at a time</td><td class="px-4 py-3 text-green-700">Built in</td></tr>
+        <tr class="border-t border-line"><td class="px-4 py-3">One view of everything</td><td class="px-4 py-3 text-muted">Yes, if everyone uses the same file</td><td class="px-4 py-3 text-muted">Hard, dates are scattered</td><td class="px-4 py-3 text-green-700">Yes</td></tr>
+        <tr class="border-t border-line"><td class="px-4 py-3">Search and filter</td><td class="px-4 py-3 text-muted">Manual</td><td class="px-4 py-3 text-muted">No</td><td class="px-4 py-3 text-green-700">Yes</td></tr>
+        <tr class="border-t border-line"><td class="px-4 py-3">Setup effort</td><td class="px-4 py-3 text-muted">Low</td><td class="px-4 py-3 text-muted">Low</td><td class="px-4 py-3 text-green-700">Low</td></tr>
+        <tr class="border-t border-line"><td class="px-4 py-3">Risk when the owner leaves</td><td class="px-4 py-3 text-muted">High</td><td class="px-4 py-3 text-muted">High</td><td class="px-4 py-3 text-green-700">Lower, if access is shared</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">When a spreadsheet is enough</h2>
+  <p class="text-ink mb-6">
+    A spreadsheet is fine when you track fewer than about ten documents, one person manages them, and that
+    person genuinely opens the file every week. If any of those three things is not true, the risk is higher
+    than it looks.
+  </p>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Signs it is time to switch</h2>
+  <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+    <li>You have found an expired document by accident.</li>
+    <li>More than one person needs to see and update the dates.</li>
+    <li>You are tracking more than 20 documents.</li>
+    <li>Renewals need lead time, such as training, inspections or applications, so a last-minute warning is too late.</li>
+    <li>You track documents for several people, sites or vehicles.</li>
+  </ul>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">What to look for in an expiry tracker</h2>
+  <ul class="list-disc pl-6 space-y-2 mb-6 text-ink">
+    <li>Reminders that arrive before the deadline, not on it.</li>
+    <li>One place for every document type.</li>
+    <li>Search and filter, so you can answer "what expires next month?" in seconds.</li>
+    <li>Simple enough that your team will actually use it.</li>
+    <li>Pricing that does not push a small list onto an enterprise plan.</li>
+  </ul>
+
+  <h2 class="font-display font-bold text-2xl mt-8 mb-3">Where Fritt Tracker fits</h2>
+  <p class="text-ink mb-6">
+    Fritt Tracker is a document expiry tracker for business owners and managers who are tired of managing
+    renewals from a spreadsheet. You add each document with its expiry date, and Fritt Tracker sends renewal
+    reminders before it lapses. Your dashboard lets you search and filter everything in one place. The free
+    plan covers up to 20 documents, so most small teams can try it without paying anything.
+  </p>
+
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 my-8">
+    <h3 class="font-display font-bold text-lg mb-2">Stop tracking renewals by hand</h3>
+    <p class="text-sm text-ink mb-4">
+      Add your documents to Fritt Tracker and get reminders before they expire. Free for up to 20 documents.
+      Pro is {{ pricing.currency }}{{ pricing.monthly }}/month for 100.
+    </p>
+    <a href="/register" class="inline-block px-5 py-2.5 rounded-md bg-fritt text-white font-medium text-sm hover:bg-fritt-dark transition-colors">
+      Start tracking for free →
+    </a>
+  </div>
+
+  <section class="mt-12">
+    <h2 class="font-display font-bold text-2xl mt-8 mb-4">Frequently asked questions</h2>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">Can I track document expiry dates in Excel for free?</summary>
+      <p class="text-sm text-ink mt-3">
+        Yes. Excel and Google Sheets both work. Set up one row per document, calculate days remaining with a
+        formula, and highlight rows that are close to expiring. The weak point is reminders, because a
+        spreadsheet will not contact you on its own.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">How do I get a spreadsheet to remind me of expiry dates?</summary>
+      <p class="text-sm text-ink mt-3">
+        Conditional formatting can highlight upcoming dates, but it only helps when the file is open. For
+        real reminders you need to build an automation or add a calendar event for each date, and both need
+        upkeep. A dedicated tracker sends reminders for you.
+      </p>
+    </details>
+
+    <details class="border-b border-line py-4">
+      <summary class="font-medium cursor-pointer">How many documents can I manage in a spreadsheet before it becomes risky?</summary>
+      <p class="text-sm text-ink mt-3">
+        There is no fixed number, but many teams find it starts to slip once they pass about 20 documents or
+        when more than one person needs to see and update the list.
+      </p>
+    </details>
+  </section>
+
+  <div class="mt-12 pt-8 border-t border-line">
+    <h2 class="font-display font-bold text-xl mb-4">Keep reading</h2>
+    <div class="grid sm:grid-cols-2 gap-4">
+      {% for a in articles if a.slug != 'excel-document-expiry-tracker-vs-dedicated-tracker' %}
+      <a href="/resources/{{ a.slug }}" class="block bg-white border border-line rounded-lg p-4 hover:border-fritt transition-colors">
+        <div class="text-xs text-muted mb-1">{{ a.category }}</div>
+        <div class="font-medium text-sm">{{ a.title }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <p class="text-xs text-muted mt-8">
+    This article is general information, not legal advice. Rules differ by authority and change over time,
+    so confirm details with the issuing body.
+  </p>
 </article>
-</main>
-</body>
-</html>
+
+{% endblock %}
