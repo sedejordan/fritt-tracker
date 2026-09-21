@@ -93,10 +93,14 @@ templates/
   resources/
     contract-renewal-tracking.html
     document-expiry-tracking-checklist.html
+    employee-document-expiry-tracking.html
+    excel-document-expiry-tracker-vs-dedicated-tracker.html
     how-to-track-business-license-renewal.html
     index.html
     insurance-coverage-gaps.html
+    nigeria-business-compliance-checklist.html
     passport-expiration-reminder.html
+    what-happens-if-business-licence-expires.html
   use-cases/
     business-licenses.html
     contracts.html
@@ -319,6 +323,670 @@ File: templates/errors/500.html
 22: </div>
 23: 
 24: {% endblock %}
+
+================
+File: templates/resources/employee-document-expiry-tracking.html
+================
+  1: <!DOCTYPE html>
+  2: <html lang="en">
+  3: <head>
+  4: <meta charset="utf8">
+  5: <meta name="viewport" content="width=device-width,initial-scale=1">
+  6: <title>How to Track Employee Document Expiry: Right to Work, Licences and Certifications</title>
+  7: <meta name="description" content="A practical guide for managers and HR on tracking employee document expiry dates, from right to work checks and work authorisation to safety certificates and professional licences.">
+  8: <link rel="canonical" href="https://tracker.fritt.org/resources/employee-document-expiry-tracking">
+  9: <script type="application/ld+json">
+ 10: {
+ 11:   "@context": "https://schema.org",
+ 12:   "@type": "Article",
+ 13:   "headline": "How to Track Employee Document Expiry: Right to Work, Licences and Certifications",
+ 14:   "description": "A practical guide for managers and HR on tracking employee document expiry dates, from right to work checks and work authorisation to safety certificates and professional licences.",
+ 15:   "datePublished": "2026-09-21",
+ 16:   "author": {
+ 17:     "@type": "Organization",
+ 18:     "name": "Fritt Tracker"
+ 19:   },
+ 20:   "publisher": {
+ 21:     "@type": "Organization",
+ 22:     "name": "Fritt Tracker",
+ 23:     "url": "https://tracker.fritt.org"
+ 24:   },
+ 25:   "mainEntityOfPage": "https://tracker.fritt.org/resources/employee-document-expiry-tracking"
+ 26: }
+ 27: </script>
+ 28: <script type="application/ld+json">
+ 29: {
+ 30:   "@context": "https://schema.org",
+ 31:   "@type": "FAQPage",
+ 32:   "mainEntity": [
+ 33:     {
+ 34:       "@type": "Question",
+ 35:       "name": "How far ahead should I remind employees to renew documents?",
+ 36:       "acceptedAnswer": {
+ 37:         "@type": "Answer",
+ 38:         "text": "Match the reminder to how long the renewal takes. Ninety days works for right to work and licence renewals, and sixty days is often enough for safety certificates and driver medicals. Allow longer if a course or application has a waiting list."
+ 39:       }
+ 40:     },
+ 41:     {
+ 42:       "@type": "Question",
+ 43:       "name": "Do I need a follow up right to work check for British citizens?",
+ 44:       "acceptedAnswer": {
+ 45:         "@type": "Answer",
+ 46:         "text": "Generally no. British and Irish citizens have an ongoing right to work, so follow up checks apply to workers whose permission has an expiry date. Check current Home Office guidance for your situation."
+ 47:       }
+ 48:     },
+ 49:     {
+ 50:       "@type": "Question",
+ 51:       "name": "Who should be responsible for tracking employee document expiry?",
+ 52:       "acceptedAnswer": {
+ 53:         "@type": "Answer",
+ 54:         "text": "Name one accountable person, often an HR lead or operations manager, and one backup. Individual managers can renew their own team's documents, but someone should oversee the full list."
+ 55:       }
+ 56:     }
+ 57:   ]
+ 58: }
+ 59: </script>
+ 60: <style>
+ 61: body{margin:0;background:#fff;color:#1c2430;font:18px/1.75 Georgia,"Times New Roman"}
+ 62: header{border-bottom:1px solid #dfe3e8;padding:14px 0}
+ 63: header div,main{width:min(720px,92vw);margin:0 auto}
+ 64: header a{font:700 1rem "Helvetica Neue",Helvetica,Arial;color:#0b5cad}
+ 65: h1{font:700 2.2rem/1.2 "Helvetica Neue",Helvetica,Arial;margin:40px 0 12px}
+ 66: h2{font:700 1.5rem/1.3 "Helvetica Neue",Helvetica,Arial;margin:44px 0 10px}
+ 67: h3{font:700 1.1rem/1.4 "Helvetica Neue",Helvetica,Arial;margin:26px 0 4px}
+ 68: p{margin:0 0 18px}
+ 69: ul,ol{margin:0 0 18px;padding:0 0 0 24px}
+ 70: li{margin:0 0 8px}
+ 71: a{color:#0b5cad}
+ 72: .byline{font:0.95rem "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 28px}
+ 73: .callout{background:#eef4fb;border:1px solid #cfe0f3;padding:18px 20px;margin:28px 0}
+ 74: .callout p{margin:0}
+ 75: .tw{overflow:auto;margin:0 0 24px}
+ 76: table{width:100%;font:0.92rem/1.5 "Helvetica Neue",Helvetica,Arial}
+ 77: th,td{border:1px solid #dfe3e8;padding:10px 12px;text-align:left;vertical-align:top}
+ 78: th{background:#f3f5f7}
+ 79: code{font:0.88em Consolas,Menlo;background:#f3f5f7;padding:2px 6px}
+ 80: .cta{background:#0b5cad;color:#fff;padding:28px;margin:52px 0 24px}
+ 81: .cta h2{margin:0 0 8px;color:#fff}
+ 82: .cta p{margin:0 0 18px}
+ 83: .cta a{display:table;background:#fff;color:#0b5cad;padding:12px 22px;font:700 1rem "Helvetica Neue",Helvetica,Arial}
+ 84: .note{font:0.85rem/1.6 "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 48px}
+ 85: </style>
+ 86: </head>
+ 87: <body>
+ 88: <header><div><a href="https://tracker.fritt.org">Fritt Tracker</a></div></header>
+ 89: <main>
+ 90: <article>
+ 91: <h1>How to Track Employee Document Expiry: Right to Work, Licences and Certifications</h1>
+ 92: <p class="byline">By the Fritt Tracker team</p>
+ 93: 
+ 94: <p>When an employee's right to work, professional licence or safety certificate expires and nobody notices, the business carries the risk. It can mean fines, a worker who has to stop work, or a failed audit. The frustrating part is that these dates are known months or years ahead. What is usually missing is a system that surfaces them at the right time.</p>
+ 95: <p>This guide covers which employee documents to track, what the rules look like in the UK, the US and Nigeria, and a simple process you can start this week.</p>
+ 96: 
+ 97: <h2>Which employee documents expire</h2>
+ 98: <ul>
+ 99: <li>Right to work or work authorisation documents, for staff whose permission has an end date</li>
+100: <li>Professional licences and registrations</li>
+101: <li>Safety and training certificates, such as first aid, forklift or working at height</li>
+102: <li>Driving licences and driver medicals for anyone who drives for work</li>
+103: <li>Fixed term contract end dates and probation review dates</li>
+104: <li>Any certification a client requires, such as site passes</li>
+105: </ul>
+106: 
+107: <h2>UK: right to work follow up checks</h2>
+108: <p>UK employers must check that every new hire has the right to work before they start. If a worker's permission is time limited, you must carry out a follow up check before it expires to keep your statutory excuse against a civil penalty. The maximum penalty is up to &pound;45,000 per illegal worker for a first breach and &pound;60,000 for repeat breaches. You must keep the evidence for the length of employment plus two years.</p>
+109: <p>The rules are also due to widen from 1 October 2026 to cover more working arrangements beyond conventional employment, so it is a good moment to review who you check and how you record it. Check the current Home Office guidance on GOV.UK.</p>
+110: 
+111: <h2>US: reverifying work authorization</h2>
+112: <p>US employers complete Form I-9 for every new hire. When an employee's work authorization has an expiry date, the employer must reverify it on or before that date. Citizens and lawful permanent residents generally do not need reverification. Put every expiry date on a list and check the current guidance from US Citizenship and Immigration Services.</p>
+113: 
+114: <h2>Nigeria: permits and professional licences</h2>
+115: <p>Foreign staff need valid residence and work documents for as long as they are employed, so record each permit's expiry date. Many professional bodies also require periodic renewal of practising licences for engineers, accountants, nurses and others. Check the rules of the body that regulates each role.</p>
+116: 
+117: <h2>Set up a tracking process in five steps</h2>
+118: <ol>
+119: <li>List the roles in your business and the documents each one needs.</li>
+120: <li>Record each employee's documents with the expiry date and the manager responsible.</li>
+121: <li>Set reminder windows based on how long each renewal takes.</li>
+122: <li>When a reminder arrives, act: request the new document, book the course or schedule the check.</li>
+123: <li>Update the record with the new expiry date as soon as the renewal is confirmed.</li>
+124: </ol>
+125: 
+126: <h2>Suggested reminder windows</h2>
+127: <div class="tw"><table cellspacing="0">
+128: <tr><th>Document type</th><th>First reminder</th><th>Why</th></tr>
+129: <tr><td>Right to work or work authorisation</td><td>90 days before</td><td>Time to request updated proof and complete a check</td></tr>
+130: <tr><td>Professional licence</td><td>90 days before</td><td>Some renewals need proof of continuing education</td></tr>
+131: <tr><td>Safety or training certificate</td><td>60 days before</td><td>Courses need to be booked and places fill up</td></tr>
+132: <tr><td>Driving licence or driver medical</td><td>60 days before</td><td>Appointments take time</td></tr>
+133: <tr><td>Fixed term contract</td><td>60 days before</td><td>Decide on renewal before the final week</td></tr>
+134: </table></div>
+135: <p>These are starting points. Adjust them to match how long each renewal takes in your business.</p>
+136: 
+137: <h2>Handle employee data with care</h2>
+138: <p>Expiry tracking involves personal information, so keep what you store to a minimum. Record the document type, the expiry date and who is responsible. You rarely need to hold a full copy of an ID number in a tracker. Rules such as UK GDPR and the Nigeria Data Protection Act 2023 apply to employee data, so limit access to the people who need it.</p>
+139: 
+140: <h2>How Fritt Tracker helps</h2>
+141: <p>Fritt Tracker lets you add each employee document with its expiry date, search and filter everything from one dashboard, and get reminders before dates arrive. It records details and dates rather than document files, which keeps the amount of sensitive data you store small. The free plan covers up to 20 documents.</p>
+142: 
+143: <h2>Frequently asked questions</h2>
+144: <h3>How far ahead should I remind employees to renew documents?</h3>
+145: <p>Match the reminder to how long the renewal takes. Ninety days works for right to work and licence renewals, and sixty days is often enough for safety certificates and driver medicals. Allow longer if a course or application has a waiting list.</p>
+146: <h3>Do I need a follow up right to work check for British citizens?</h3>
+147: <p>Generally no. British and Irish citizens have an ongoing right to work, so follow up checks apply to workers whose permission has an expiry date. Check current Home Office guidance for your situation.</p>
+148: <h3>Who should be responsible for tracking employee document expiry?</h3>
+149: <p>Name one accountable person, often an HR lead or operations manager, and one backup. Individual managers can renew their own team&#x27;s documents, but someone should oversee the full list.</p>
+150: <div class="cta">
+151: <h2>Never miss an employee document renewal</h2>
+152: <p>Track right to work dates, licences and certificates in one place and get reminders before they expire. Free for up to 20 documents.</p>
+153: <a href="https://tracker.fritt.org">Start tracking for free</a>
+154: </div>
+155: <p class="note">This article is general information, not legal advice. Rules differ by authority and change over time, so confirm details with the issuing body.</p>
+156: </article>
+157: </main>
+158: </body>
+159: </html>
+
+================
+File: templates/resources/excel-document-expiry-tracker-vs-dedicated-tracker.html
+================
+  1: <!DOCTYPE html>
+  2: <html lang="en">
+  3: <head>
+  4: <meta charset="utf8">
+  5: <meta name="viewport" content="width=device-width,initial-scale=1">
+  6: <title>Excel Document Expiry Tracker: Why Spreadsheets Fail and What to Use Instead</title>
+  7: <meta name="description" content="Tracking document expiry dates in a spreadsheet? Learn how to set one up properly, where it breaks down, and when to switch to a dedicated expiry tracker.">
+  8: <link rel="canonical" href="https://tracker.fritt.org/resources/excel-document-expiry-tracker-vs-dedicated-tracker">
+  9: <script type="application/ld+json">
+ 10: {
+ 11:   "@context": "https://schema.org",
+ 12:   "@type": "Article",
+ 13:   "headline": "Excel Document Expiry Tracker: Why Spreadsheets Fail and What to Use Instead",
+ 14:   "description": "Tracking document expiry dates in a spreadsheet? Learn how to set one up properly, where it breaks down, and when to switch to a dedicated expiry tracker.",
+ 15:   "datePublished": "2026-09-21",
+ 16:   "author": {
+ 17:     "@type": "Organization",
+ 18:     "name": "Fritt Tracker"
+ 19:   },
+ 20:   "publisher": {
+ 21:     "@type": "Organization",
+ 22:     "name": "Fritt Tracker",
+ 23:     "url": "https://tracker.fritt.org"
+ 24:   },
+ 25:   "mainEntityOfPage": "https://tracker.fritt.org/resources/excel-document-expiry-tracker-vs-dedicated-tracker"
+ 26: }
+ 27: </script>
+ 28: <script type="application/ld+json">
+ 29: {
+ 30:   "@context": "https://schema.org",
+ 31:   "@type": "FAQPage",
+ 32:   "mainEntity": [
+ 33:     {
+ 34:       "@type": "Question",
+ 35:       "name": "Can I track document expiry dates in Excel for free?",
+ 36:       "acceptedAnswer": {
+ 37:         "@type": "Answer",
+ 38:         "text": "Yes. Excel and Google Sheets both work. Set up one row per document, calculate days remaining with a formula, and highlight rows that are close to expiring. The weak point is reminders, because a spreadsheet will not contact you on its own."
+ 39:       }
+ 40:     },
+ 41:     {
+ 42:       "@type": "Question",
+ 43:       "name": "How do I get a spreadsheet to remind me of expiry dates?",
+ 44:       "acceptedAnswer": {
+ 45:         "@type": "Answer",
+ 46:         "text": "Conditional formatting can highlight upcoming dates, but it only helps when the file is open. For real reminders you need to build an automation or add a calendar event for each date, and both need upkeep. A dedicated tracker sends reminders for you."
+ 47:       }
+ 48:     },
+ 49:     {
+ 50:       "@type": "Question",
+ 51:       "name": "How many documents can I manage in a spreadsheet before it becomes risky?",
+ 52:       "acceptedAnswer": {
+ 53:         "@type": "Answer",
+ 54:         "text": "There is no fixed number, but many teams find it starts to slip once they pass about 20 documents or when more than one person needs to see and update the list."
+ 55:       }
+ 56:     }
+ 57:   ]
+ 58: }
+ 59: </script>
+ 60: <style>
+ 61: body{margin:0;background:#fff;color:#1c2430;font:18px/1.75 Georgia,"Times New Roman"}
+ 62: header{border-bottom:1px solid #dfe3e8;padding:14px 0}
+ 63: header div,main{width:min(720px,92vw);margin:0 auto}
+ 64: header a{font:700 1rem "Helvetica Neue",Helvetica,Arial;color:#0b5cad}
+ 65: h1{font:700 2.2rem/1.2 "Helvetica Neue",Helvetica,Arial;margin:40px 0 12px}
+ 66: h2{font:700 1.5rem/1.3 "Helvetica Neue",Helvetica,Arial;margin:44px 0 10px}
+ 67: h3{font:700 1.1rem/1.4 "Helvetica Neue",Helvetica,Arial;margin:26px 0 4px}
+ 68: p{margin:0 0 18px}
+ 69: ul,ol{margin:0 0 18px;padding:0 0 0 24px}
+ 70: li{margin:0 0 8px}
+ 71: a{color:#0b5cad}
+ 72: .byline{font:0.95rem "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 28px}
+ 73: .callout{background:#eef4fb;border:1px solid #cfe0f3;padding:18px 20px;margin:28px 0}
+ 74: .callout p{margin:0}
+ 75: .tw{overflow:auto;margin:0 0 24px}
+ 76: table{width:100%;font:0.92rem/1.5 "Helvetica Neue",Helvetica,Arial}
+ 77: th,td{border:1px solid #dfe3e8;padding:10px 12px;text-align:left;vertical-align:top}
+ 78: th{background:#f3f5f7}
+ 79: code{font:0.88em Consolas,Menlo;background:#f3f5f7;padding:2px 6px}
+ 80: .cta{background:#0b5cad;color:#fff;padding:28px;margin:52px 0 24px}
+ 81: .cta h2{margin:0 0 8px;color:#fff}
+ 82: .cta p{margin:0 0 18px}
+ 83: .cta a{display:table;background:#fff;color:#0b5cad;padding:12px 22px;font:700 1rem "Helvetica Neue",Helvetica,Arial}
+ 84: .note{font:0.85rem/1.6 "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 48px}
+ 85: </style>
+ 86: </head>
+ 87: <body>
+ 88: <header><div><a href="https://tracker.fritt.org">Fritt Tracker</a></div></header>
+ 89: <main>
+ 90: <article>
+ 91: <h1>Excel Document Expiry Tracker: Why Spreadsheets Fail and What to Use Instead</h1>
+ 92: <p class="byline">By the Fritt Tracker team</p>
+ 93: 
+ 94: <p>If you run a business, you probably have a spreadsheet somewhere with licence dates, insurance renewals or staff certificates in it. That is a sensible place to start. It is free, you already know how it works, and for a handful of documents it does the job.</p>
+ 95: <p>The trouble is that a spreadsheet only helps if someone opens it at the right time. This guide shows you how to build a spreadsheet expiry tracker properly, where it tends to fail, and how to tell when it is time to move to something that reminds you instead.</p>
+ 96: 
+ 97: <h2>How to set up an expiry date tracker in Excel or Google Sheets</h2>
+ 98: <p>Create one row per document and give it these columns:</p>
+ 99: <ul>
+100: <li>Document name, for example Business Premises Licence</li>
+101: <li>Type, such as licence, insurance, certificate, contract or permit</li>
+102: <li>Belongs to, meaning the person, vehicle, site or company it covers</li>
+103: <li>Issuing body</li>
+104: <li>Expiry date</li>
+105: <li>Days left</li>
+106: <li>Person responsible for renewal</li>
+107: <li>Notes, such as the fee, reference number or renewal link</li>
+108: </ul>
+109: <p>If your expiry date is in column E, use this formula in the Days left column:</p>
+110: <p><code>=IF(E2&lt;TODAY(),"Expired",DATEDIF(TODAY(),E2,"d"))</code></p>
+111: <p>Then add conditional formatting so a row turns amber when fewer than 90 days remain and red when fewer than 30 remain. Sort by expiry date, and agree that one named person opens the file every week.</p>
+112: 
+113: <h2>Where spreadsheets fail</h2>
+114: <h3>Nothing tells you when a date is close</h3>
+115: <p>A spreadsheet is passive. It shows the right answer only when someone looks. Most missed renewals are not caused by people who did not care. They happen in the week nobody opened the file.</p>
+116: <h3>It depends on one person</h3>
+117: <p>The sheet usually belongs to whoever built it. When that person is on leave, busy or gone, the reminders go with them.</p>
+118: <h3>Versions drift</h3>
+119: <p>Copies get emailed around, a formula gets overwritten, and soon two people are looking at different dates for the same licence.</p>
+120: <h3>It gets messy as you grow</h3>
+121: <p>Twenty rows are easy to scan. Two hundred rows across staff, vehicles, sites and suppliers are not.</p>
+122: <h3>Reminders become another thing to maintain</h3>
+123: <p>Scripts and automations can send emails from a sheet, but somebody has to build them, fix them when they break and remember how they work.</p>
+124: 
+125: <h2>Spreadsheet, calendar or dedicated tracker</h2>
+126: <div class="tw"><table cellspacing="0">
+127: <tr><th>What you need</th><th>Spreadsheet</th><th>Calendar reminders</th><th>Dedicated tracker</th></tr>
+128: <tr><td>Reminders before expiry</td><td>Only if you build them</td><td>Yes, one event at a time</td><td>Built in</td></tr>
+129: <tr><td>One view of everything</td><td>Yes, if everyone uses the same file</td><td>Hard, dates are scattered</td><td>Yes</td></tr>
+130: <tr><td>Search and filter</td><td>Manual</td><td>No</td><td>Yes</td></tr>
+131: <tr><td>Setup effort</td><td>Low</td><td>Low</td><td>Low</td></tr>
+132: <tr><td>Risk when the owner leaves</td><td>High</td><td>High</td><td>Lower, if access is shared</td></tr>
+133: </table></div>
+134: 
+135: <h2>When a spreadsheet is enough</h2>
+136: <p>A spreadsheet is fine when you track fewer than about ten documents, one person manages them, and that person genuinely opens the file every week. If any of those three things is not true, the risk is higher than it looks.</p>
+137: 
+138: <h2>Signs it is time to switch</h2>
+139: <ul>
+140: <li>You have found an expired document by accident.</li>
+141: <li>More than one person needs to see and update the dates.</li>
+142: <li>You are tracking more than 20 documents.</li>
+143: <li>Renewals need lead time, such as training, inspections or applications, so a last minute warning is too late.</li>
+144: <li>You track documents for several people, sites or vehicles.</li>
+145: </ul>
+146: 
+147: <h2>What to look for in an expiry tracker</h2>
+148: <ul>
+149: <li>Reminders that arrive before the deadline, not on it.</li>
+150: <li>One place for every document type.</li>
+151: <li>Search and filter, so you can answer "what expires next month?" in seconds.</li>
+152: <li>Simple enough that your team will actually use it.</li>
+153: <li>Pricing that does not push a small list onto an enterprise plan.</li>
+154: </ul>
+155: 
+156: <h2>Where Fritt Tracker fits</h2>
+157: <p>Fritt Tracker is a document expiry tracker for business owners and managers who are tired of managing renewals from a spreadsheet. You add each document with its expiry date, and Fritt Tracker sends renewal reminders before it lapses. Your dashboard lets you search and filter everything in one place. The free plan covers up to 20 documents, so most small teams can try it without paying anything.</p>
+158: <!-- <div class="callout"><p>Fritt Tracker keeps the details and dates of your documents. It does not store the document files themselves.</p></div> -->
+159: 
+160: <h2>Frequently asked questions</h2>
+161: <h3>Can I track document expiry dates in Excel for free?</h3>
+162: <p>Yes. Excel and Google Sheets both work. Set up one row per document, calculate days remaining with a formula, and highlight rows that are close to expiring. The weak point is reminders, because a spreadsheet will not contact you on its own.</p>
+163: <h3>How do I get a spreadsheet to remind me of expiry dates?</h3>
+164: <p>Conditional formatting can highlight upcoming dates, but it only helps when the file is open. For real reminders you need to build an automation or add a calendar event for each date, and both need upkeep. A dedicated tracker sends reminders for you.</p>
+165: <h3>How many documents can I manage in a spreadsheet before it becomes risky?</h3>
+166: <p>There is no fixed number, but many teams find it starts to slip once they pass about 20 documents or when more than one person needs to see and update the list.</p>
+167: <div class="cta">
+168: <h2>Stop tracking renewals by hand</h2>
+169: <p>Add your documents to Fritt Tracker and get reminders before they expire. Free for up to 20 documents.</p>
+170: <a href="https://tracker.fritt.org">Start tracking for free</a>
+171: </div>
+172: <p class="note">This article is general information, not legal advice. Rules differ by authority and change over time, so confirm details with the issuing body.</p>
+173: </article>
+174: </main>
+175: </body>
+176: </html>
+
+================
+File: templates/resources/nigeria-business-compliance-checklist.html
+================
+  1: <!DOCTYPE html>
+  2: <html lang="en">
+  3: <head>
+  4: <meta charset="utf8">
+  5: <meta name="viewport" content="width=device-width,initial-scale=1">
+  6: <title>Nigerian Business Compliance Checklist: Documents and Filings to Renew Every Year</title>
+  7: <meta name="description" content="A practical checklist of the documents, filings and certificates Nigerian businesses need to keep current, from CAC annual returns to vehicle papers, and how to track them.">
+  8: <link rel="canonical" href="https://tracker.fritt.org/resources/nigeria-business-compliance-checklist">
+  9: <script type="application/ld+json">
+ 10: {
+ 11:   "@context": "https://schema.org",
+ 12:   "@type": "Article",
+ 13:   "headline": "Nigerian Business Compliance Checklist: Documents and Filings to Renew Every Year",
+ 14:   "description": "A practical checklist of the documents, filings and certificates Nigerian businesses need to keep current, from CAC annual returns to vehicle papers, and how to track them.",
+ 15:   "datePublished": "2026-09-21",
+ 16:   "author": {
+ 17:     "@type": "Organization",
+ 18:     "name": "Fritt Tracker"
+ 19:   },
+ 20:   "publisher": {
+ 21:     "@type": "Organization",
+ 22:     "name": "Fritt Tracker",
+ 23:     "url": "https://tracker.fritt.org"
+ 24:   },
+ 25:   "mainEntityOfPage": "https://tracker.fritt.org/resources/nigeria-business-compliance-checklist"
+ 26: }
+ 27: </script>
+ 28: <script type="application/ld+json">
+ 29: {
+ 30:   "@context": "https://schema.org",
+ 31:   "@type": "FAQPage",
+ 32:   "mainEntity": [
+ 33:     {
+ 34:       "@type": "Question",
+ 35:       "name": "How often do companies file annual returns in Nigeria?",
+ 36:       "acceptedAnswer": {
+ 37:         "@type": "Answer",
+ 38:         "text": "Every year. The Companies and Allied Matters Act 2020 requires registered companies to file annual returns with the CAC each year, even if the company is inactive."
+ 39:       }
+ 40:     },
+ 41:     {
+ 42:       "@type": "Question",
+ 43:       "name": "What happens if a Nigerian company does not file annual returns?",
+ 44:       "acceptedAnswer": {
+ 45:         "@type": "Answer",
+ 46:         "text": "The CAC can apply penalties to the company and to its directors or officers, and it can strike a company off the register. It has publicly announced striking off exercises for companies that fall behind. Check the CAC website for your company's current status."
+ 47:       }
+ 48:     },
+ 49:     {
+ 50:       "@type": "Question",
+ 51:       "name": "What documents should a small business in Nigeria track?",
+ 52:       "acceptedAnswer": {
+ 53:         "@type": "Answer",
+ 54:         "text": "At minimum, CAC filings, tax documents and clearance certificates, insurance policies, premises and lease dates, vehicle papers, sector licences and staff certifications. Add anything else that has an expiry or renewal date."
+ 55:       }
+ 56:     }
+ 57:   ]
+ 58: }
+ 59: </script>
+ 60: <style>
+ 61: body{margin:0;background:#fff;color:#1c2430;font:18px/1.75 Georgia,"Times New Roman"}
+ 62: header{border-bottom:1px solid #dfe3e8;padding:14px 0}
+ 63: header div,main{width:min(720px,92vw);margin:0 auto}
+ 64: header a{font:700 1rem "Helvetica Neue",Helvetica,Arial;color:#0b5cad}
+ 65: h1{font:700 2.2rem/1.2 "Helvetica Neue",Helvetica,Arial;margin:40px 0 12px}
+ 66: h2{font:700 1.5rem/1.3 "Helvetica Neue",Helvetica,Arial;margin:44px 0 10px}
+ 67: h3{font:700 1.1rem/1.4 "Helvetica Neue",Helvetica,Arial;margin:26px 0 4px}
+ 68: p{margin:0 0 18px}
+ 69: ul,ol{margin:0 0 18px;padding:0 0 0 24px}
+ 70: li{margin:0 0 8px}
+ 71: a{color:#0b5cad}
+ 72: .byline{font:0.95rem "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 28px}
+ 73: .callout{background:#eef4fb;border:1px solid #cfe0f3;padding:18px 20px;margin:28px 0}
+ 74: .callout p{margin:0}
+ 75: .tw{overflow:auto;margin:0 0 24px}
+ 76: table{width:100%;font:0.92rem/1.5 "Helvetica Neue",Helvetica,Arial}
+ 77: th,td{border:1px solid #dfe3e8;padding:10px 12px;text-align:left;vertical-align:top}
+ 78: th{background:#f3f5f7}
+ 79: code{font:0.88em Consolas,Menlo;background:#f3f5f7;padding:2px 6px}
+ 80: .cta{background:#0b5cad;color:#fff;padding:28px;margin:52px 0 24px}
+ 81: .cta h2{margin:0 0 8px;color:#fff}
+ 82: .cta p{margin:0 0 18px}
+ 83: .cta a{display:table;background:#fff;color:#0b5cad;padding:12px 22px;font:700 1rem "Helvetica Neue",Helvetica,Arial}
+ 84: .note{font:0.85rem/1.6 "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 48px}
+ 85: </style>
+ 86: </head>
+ 87: <body>
+ 88: <header><div><a href="https://tracker.fritt.org">Fritt Tracker</a></div></header>
+ 89: <main>
+ 90: <article>
+ 91: <h1>Nigerian Business Compliance Checklist: Documents and Filings to Renew Every Year</h1>
+ 92: <p class="byline">By the Fritt Tracker team</p>
+ 93: 
+ 94: <p>Running a business in Nigeria means answering to several authorities at once. The Corporate Affairs Commission (CAC), tax authorities, pension and insurance bodies, sector regulators, state governments and local councils each issue their own documents, and each has its own renewal date. Miss one and the cost can be a penalty, a delayed contract or a business that is no longer in good standing.</p>
+ 95: <p>This checklist covers the documents and filings most Nigerian businesses need to keep current. It is a starting point, not legal advice. Requirements differ by sector, state and company type, so confirm details with the relevant authority.</p>
+ 96: 
+ 97: <h2>CAC annual returns</h2>
+ 98: <p>Under the Companies and Allied Matters Act 2020, registered companies must file annual returns with the CAC every year, whether or not they traded. The CAC has said that penalties can apply to the company and to each of its directors or officers, and it has moved to remove inactive or noncompliant companies from the register.</p>
+ 99: <p>A public notice dated 15 July 2026, as reported in the press, listed around 100,000 companies for striking off and gave them 90 days to file outstanding annual returns, including persons with significant control and beneficial ownership information. If you have not checked your own company's status recently, do it now on the CAC website at <a href="https://cac.gov.ng">cac.gov.ng</a>.</p>
+100: 
+101: <h2>Tax registration and clearance</h2>
+102: <p>Keep your tax identification details in order and file your returns on time. Many government contracts, tenders, bank facilities and licence applications ask for a tax clearance certificate, so note its validity period and renew it before you need to submit it.</p>
+103: 
+104: <h2>Employee related certificates</h2>
+105: <p>If you have staff, look at the pension, employee compensation and training fund requirements that apply to your business, and at the compliance certificates attached to them. Buyers and procurement teams often ask for these as proof of good standing. Group life insurance for employees is another item to track where the law requires it.</p>
+106: 
+107: <h2>Sector licences and product registrations</h2>
+108: <p>Regulated businesses carry extra documents. Food, drug and cosmetic products need registration with NAFDAC, which is valid for a fixed number of years before it must be renewed. Manufacturers and importers may hold standards certifications from SON. Other sectors such as transport, energy, health and finance have their own regulators, licences and renewal cycles.</p>
+109: 
+110: <h2>Vehicles and drivers</h2>
+111: <p>If your business runs vehicles, each one carries several dates: vehicle licence, road worthiness, insurance and any permits your state or route requires. Each driver adds a driver's licence expiry. A fleet of ten vehicles can quickly mean dozens of dates to watch.</p>
+112: 
+113: <h2>Premises, insurance and contracts</h2>
+114: <p>Track your lease or tenancy end date, business premises permits from your state or local government, signage or advertising permits, and every insurance policy. Add contract end dates and renewal windows too, because a lapsed agreement with a key client or supplier is just as damaging as a lapsed licence.</p>
+115: 
+116: <h2>Staff and foreign worker documents</h2>
+117: <p>Professional bodies typically require regular renewal of practising licences, and foreign staff need valid residence and work documents. Keep these on the list under each person's name.</p>
+118: 
+119: <h2>How to build a renewal calendar that works</h2>
+120: <ol>
+121: <li>List every document. Start with everything above, then ask each department what it holds.</li>
+122: <li>Record the expiry date, the issuing body and the person responsible for renewal.</li>
+123: <li>Decide how early you need warning. If a renewal takes three weeks to process, a reminder one week before expiry is too late. Many businesses use 90, 60 and 30 days.</li>
+124: <li>Send the reminder to a named person, not only a shared inbox.</li>
+125: <li>After each renewal, update the new expiry date straight away and note the cost.</li>
+126: </ol>
+127: <div class="callout"><p>Fritt Tracker was built for this. Add each document, its expiry date and who is responsible, and get reminders before it lapses. It is free for up to 20 documents.</p></div>
+128: 
+129: <h2>Frequently asked questions</h2>
+130: <h3>How often do companies file annual returns in Nigeria?</h3>
+131: <p>Every year. The Companies and Allied Matters Act 2020 requires registered companies to file annual returns with the CAC each year, even if the company is inactive.</p>
+132: <h3>What happens if a Nigerian company does not file annual returns?</h3>
+133: <p>The CAC can apply penalties to the company and to its directors or officers, and it can strike a company off the register. It has publicly announced striking off exercises for companies that fall behind. Check the CAC website for your company&#x27;s current status.</p>
+134: <h3>What documents should a small business in Nigeria track?</h3>
+135: <p>At minimum, CAC filings, tax documents and clearance certificates, insurance policies, premises and lease dates, vehicle papers, sector licences and staff certifications. Add anything else that has an expiry or renewal date.</p>
+136: <div class="cta">
+137: <h2>Keep every Nigerian business document current</h2>
+138: <p>Put your CAC filings, licences, vehicle papers and insurance dates in one place and get reminders before they lapse. Free for up to 20 documents.</p>
+139: <a href="https://tracker.fritt.org">Start tracking for free</a>
+140: </div>
+141: <p class="note">This article is general information, not legal advice. Rules differ by authority and change over time, so confirm details with the issuing body.</p>
+142: </article>
+143: </main>
+144: </body>
+145: </html>
+
+================
+File: templates/resources/what-happens-if-business-licence-expires.html
+================
+  1: <!DOCTYPE html>
+  2: <html lang="en">
+  3: <head>
+  4: <meta charset="utf8">
+  5: <meta name="viewport" content="width=device-width,initial-scale=1">
+  6: <title>What Happens If a Business Licence or Permit Expires?</title>
+  7: <meta name="description" content="The consequences of an expired business licence, permit or certificate in the US, UK and Nigeria, real examples of penalties, and how to avoid a lapse.">
+  8: <link rel="canonical" href="https://tracker.fritt.org/resources/what-happens-if-business-licence-expires">
+  9: <script type="application/ld+json">
+ 10: {
+ 11:   "@context": "https://schema.org",
+ 12:   "@type": "Article",
+ 13:   "headline": "What Happens If a Business Licence or Permit Expires?",
+ 14:   "description": "The consequences of an expired business licence, permit or certificate in the US, UK and Nigeria, real examples of penalties, and how to avoid a lapse.",
+ 15:   "datePublished": "2026-09-21",
+ 16:   "author": {
+ 17:     "@type": "Organization",
+ 18:     "name": "Fritt Tracker"
+ 19:   },
+ 20:   "publisher": {
+ 21:     "@type": "Organization",
+ 22:     "name": "Fritt Tracker",
+ 23:     "url": "https://tracker.fritt.org"
+ 24:   },
+ 25:   "mainEntityOfPage": "https://tracker.fritt.org/resources/what-happens-if-business-licence-expires"
+ 26: }
+ 27: </script>
+ 28: <script type="application/ld+json">
+ 29: {
+ 30:   "@context": "https://schema.org",
+ 31:   "@type": "FAQPage",
+ 32:   "mainEntity": [
+ 33:     {
+ 34:       "@type": "Question",
+ 35:       "name": "Can I keep trading while my licence renewal is pending?",
+ 36:       "acceptedAnswer": {
+ 37:         "@type": "Answer",
+ 38:         "text": "It depends on the licence and the authority. Some authorities treat a submitted renewal as enough while it is processed, and others do not. Ask the issuing body and get the answer in writing."
+ 39:       }
+ 40:     },
+ 41:     {
+ 42:       "@type": "Question",
+ 43:       "name": "How early should I renew a business licence?",
+ 44:       "acceptedAnswer": {
+ 45:         "@type": "Answer",
+ 46:         "text": "Start early enough to cover the processing time plus a buffer. Many businesses set reminders at 90, 60 and 30 days before expiry, and longer for licences that need inspections or supporting documents."
+ 47:       }
+ 48:     },
+ 49:     {
+ 50:       "@type": "Question",
+ 51:       "name": "What documents should a small business track for expiry?",
+ 52:       "acceptedAnswer": {
+ 53:         "@type": "Answer",
+ 54:         "text": "Business registration filings, operating licences and permits, tax certificates, insurance policies, professional and safety certificates for staff, vehicle papers, and lease and contract end dates."
+ 55:       }
+ 56:     }
+ 57:   ]
+ 58: }
+ 59: </script>
+ 60: <style>
+ 61: body{margin:0;background:#fff;color:#1c2430;font:18px/1.75 Georgia,"Times New Roman"}
+ 62: header{border-bottom:1px solid #dfe3e8;padding:14px 0}
+ 63: header div,main{width:min(720px,92vw);margin:0 auto}
+ 64: header a{font:700 1rem "Helvetica Neue",Helvetica,Arial;color:#0b5cad}
+ 65: h1{font:700 2.2rem/1.2 "Helvetica Neue",Helvetica,Arial;margin:40px 0 12px}
+ 66: h2{font:700 1.5rem/1.3 "Helvetica Neue",Helvetica,Arial;margin:44px 0 10px}
+ 67: h3{font:700 1.1rem/1.4 "Helvetica Neue",Helvetica,Arial;margin:26px 0 4px}
+ 68: p{margin:0 0 18px}
+ 69: ul,ol{margin:0 0 18px;padding:0 0 0 24px}
+ 70: li{margin:0 0 8px}
+ 71: a{color:#0b5cad}
+ 72: .byline{font:0.95rem "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 28px}
+ 73: .callout{background:#eef4fb;border:1px solid #cfe0f3;padding:18px 20px;margin:28px 0}
+ 74: .callout p{margin:0}
+ 75: .tw{overflow:auto;margin:0 0 24px}
+ 76: table{width:100%;font:0.92rem/1.5 "Helvetica Neue",Helvetica,Arial}
+ 77: th,td{border:1px solid #dfe3e8;padding:10px 12px;text-align:left;vertical-align:top}
+ 78: th{background:#f3f5f7}
+ 79: code{font:0.88em Consolas,Menlo;background:#f3f5f7;padding:2px 6px}
+ 80: .cta{background:#0b5cad;color:#fff;padding:28px;margin:52px 0 24px}
+ 81: .cta h2{margin:0 0 8px;color:#fff}
+ 82: .cta p{margin:0 0 18px}
+ 83: .cta a{display:table;background:#fff;color:#0b5cad;padding:12px 22px;font:700 1rem "Helvetica Neue",Helvetica,Arial}
+ 84: .note{font:0.85rem/1.6 "Helvetica Neue",Helvetica,Arial;color:#5b6675;margin:0 0 48px}
+ 85: </style>
+ 86: </head>
+ 87: <body>
+ 88: <header><div><a href="https://tracker.fritt.org">Fritt Tracker</a></div></header>
+ 89: <main>
+ 90: <article>
+ 91: <h1>What Happens If a Business Licence or Permit Expires?</h1>
+ 92: <p class="byline">By the Fritt Tracker team</p>
+ 93: 
+ 94: <p>A business licence usually does not fail with a bang. The date passes, nobody notices, and the problem shows up later as a fine, a rejected tender, a stopped job or an insurer that disputes a claim. The consequences depend on the document, the authority and the country, but the pattern is consistent: expired paperwork is far more expensive than renewed paperwork.</p>
+ 95: <p>This guide explains what typically happens when a business licence (spelled license in the US), permit or certificate lapses, gives real examples, and shows how to stop it happening to you.</p>
+ 96: 
+ 97: <h2>The short answer</h2>
+ 98: <p>It depends on what expired and who issued it. In general, an expired document leads to one or more of four things:</p>
+ 99: <ul>
+100: <li><strong>Penalties and fines.</strong> Late fees, fixed penalties or, in serious cases, criminal offences.</li>
+101: <li><strong>Restrictions on operating.</strong> Authorities can require you to stop the regulated activity until the document is renewed.</li>
+102: <li><strong>Commercial loss.</strong> Clients and procurement teams ask for valid certificates. An expired one can disqualify a bid or pause a contract.</li>
+103: <li><strong>Extra cost and time.</strong> Reinstatement fees, rush processing and the staff hours needed to sort it out.</li>
+104: </ul>
+105: 
+106: <h2>Real examples from Nigeria, the UK and the US</h2>
+107: <h3>Nigeria: CAC annual returns</h3>
+108: <p>Companies must file annual returns every year. The CAC has said penalties can apply to both the company and its directors or officers, and it has published notices about striking off companies that fall behind, including a notice in July 2026 that gave listed companies 90 days to file.</p>
+109: <h3>UK: right to work checks and Companies House</h3>
+110: <p>An employer who employs someone without the right to work, and cannot show a valid statutory excuse, can face a civil penalty of up to &pound;45,000 per worker for a first breach. Separately, UK companies must file a confirmation statement with Companies House at least once every 12 months. Failing to file is an offence, and the registrar can begin action to strike the company off the register.</p>
+111: <h3>US: state and local licences, contractor licences and insurance</h3>
+112: <p>In the US the rules vary by state, county and city. Late renewal of a business license commonly brings late fees, and operating without a current license can lead to fines. In some states, contractors working with a lapsed licence can face fines or difficulty collecting payment. Many commercial clients also require a current certificate of insurance before your crew can start work.</p>
+113: 
+114: <h2>The costs people forget</h2>
+115: <ul>
+116: <li>Reinstatement or late fees on top of the normal renewal fee</li>
+117: <li>Days or weeks of lost work while the renewal is processed</li>
+118: <li>Disqualified bids and lost contracts</li>
+119: <li>Claims that may be challenged if a required licence or certificate had lapsed</li>
+120: <li>Senior time spent on damage control instead of running the business</li>
+121: </ul>
+122: 
+123: <h2>Why licences expire without anyone noticing</h2>
+124: <ul>
+125: <li>The documents are spread across people, drawers, inboxes and online portals.</li>
+126: <li>Each one has a different renewal cycle: annual, every two years, every five years.</li>
+127: <li>The one person who knew the dates has moved on.</li>
+128: <li>Renewals take longer than expected, so a reminder that arrives at the last minute is too late.</li>
+129: <li>Reminders live in one calendar that nobody else can see.</li>
+130: </ul>
+131: 
+132: <h2>How to avoid a lapse</h2>
+133: <ol>
+134: <li>Put every licence, permit, certificate and insurance policy in one list.</li>
+135: <li>Record the expiry date, the authority, the fee and the person responsible.</li>
+136: <li>Work backward from processing time. If renewal takes a month, your first reminder should arrive at least two months before expiry.</li>
+137: <li>Send reminders to a named person and a backup.</li>
+138: <li>Save proof of each renewal and update the next expiry date immediately.</li>
+139: </ol>
+140: 
+141: <h2>What to do if something has already expired</h2>
+142: <ol>
+143: <li>Confirm the exact status with the issuing authority. Do not assume.</li>
+144: <li>Find out whether you can continue the regulated activity while the renewal is pending, and get the answer in writing.</li>
+145: <li>Submit the renewal or reinstatement application immediately and keep the receipt.</li>
+146: <li>If a penalty notice has already arrived, get advice from a qualified professional before you respond.</li>
+147: </ol>
+148: 
+149: <h2>How Fritt Tracker helps</h2>
+150: <p>Fritt Tracker gives you one dashboard for every licence, permit, certificate and policy. Add the expiry date and get reminders before it lapses, then search and filter to see what is due next. The free plan covers up to 20 documents.</p>
+151: 
+152: <h2>Frequently asked questions</h2>
+153: <h3>Can I keep trading while my licence renewal is pending?</h3>
+154: <p>It depends on the licence and the authority. Some authorities treat a submitted renewal as enough while it is processed, and others do not. Ask the issuing body and get the answer in writing.</p>
+155: <h3>How early should I renew a business licence?</h3>
+156: <p>Start early enough to cover the processing time plus a buffer. Many businesses set reminders at 90, 60 and 30 days before expiry, and longer for licences that need inspections or supporting documents.</p>
+157: <h3>What documents should a small business track for expiry?</h3>
+158: <p>Business registration filings, operating licences and permits, tax certificates, insurance policies, professional and safety certificates for staff, vehicle papers, and lease and contract end dates.</p>
+159: <div class="cta">
+160: <h2>Catch every expiry date before it costs you</h2>
+161: <p>Add your licences, permits and certificates to Fritt Tracker and get reminders in time to renew. Free for up to 20 documents.</p>
+162: <a href="https://tracker.fritt.org">Start tracking for free</a>
+163: </div>
+164: <p class="note">This article is general information, not legal advice. Rules differ by authority and change over time, so confirm details with the issuing body.</p>
+165: </article>
+166: </main>
+167: </body>
+168: </html>
 
 ================
 File: templates/add.html
@@ -8831,122 +9499,6 @@ File: templates/resources/contract-renewal-tracking.html
 271: {% endblock %}
 
 ================
-File: templates/admin/users.html
-================
-  1: {% extends "admin/admin_base.html" %}
-  2: 
-  3: {% block admin_title %}Users{% endblock %}
-  4: 
-  5: {% block admin_content %}
-  6: <div class="flex justify-between items-center mb-6">
-  7:     <h1 class="text-2xl font-bold">All Users</h1>
-  8:     <span class="text-sm text-gray-500">Total: {{ total_users }}</span>
-  9: </div>
- 10: 
- 11: <!-- Filters -->
- 12: <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
- 13:     <form method="GET" class="flex flex-wrap gap-3">
- 14:         <input type="text" name="search" value="{{ search }}" 
- 15:                placeholder="Search by email..." 
- 16:                class="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
- 17:         
- 18:         <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
- 19:             <option value="all" {% if status == 'all' %}selected{% endif %}>All Users</option>
- 20:             <option value="verified" {% if status == 'verified' %}selected{% endif %}>Verified</option>
- 21:             <option value="unverified" {% if status == 'unverified' %}selected{% endif %}>Unverified</option>
- 22:             <option value="flagged" {% if status == 'flagged' %}selected{% endif %}>Flagged</option>
- 23:             <option value="admin" {% if status == 'admin' %}selected{% endif %}>Admins</option>
- 24:         </select>
- 25:         
- 26:         <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
- 27:             Filter
- 28:         </button>
- 29:         
- 30:         <a href="{{ url_for('admin_users') }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
- 31:             Clear
- 32:         </a>
- 33:     </form>
- 34: </div>
- 35: 
- 36: <!-- Users Table -->
- 37: <div class="bg-white rounded-xl shadow-sm overflow-hidden">
- 38:     <div class="overflow-x-auto">
- 39:         <table class="w-full text-sm">
- 40:             <thead>
- 41:                 <tr class="bg-gray-50 text-left text-gray-500 border-b">
- 42:                     <th class="px-6 py-3">User</th>
- 43:                     <th class="px-6 py-3">Plan</th>
- 44:                     <th class="px-6 py-3">Docs</th>
- 45:                     <th class="px-6 py-3">Status</th>
- 46:                     <th class="px-6 py-3">Joined</th>
- 47:                     <th class="px-6 py-3">Actions</th>
- 48:                 </tr>
- 49:             </thead>
- 50:             <tbody>
- 51:                 {% for user in users %}
- 52:                 <tr class="border-b border-gray-100 hover:bg-gray-50">
- 53:                     <td class="px-6 py-3">
- 54:                         <div class="font-medium">{{ user[1] }}</div>
- 55:                         <div class="text-xs text-gray-500">ID: {{ user[0] }}</div>
- 56:                     </td>
- 57:                     <td class="px-6 py-3">
- 58:                         <span class="px-2 py-1 rounded-full text-xs
- 59:                             {% if user[11] %}bg-red-100 text-red-700
- 60:                             {% elif user[14] %}bg-orange-100 text-orange-700
- 61:                             {% elif user[15] %}bg-red-100 text-red-700
- 62:                             {% elif user[13] %}bg-blue-100 text-blue-700
- 63:                             {% elif user[3] == 'pro' %}bg-blue-100 text-blue-700
- 64:                             {% else %}bg-gray-100 text-gray-700{% endif %}">
- 65:                             {{ user[12] }}
- 66:                         </span>
- 67:                         {% if user[7] %}
- 68:                         <span class="ml-1 text-xs text-purple-600">👑</span>
- 69:                         {% endif %}
- 70:                         {% if user[8] %}
- 71:                         <span class="ml-1 text-xs text-red-600">🚩</span>
- 72:                         {% endif %}
- 73:                     </td>
- 74:                     <td class="px-6 py-3">{{ user[6] or 0 }}</td>
- 75:                     <td class="px-6 py-3">
- 76:                         {% if user[2] %}
- 77:                         <span class="text-green-600">✅ Verified</span>
- 78:                         {% else %}
- 79:                         <span class="text-yellow-600">⏳ Unverified</span>
- 80:                         {% endif %}
- 81:                     </td>
- 82:                     <td class="px-6 py-3 text-gray-500">{{ user[5].strftime('%Y-%m-%d') }}</td>
- 83:                     <td class="px-6 py-3">
- 84:                         <a href="{{ url_for('admin_user_detail', user_id=user[0]) }}" 
- 85:                            class="text-blue-600 hover:underline text-xs">View</a>
- 86:                     </td>
- 87:                 </tr>
- 88:                 {% endfor %}
- 89:             </tbody>
- 90:         </table>
- 91:     </div>
- 92:     
- 93:     <!-- Pagination -->
- 94:     {% if total_users > per_page %}
- 95:     <div class="px-6 py-4 border-t flex justify-between items-center">
- 96:         <div class="text-sm text-gray-500">
- 97:             Showing {{ (page-1)*per_page + 1 }} - {{ [page*per_page, total_users]|min }} of {{ total_users }}
- 98:         </div>
- 99:         <div class="flex gap-2">
-100:             {% if page > 1 %}
-101:             <a href="{{ url_for('admin_users', page=page-1, search=search, status=status) }}" 
-102:                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">Previous</a>
-103:             {% endif %}
-104:             {% if page * per_page < total_users %}
-105:             <a href="{{ url_for('admin_users', page=page+1, search=search, status=status) }}" 
-106:                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">Next</a>
-107:             {% endif %}
-108:         </div>
-109:     </div>
-110:     {% endif %}
-111: </div>
-112: {% endblock %}
-
-================
 File: templates/landing.html
 ================
   1: {% extends "base.html" %}
@@ -9180,6 +9732,122 @@ File: templates/landing.html
 229: </section>
 230: 
 231: {% endblock %}
+
+================
+File: templates/admin/users.html
+================
+  1: {% extends "admin/admin_base.html" %}
+  2: 
+  3: {% block admin_title %}Users{% endblock %}
+  4: 
+  5: {% block admin_content %}
+  6: <div class="flex justify-between items-center mb-6">
+  7:     <h1 class="text-2xl font-bold">All Users</h1>
+  8:     <span class="text-sm text-gray-500">Total: {{ total_users }}</span>
+  9: </div>
+ 10: 
+ 11: <!-- Filters -->
+ 12: <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+ 13:     <form method="GET" class="flex flex-wrap gap-3">
+ 14:         <input type="text" name="search" value="{{ search }}" 
+ 15:                placeholder="Search by email..." 
+ 16:                class="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+ 17:         
+ 18:         <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+ 19:             <option value="all" {% if status == 'all' %}selected{% endif %}>All Users</option>
+ 20:             <option value="verified" {% if status == 'verified' %}selected{% endif %}>Verified</option>
+ 21:             <option value="unverified" {% if status == 'unverified' %}selected{% endif %}>Unverified</option>
+ 22:             <option value="flagged" {% if status == 'flagged' %}selected{% endif %}>Flagged</option>
+ 23:             <option value="admin" {% if status == 'admin' %}selected{% endif %}>Admins</option>
+ 24:         </select>
+ 25:         
+ 26:         <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+ 27:             Filter
+ 28:         </button>
+ 29:         
+ 30:         <a href="{{ url_for('admin_users') }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+ 31:             Clear
+ 32:         </a>
+ 33:     </form>
+ 34: </div>
+ 35: 
+ 36: <!-- Users Table -->
+ 37: <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+ 38:     <div class="overflow-x-auto">
+ 39:         <table class="w-full text-sm">
+ 40:             <thead>
+ 41:                 <tr class="bg-gray-50 text-left text-gray-500 border-b">
+ 42:                     <th class="px-6 py-3">User</th>
+ 43:                     <th class="px-6 py-3">Plan</th>
+ 44:                     <th class="px-6 py-3">Docs</th>
+ 45:                     <th class="px-6 py-3">Status</th>
+ 46:                     <th class="px-6 py-3">Joined</th>
+ 47:                     <th class="px-6 py-3">Actions</th>
+ 48:                 </tr>
+ 49:             </thead>
+ 50:             <tbody>
+ 51:                 {% for user in users %}
+ 52:                 <tr class="border-b border-gray-100 hover:bg-gray-50">
+ 53:                     <td class="px-6 py-3">
+ 54:                         <div class="font-medium">{{ user[1] }}</div>
+ 55:                         <div class="text-xs text-gray-500">ID: {{ user[0] }}</div>
+ 56:                     </td>
+ 57:                     <td class="px-6 py-3">
+ 58:                         <span class="px-2 py-1 rounded-full text-xs
+ 59:                             {% if user[11] %}bg-red-100 text-red-700
+ 60:                             {% elif user[14] %}bg-orange-100 text-orange-700
+ 61:                             {% elif user[15] %}bg-red-100 text-red-700
+ 62:                             {% elif user[13] %}bg-blue-100 text-blue-700
+ 63:                             {% elif user[3] == 'pro' %}bg-blue-100 text-blue-700
+ 64:                             {% else %}bg-gray-100 text-gray-700{% endif %}">
+ 65:                             {{ user[12] }}
+ 66:                         </span>
+ 67:                         {% if user[7] %}
+ 68:                         <span class="ml-1 text-xs text-purple-600">👑</span>
+ 69:                         {% endif %}
+ 70:                         {% if user[8] %}
+ 71:                         <span class="ml-1 text-xs text-red-600">🚩</span>
+ 72:                         {% endif %}
+ 73:                     </td>
+ 74:                     <td class="px-6 py-3">{{ user[6] or 0 }}</td>
+ 75:                     <td class="px-6 py-3">
+ 76:                         {% if user[2] %}
+ 77:                         <span class="text-green-600">✅ Verified</span>
+ 78:                         {% else %}
+ 79:                         <span class="text-yellow-600">⏳ Unverified</span>
+ 80:                         {% endif %}
+ 81:                     </td>
+ 82:                     <td class="px-6 py-3 text-gray-500">{{ user[5].strftime('%Y-%m-%d') }}</td>
+ 83:                     <td class="px-6 py-3">
+ 84:                         <a href="{{ url_for('admin_user_detail', user_id=user[0]) }}" 
+ 85:                            class="text-blue-600 hover:underline text-xs">View</a>
+ 86:                     </td>
+ 87:                 </tr>
+ 88:                 {% endfor %}
+ 89:             </tbody>
+ 90:         </table>
+ 91:     </div>
+ 92:     
+ 93:     <!-- Pagination -->
+ 94:     {% if total_users > per_page %}
+ 95:     <div class="px-6 py-4 border-t flex justify-between items-center">
+ 96:         <div class="text-sm text-gray-500">
+ 97:             Showing {{ (page-1)*per_page + 1 }} - {{ [page*per_page, total_users]|min }} of {{ total_users }}
+ 98:         </div>
+ 99:         <div class="flex gap-2">
+100:             {% if page > 1 %}
+101:             <a href="{{ url_for('admin_users', page=page-1, search=search, status=status) }}" 
+102:                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">Previous</a>
+103:             {% endif %}
+104:             {% if page * per_page < total_users %}
+105:             <a href="{{ url_for('admin_users', page=page+1, search=search, status=status) }}" 
+106:                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">Next</a>
+107:             {% endif %}
+108:         </div>
+109:     </div>
+110:     {% endif %}
+111: </div>
+112: {% endblock %}
 
 ================
 File: templates/pricing.html
@@ -9477,272 +10145,6 @@ File: templates/pricing.html
 291: });
 292: </script>
 293: {% endblock %}
-
-================
-File: templates/admin/user_detail.html
-================
-  1: {% extends "admin/admin_base.html" %}
-  2: 
-  3: {% block admin_title %}User Details{% endblock %}
-  4: 
-  5: {% block admin_content %}
-  6: <div class="flex justify-between items-center mb-6">
-  7:     <div>
-  8:         <h1 class="text-2xl font-bold">User Details</h1>
-  9:         <p class="text-gray-500">{{ user[1] }}</p>
- 10:     </div>
- 11:     <a href="{{ url_for('admin_users') }}" class="text-blue-600 hover:underline">← Back to Users</a>
- 12: </div>
- 13: 
- 14: <!-- User Info -->
- 15: <div class="grid md:grid-cols-2 gap-6 mb-6">
- 16:     <div class="bg-white rounded-xl shadow-sm p-6">
- 17:         <h2 class="font-bold text-lg mb-4">Account Info</h2>
- 18:         <div class="space-y-2 text-sm">
- 19:             <div><span class="text-gray-500">User ID:</span> {{ user[0] }}</div>
- 20:             <div><span class="text-gray-500">Email:</span> {{ user[1] }}</div>
- 21:             <div>
- 22:                 <span class="text-gray-500">Verified:</span>
- 23:                 {% if user[2] %}
- 24:                 <span class="text-green-600">✅ Yes</span>
- 25:                 {% else %}
- 26:                 <span class="text-yellow-600">⏳ No</span>
- 27:                 {% endif %}
- 28:             </div>
- 29:             <div>
- 30:                 <span class="text-gray-500">Plan:</span>
- 31:                 <span class="px-2 py-1 rounded-full text-xs 
- 32:                     {% if user[11] %}bg-red-100 text-red-700
- 33:                     {% elif user[14] %}bg-orange-100 text-orange-700
- 34:                     {% elif user[15] %}bg-red-100 text-red-700
- 35:                     {% elif user[13] %}bg-blue-100 text-blue-700
- 36:                     {% elif user[3] == 'pro' %}bg-blue-100 text-blue-700
- 37:                     {% else %}bg-gray-100 text-gray-700{% endif %}">
- 38:                     {{ user[12] }}
- 39:                 </span>
- 40:                 {% if user[7] %}
- 41:                 <span class="ml-2 text-purple-600 text-xs">👑 Admin</span>
- 42:                 {% endif %}
- 43:             </div>
- 44:             <div><span class="text-gray-500">Status:</span> {{ user[4] }}</div>
- 45:             <div><span class="text-gray-500">Joined:</span> {{ user[6].strftime('%Y-%m-%d %H:%M') if user[6] else 'N/A' }}</div>
- 46:             {% if user[4] == 'active' and user[3] != 'free' %}
- 47:             <div><span class="text-gray-500">Expires:</span> {{ user[5].strftime('%Y-%m-%d') if user[5] else 'N/A' }}</div>
- 48:             {% endif %}
- 49:         </div>
- 50:     </div>
- 51: 
- 52:     <!-- Actions -->
- 53:     <div class="bg-white rounded-xl shadow-sm p-6">
- 54:         <h2 class="font-bold text-lg mb-4">Actions</h2>
- 55:         <div class="space-y-2">
- 56:             <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="flex flex-wrap gap-2">
- 57:                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
- 58:                 
- 59:                 {% if not user[2] %}
- 60:                 <button type="submit" name="action" value="verify_email" 
- 61:                         class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
- 62:                     ✅ Verify Email
- 63:                 </button>
- 64:                 {% endif %}
- 65:               
- 66:                 {% if not user[7] %}
- 67:                 <button type="submit" name="action" value="make_admin" 
- 68:                         class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
- 69:                     👑 Make Admin
- 70:                 </button>
- 71:                 {% else %}
- 72:                 <button type="submit" name="action" value="remove_admin" 
- 73:                         class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition text-sm">
- 74:                     👑 Remove Admin
- 75:                 </button>
- 76:                 {% endif %}
- 77:                 
- 78:                 {% if not user[11] %}
- 79:                 <button type="submit" name="action" value="suspend_user" 
- 80:                         class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm">
- 81:                     ⛔ Suspend
- 82:                 </button>
- 83:                 {% else %}
- 84:                 <button type="submit" name="action" value="unsuspend_user" 
- 85:                         class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
- 86:                     ✅ Unsuspend
- 87:                 </button>
- 88:                 {% endif %}
- 89:                 
- 90:                 <button type="submit" name="action" value="delete_user" 
- 91:                         class="px-4 py-2 bg-red-800 text-white rounded-lg hover:bg-red-900 transition text-sm"
- 92:                         onclick="return confirm('⚠️ Are you sure you want to delete this user and ALL their data? This cannot be undone!')">
- 93:                     🗑️ Delete User
- 94:                 </button>
- 95:             </form>
- 96: 
- 97:             <!-- Flag User -->
- 98:             <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="mt-4 border-t pt-4">
- 99:                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-100:                 <label class="block text-sm font-medium text-gray-700 mb-1">Flag User</label>
-101:                 <div class="flex gap-2">
-102:                     <input type="text" name="reason" placeholder="Reason for flagging..." 
-103:                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm">
-104:                     <button type="submit" name="action" value="flag_user" 
-105:                             class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm">
-106:                         🚩 Flag
-107:                     </button>
-108:                 </div>
-109:             </form>
-110: 
-111:             <!-- Resolve Flag -->
-112:             {% if user[8] %}
-113:             <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="mt-2 border-t pt-4">
-114:                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-115:                 <label class="block text-sm font-medium text-gray-700 mb-1">Resolve Flag</label>
-116:                 <div class="flex gap-2">
-117:                     <input type="text" name="notes" placeholder="Resolution notes..." 
-118:                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
-119:                     <button type="submit" name="action" value="resolve_flag" 
-120:                             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
-121:                         ✅ Resolve
-122:                     </button>
-123:                 </div>
-124:             </form>
-125:             {% endif %}
-126: 
-127:             <!-- Manual Plan Management -->
-128:             <div class="mt-4 border-t pt-4">
-129:                 <label class="block text-sm font-medium text-gray-700 mb-2">Manual Plan Management</label>
-130:                 <div class="space-y-2">
-131:                     <!-- Upgrade Form -->
-132:                     <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="flex flex-wrap gap-2 items-center">
-133:                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-134:                         <input type="hidden" name="action" value="upgrade_user">
-135:                         
-136:                         <select name="new_tier" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-137:                             <option value="pro">Pro</option>
-138:                         </select>
-139:                         
-140:                         <select name="duration" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-141:                             <option value="1_month">1 Month</option>
-142:                             <option value="3_months">3 Months</option>
-143:                             <option value="6_months">6 Months</option>
-144:                             <option value="1_year">1 Year</option>
-145:                             <option value="indefinite" selected>Indefinite</option>
-146:                         </select>
-147:                         
-148:                         <button type="submit" class="px-4 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
-149:                             ⬆️ Upgrade
-150:                         </button>
-151:                     </form>
-152:                     
-153:                     <!-- Downgrade Form -->
-154:                     <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="flex flex-wrap gap-2">
-155:                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-156:                         <input type="hidden" name="action" value="downgrade_user">
-157:                         <input type="hidden" name="new_tier" value="free">
-158:                         <button type="submit" class="px-4 py-1.5 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition text-sm"
-159:                                 onclick="return confirm('⚠️ This will downgrade the user to Free plan and trim documents to 20 (keeping closest to expiry). Continue?')">
-160:                             ⬇️ Downgrade to Free
-161:                         </button>
-162:                     </form>
-163:                     
-164:                     <!-- Force Fix Button -->
-165:                     <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="flex flex-wrap gap-2">
-166:                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-167:                         <input type="hidden" name="action" value="force_fix">
-168:                         <button type="submit" class="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
-169:                             🔧 Force Fix Subscription
-170:                         </button>
-171:                     </form>
-172: 
-173:                     <form method="POST" action="{{ url_for('admin_reset_test_account') }}" 
-174:                         onsubmit="return confirm('⚠️ This will DELETE ALL DOCUMENTS and reset this account to brand new status.\n\nThis action cannot be undone.\n\nContinue?');">
-175:                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-176:                     <input type="hidden" name="email" value="{{ user[1] }}">
-177:                     <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition text-sm font-medium">
-178:                         🔄 Reset Test Account
-179:                     </button>
-180:                     </form>
-181:                 </div>
-182:             </div>
-183:         </div>
-184:     </div>
-185: </div>
-186: 
-187: <!-- Documents -->
-188: <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
-189:     <h2 class="font-bold text-lg mb-4">Documents ({{ documents|length }})</h2>
-190: 
-191:     <div class="mt-4 border-t pt-4">
-192:         <a href="{{ url_for('admin_user_documents', user_id=user[0]) }}" 
-193:         class="block text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
-194:             📄 Manage User's Documents
-195:         </a>
-196:     </div>
-197: 
-198:     <div class="overflow-x-auto">
-199:         <table class="w-full text-sm">
-200:             <thead>
-201:                 <tr class="text-left text-gray-500 border-b">
-202:                     <th class="pb-2">Title</th>
-203:                     <th class="pb-2">Expiry</th>
-204:                     <th class="pb-2">Status</th>
-205:                 </tr>
-206:             </thead>
-207:             <tbody>
-208:                 {% for doc in documents %}
-209:                 <tr class="border-b border-gray-100">
-210:                     <td class="py-2">{{ doc.title }}</td>
-211:                     <td class="py-2">{{ doc.expiry_date }}</td>
-212:                     <td class="py-2">
-213:                         <span class="px-2 py-1 rounded-full text-xs
-214:                             {% if doc.color == 'blue' %}bg-blue-100 text-blue-700
-215:                             {% elif doc.color == 'green' %}bg-green-100 text-green-700
-216:                             {% elif doc.color == 'orange' %}bg-orange-100 text-orange-700
-217:                             {% elif doc.color == 'red' %}bg-red-100 text-red-700
-218:                             {% else %}bg-slate-100 text-slate-700{% endif %}">
-219:                             {{ doc.icon }} {{ doc.status }}
-220:                         </span>
-221:                     </td>
-222:                 </tr>
-223:                 {% endfor %}
-224:             </tbody>
-225:         </table>
-226:     </div>
-227: </div>
-228: 
-229: <!-- Activity Logs -->
-230: <div class="grid md:grid-cols-2 gap-6">
-231:     <div class="bg-white rounded-xl shadow-sm p-6">
-232:         <h2 class="font-bold text-lg mb-4">User Activity</h2>
-233:         <div class="space-y-2 max-h-64 overflow-y-auto">
-234:             {% for log in activity_logs %}
-235:             <div class="text-sm border-b border-gray-100 pb-2">
-236:                 <div class="font-medium">{{ log[0] }}</div>
-237:                 <div class="text-xs text-gray-500">{{ log[2].strftime('%Y-%m-%d %H:%M') if log[2] else 'N/A' }}</div>
-238:                 {% if log[1] %}
-239:                 <div class="text-xs text-gray-400">{{ log[1]|tojson }}</div>
-240:                 {% endif %}
-241:             </div>
-242:             {% else %}
-243:             <p class="text-gray-500 text-sm">No activity logs found.</p>
-244:             {% endfor %}
-245:         </div>
-246:     </div>
-247: 
-248:     <div class="bg-white rounded-xl shadow-sm p-6">
-249:         <h2 class="font-bold text-lg mb-4">Admin Actions</h2>
-250:         <div class="space-y-2 max-h-64 overflow-y-auto">
-251:             {% for log in audit_logs %}
-252:             <div class="text-sm border-b border-gray-100 pb-2">
-253:                 <div class="font-medium">{{ log[0] }}</div>
-254:                 <div class="text-xs text-gray-500">{{ log[3].strftime('%Y-%m-%d %H:%M') if log[3] else 'N/A' }}</div>
-255:             </div>
-256:             {% else %}
-257:             <p class="text-gray-500 text-sm">No admin actions logged.</p>
-258:             {% endfor %}
-259:         </div>
-260:     </div>
-261: </div>
-262: {% endblock %}
 
 ================
 File: database.py
@@ -10586,6 +10988,272 @@ File: database.py
 837: """
 
 ================
+File: templates/admin/user_detail.html
+================
+  1: {% extends "admin/admin_base.html" %}
+  2: 
+  3: {% block admin_title %}User Details{% endblock %}
+  4: 
+  5: {% block admin_content %}
+  6: <div class="flex justify-between items-center mb-6">
+  7:     <div>
+  8:         <h1 class="text-2xl font-bold">User Details</h1>
+  9:         <p class="text-gray-500">{{ user[1] }}</p>
+ 10:     </div>
+ 11:     <a href="{{ url_for('admin_users') }}" class="text-blue-600 hover:underline">← Back to Users</a>
+ 12: </div>
+ 13: 
+ 14: <!-- User Info -->
+ 15: <div class="grid md:grid-cols-2 gap-6 mb-6">
+ 16:     <div class="bg-white rounded-xl shadow-sm p-6">
+ 17:         <h2 class="font-bold text-lg mb-4">Account Info</h2>
+ 18:         <div class="space-y-2 text-sm">
+ 19:             <div><span class="text-gray-500">User ID:</span> {{ user[0] }}</div>
+ 20:             <div><span class="text-gray-500">Email:</span> {{ user[1] }}</div>
+ 21:             <div>
+ 22:                 <span class="text-gray-500">Verified:</span>
+ 23:                 {% if user[2] %}
+ 24:                 <span class="text-green-600">✅ Yes</span>
+ 25:                 {% else %}
+ 26:                 <span class="text-yellow-600">⏳ No</span>
+ 27:                 {% endif %}
+ 28:             </div>
+ 29:             <div>
+ 30:                 <span class="text-gray-500">Plan:</span>
+ 31:                 <span class="px-2 py-1 rounded-full text-xs 
+ 32:                     {% if user[11] %}bg-red-100 text-red-700
+ 33:                     {% elif user[14] %}bg-orange-100 text-orange-700
+ 34:                     {% elif user[15] %}bg-red-100 text-red-700
+ 35:                     {% elif user[13] %}bg-blue-100 text-blue-700
+ 36:                     {% elif user[3] == 'pro' %}bg-blue-100 text-blue-700
+ 37:                     {% else %}bg-gray-100 text-gray-700{% endif %}">
+ 38:                     {{ user[12] }}
+ 39:                 </span>
+ 40:                 {% if user[7] %}
+ 41:                 <span class="ml-2 text-purple-600 text-xs">👑 Admin</span>
+ 42:                 {% endif %}
+ 43:             </div>
+ 44:             <div><span class="text-gray-500">Status:</span> {{ user[4] }}</div>
+ 45:             <div><span class="text-gray-500">Joined:</span> {{ user[6].strftime('%Y-%m-%d %H:%M') if user[6] else 'N/A' }}</div>
+ 46:             {% if user[4] == 'active' and user[3] != 'free' %}
+ 47:             <div><span class="text-gray-500">Expires:</span> {{ user[5].strftime('%Y-%m-%d') if user[5] else 'N/A' }}</div>
+ 48:             {% endif %}
+ 49:         </div>
+ 50:     </div>
+ 51: 
+ 52:     <!-- Actions -->
+ 53:     <div class="bg-white rounded-xl shadow-sm p-6">
+ 54:         <h2 class="font-bold text-lg mb-4">Actions</h2>
+ 55:         <div class="space-y-2">
+ 56:             <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="flex flex-wrap gap-2">
+ 57:                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+ 58:                 
+ 59:                 {% if not user[2] %}
+ 60:                 <button type="submit" name="action" value="verify_email" 
+ 61:                         class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
+ 62:                     ✅ Verify Email
+ 63:                 </button>
+ 64:                 {% endif %}
+ 65:               
+ 66:                 {% if not user[7] %}
+ 67:                 <button type="submit" name="action" value="make_admin" 
+ 68:                         class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
+ 69:                     👑 Make Admin
+ 70:                 </button>
+ 71:                 {% else %}
+ 72:                 <button type="submit" name="action" value="remove_admin" 
+ 73:                         class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition text-sm">
+ 74:                     👑 Remove Admin
+ 75:                 </button>
+ 76:                 {% endif %}
+ 77:                 
+ 78:                 {% if not user[11] %}
+ 79:                 <button type="submit" name="action" value="suspend_user" 
+ 80:                         class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm">
+ 81:                     ⛔ Suspend
+ 82:                 </button>
+ 83:                 {% else %}
+ 84:                 <button type="submit" name="action" value="unsuspend_user" 
+ 85:                         class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
+ 86:                     ✅ Unsuspend
+ 87:                 </button>
+ 88:                 {% endif %}
+ 89:                 
+ 90:                 <button type="submit" name="action" value="delete_user" 
+ 91:                         class="px-4 py-2 bg-red-800 text-white rounded-lg hover:bg-red-900 transition text-sm"
+ 92:                         onclick="return confirm('⚠️ Are you sure you want to delete this user and ALL their data? This cannot be undone!')">
+ 93:                     🗑️ Delete User
+ 94:                 </button>
+ 95:             </form>
+ 96: 
+ 97:             <!-- Flag User -->
+ 98:             <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="mt-4 border-t pt-4">
+ 99:                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+100:                 <label class="block text-sm font-medium text-gray-700 mb-1">Flag User</label>
+101:                 <div class="flex gap-2">
+102:                     <input type="text" name="reason" placeholder="Reason for flagging..." 
+103:                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm">
+104:                     <button type="submit" name="action" value="flag_user" 
+105:                             class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm">
+106:                         🚩 Flag
+107:                     </button>
+108:                 </div>
+109:             </form>
+110: 
+111:             <!-- Resolve Flag -->
+112:             {% if user[8] %}
+113:             <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="mt-2 border-t pt-4">
+114:                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+115:                 <label class="block text-sm font-medium text-gray-700 mb-1">Resolve Flag</label>
+116:                 <div class="flex gap-2">
+117:                     <input type="text" name="notes" placeholder="Resolution notes..." 
+118:                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+119:                     <button type="submit" name="action" value="resolve_flag" 
+120:                             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
+121:                         ✅ Resolve
+122:                     </button>
+123:                 </div>
+124:             </form>
+125:             {% endif %}
+126: 
+127:             <!-- Manual Plan Management -->
+128:             <div class="mt-4 border-t pt-4">
+129:                 <label class="block text-sm font-medium text-gray-700 mb-2">Manual Plan Management</label>
+130:                 <div class="space-y-2">
+131:                     <!-- Upgrade Form -->
+132:                     <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="flex flex-wrap gap-2 items-center">
+133:                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+134:                         <input type="hidden" name="action" value="upgrade_user">
+135:                         
+136:                         <select name="new_tier" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+137:                             <option value="pro">Pro</option>
+138:                         </select>
+139:                         
+140:                         <select name="duration" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+141:                             <option value="1_month">1 Month</option>
+142:                             <option value="3_months">3 Months</option>
+143:                             <option value="6_months">6 Months</option>
+144:                             <option value="1_year">1 Year</option>
+145:                             <option value="indefinite" selected>Indefinite</option>
+146:                         </select>
+147:                         
+148:                         <button type="submit" class="px-4 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
+149:                             ⬆️ Upgrade
+150:                         </button>
+151:                     </form>
+152:                     
+153:                     <!-- Downgrade Form -->
+154:                     <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="flex flex-wrap gap-2">
+155:                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+156:                         <input type="hidden" name="action" value="downgrade_user">
+157:                         <input type="hidden" name="new_tier" value="free">
+158:                         <button type="submit" class="px-4 py-1.5 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition text-sm"
+159:                                 onclick="return confirm('⚠️ This will downgrade the user to Free plan and trim documents to 20 (keeping closest to expiry). Continue?')">
+160:                             ⬇️ Downgrade to Free
+161:                         </button>
+162:                     </form>
+163:                     
+164:                     <!-- Force Fix Button -->
+165:                     <form method="POST" action="{{ url_for('admin_user_action', user_id=user[0]) }}" class="flex flex-wrap gap-2">
+166:                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+167:                         <input type="hidden" name="action" value="force_fix">
+168:                         <button type="submit" class="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+169:                             🔧 Force Fix Subscription
+170:                         </button>
+171:                     </form>
+172: 
+173:                     <form method="POST" action="{{ url_for('admin_reset_test_account') }}" 
+174:                         onsubmit="return confirm('⚠️ This will DELETE ALL DOCUMENTS and reset this account to brand new status.\n\nThis action cannot be undone.\n\nContinue?');">
+175:                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+176:                     <input type="hidden" name="email" value="{{ user[1] }}">
+177:                     <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition text-sm font-medium">
+178:                         🔄 Reset Test Account
+179:                     </button>
+180:                     </form>
+181:                 </div>
+182:             </div>
+183:         </div>
+184:     </div>
+185: </div>
+186: 
+187: <!-- Documents -->
+188: <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+189:     <h2 class="font-bold text-lg mb-4">Documents ({{ documents|length }})</h2>
+190: 
+191:     <div class="mt-4 border-t pt-4">
+192:         <a href="{{ url_for('admin_user_documents', user_id=user[0]) }}" 
+193:         class="block text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+194:             📄 Manage User's Documents
+195:         </a>
+196:     </div>
+197: 
+198:     <div class="overflow-x-auto">
+199:         <table class="w-full text-sm">
+200:             <thead>
+201:                 <tr class="text-left text-gray-500 border-b">
+202:                     <th class="pb-2">Title</th>
+203:                     <th class="pb-2">Expiry</th>
+204:                     <th class="pb-2">Status</th>
+205:                 </tr>
+206:             </thead>
+207:             <tbody>
+208:                 {% for doc in documents %}
+209:                 <tr class="border-b border-gray-100">
+210:                     <td class="py-2">{{ doc.title }}</td>
+211:                     <td class="py-2">{{ doc.expiry_date }}</td>
+212:                     <td class="py-2">
+213:                         <span class="px-2 py-1 rounded-full text-xs
+214:                             {% if doc.color == 'blue' %}bg-blue-100 text-blue-700
+215:                             {% elif doc.color == 'green' %}bg-green-100 text-green-700
+216:                             {% elif doc.color == 'orange' %}bg-orange-100 text-orange-700
+217:                             {% elif doc.color == 'red' %}bg-red-100 text-red-700
+218:                             {% else %}bg-slate-100 text-slate-700{% endif %}">
+219:                             {{ doc.icon }} {{ doc.status }}
+220:                         </span>
+221:                     </td>
+222:                 </tr>
+223:                 {% endfor %}
+224:             </tbody>
+225:         </table>
+226:     </div>
+227: </div>
+228: 
+229: <!-- Activity Logs -->
+230: <div class="grid md:grid-cols-2 gap-6">
+231:     <div class="bg-white rounded-xl shadow-sm p-6">
+232:         <h2 class="font-bold text-lg mb-4">User Activity</h2>
+233:         <div class="space-y-2 max-h-64 overflow-y-auto">
+234:             {% for log in activity_logs %}
+235:             <div class="text-sm border-b border-gray-100 pb-2">
+236:                 <div class="font-medium">{{ log[0] }}</div>
+237:                 <div class="text-xs text-gray-500">{{ log[2].strftime('%Y-%m-%d %H:%M') if log[2] else 'N/A' }}</div>
+238:                 {% if log[1] %}
+239:                 <div class="text-xs text-gray-400">{{ log[1]|tojson }}</div>
+240:                 {% endif %}
+241:             </div>
+242:             {% else %}
+243:             <p class="text-gray-500 text-sm">No activity logs found.</p>
+244:             {% endfor %}
+245:         </div>
+246:     </div>
+247: 
+248:     <div class="bg-white rounded-xl shadow-sm p-6">
+249:         <h2 class="font-bold text-lg mb-4">Admin Actions</h2>
+250:         <div class="space-y-2 max-h-64 overflow-y-auto">
+251:             {% for log in audit_logs %}
+252:             <div class="text-sm border-b border-gray-100 pb-2">
+253:                 <div class="font-medium">{{ log[0] }}</div>
+254:                 <div class="text-xs text-gray-500">{{ log[3].strftime('%Y-%m-%d %H:%M') if log[3] else 'N/A' }}</div>
+255:             </div>
+256:             {% else %}
+257:             <p class="text-gray-500 text-sm">No admin actions logged.</p>
+258:             {% endfor %}
+259:         </div>
+260:     </div>
+261: </div>
+262: {% endblock %}
+
+================
 File: templates/index.html
 ================
   1: {% extends "base.html" %}
@@ -11071,20 +11739,20 @@ File: templates/base.html
   4:     <meta charset="UTF-8">
   5:     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   6:     <meta name="google-site-verification" content="tzlP73O_C9ElTvrpUUb592kJ9dDnIOpRANP7AeFbXB4" />
-  7:     <title>{% block title %}Fritt Tracker — Document Expiry Tracker & Renewal Reminders{% endblock %}</title>
+  7:     <title>{% block title %}Fritt Tracker — Never Miss a Document Renewal Again{% endblock %}</title>
   8:     <meta name="description" content="{% block meta_description %}Track document expiry dates and get email reminders before passports, licenses, contracts, and insurance expire. Free for up to 20 documents.{% endblock %}">
   9:     <link rel="canonical" href="{% block canonical %}{{ request.url.split('?')[0] }}{% endblock %}">
  10:     <meta name="robots" content="{% block robots %}index, follow{% endblock %}">
  11: 
  12:     <meta property="og:type" content="website">
  13:     <meta property="og:site_name" content="Fritt Tracker">
- 14:     <meta property="og:title" content="{% block og_title %}Fritt Tracker — Never Miss a Document Renewal{% endblock %}">
+ 14:     <meta property="og:title" content="{% block og_title %}Fritt Tracker — Never Miss a Document Renewal Again{% endblock %}">
  15:     <meta property="og:description" content="{% block og_description %}Track company document expiry dates and get reminded before they lapse.{% endblock %}">
  16:     <meta property="og:image" content="{% block og_image %}https://tracker.fritt.org/static/og-image.png{% endblock %}">
  17:     <meta property="og:url" content="{{ request.url.split('?')[0] }}">
  18: 
  19:     <meta name="twitter:card" content="summary_large_image">
- 20:     <meta name="twitter:title" content="{% block twitter_title %}Fritt Tracker — Document Expiry Tracker{% endblock %}">
+ 20:     <meta name="twitter:title" content="{% block twitter_title %}Fritt Tracker — Never Miss a Document Renewal Again{% endblock %}">
  21:     <meta name="twitter:description" content="{% block twitter_description %}Track company document expiry dates and get reminded before they lapse.{% endblock %}">
  22:     <meta name="twitter:image" content="{% block twitter_image %}https://tracker.fritt.org/static/og-image.png{% endblock %}">
  23: 
