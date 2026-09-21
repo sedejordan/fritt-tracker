@@ -4747,7 +4747,7 @@ def resource_insurance_gaps():
 @limiter.exempt
 def resource_document_checklist():
     return render_template(
-        "resources/document-expiry-tracking-checklist.html", articles=RESOURCE_ARTICLES
+        "resources/document-expiry-tracking-checklist.html", articles=RESOURCE_ARTICLES)
     
 
 @app.route("/resources/<slug>")
